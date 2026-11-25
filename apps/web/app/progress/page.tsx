@@ -3,11 +3,18 @@
 import { useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 
+type LessonMastery = {
+  id: string;
+  title: string;
+  mastery: number;
+};
+
 type Row = {
   courseId: string;
   title: string;
   total: number;
   done: number;
+  lessons: LessonMastery[];
 };
 
 type NoteRow = {
@@ -40,6 +47,9 @@ export default function MyProgress() {
   const [points, setPoints] = useState(0);
   const [badges, setBadges] = useState<{ icon: string; name: string; earned: boolean }[]>([]);
   const [notes, setNotes] = useState<NoteRow[]>([]);
+  const [plan, setPlan] = useState<
+    { lesson_title: string; course_title: string; course_id: string; mastery: number }[]
+  >([]);
 
   useEffect(() => {
     async function load() {
@@ -78,7 +88,10 @@ export default function MyProgress() {
 
       // Points/badges/notes data. Notes need student-features-setup.sql.
       const [attemptsRes, notesRes, allProgressRes] = await Promise.all([
-        supabase.from("exam_attempts").select("score").eq("student_id", user.id),
+        supabase
+          .from("exam_attempts")
+          .select("exam_id, score")
+          .eq("student_id", user.id),
         supabase
           .from("lesson_notes")
           .select("lesson_id, note, lessons(title, course_id)")
@@ -91,9 +104,11 @@ export default function MyProgress() {
       const totalDone = (allProgressRes.data || []).filter(
         (p: { completed: boolean }) => p.completed
       ).length;
-      const attemptScores = (attemptsRes.data || []).map(
-        (a: { score: number }) => a.score
-      );
+      const attemptsList = (attemptsRes.data || []) as {
+        exam_id: string;
+        score: number;
+      }[];
+      const attemptScores = attemptsList.map((a) => a.score);
       const passes = attemptScores.filter((s: number) => s >= 50).length;
       const perfects = attemptScores.filter((s: number) => s === 100).length;
 
@@ -143,13 +158,31 @@ export default function MyProgress() {
 
       const { data: lessons } = await supabase
         .from("lessons")
-        .select("id, course_id")
+        .select("id, course_id, title, sort_order")
         .eq("is_published", true)
         .in("course_id", courseIds);
 
+      const { data: courseExams } = await supabase
+        .from("exams")
+        .select("id, course_id")
+        .in("course_id", courseIds);
+
+      const examBestByCourse: Record<string, number> = {};
+      const examCourse: Record<string, string> = {};
+      (courseExams || []).forEach((e: { id: string; course_id: string }) => {
+        examCourse[e.id] = e.course_id;
+      });
+      attemptsList.forEach((a) => {
+        const cid = examCourse[a.exam_id];
+        if (!cid) return;
+        if (!(cid in examBestByCourse) || a.score > examBestByCourse[cid]) {
+          examBestByCourse[cid] = a.score;
+        }
+      });
+
       const { data: progressData } = await supabase
         .from("lesson_progress")
-        .select("lesson_id, completed")
+        .select("lesson_id, completed, watched_seconds, duration_seconds")
         .eq("student_id", user.id);
 
       const doneSet = new Set(
@@ -158,12 +191,49 @@ export default function MyProgress() {
           .map((p: { lesson_id: string }) => p.lesson_id)
       );
 
+      const progressMap: Record<
+        string,
+        { completed: boolean; watched_seconds: number; duration_seconds: number }
+      > = {};
+      (progressData || []).forEach(
+        (p: {
+          lesson_id: string;
+          completed: boolean;
+          watched_seconds: number;
+          duration_seconds: number;
+        }) => {
+          progressMap[p.lesson_id] = p;
+        }
+      );
+
       const perCourse: Record<string, { total: number; done: number }> = {};
-      (lessons || []).forEach((l: { id: string; course_id: string }) => {
-        if (!perCourse[l.course_id]) perCourse[l.course_id] = { total: 0, done: 0 };
-        perCourse[l.course_id].total += 1;
-        if (doneSet.has(l.id)) perCourse[l.course_id].done += 1;
-      });
+      const masteryByCourse: Record<string, LessonMastery[]> = {};
+      type LessonRow = {
+        id: string;
+        course_id: string;
+        title: string;
+        sort_order: number;
+      };
+      ((lessons as LessonRow[]) || [])
+        .slice()
+        .sort((a, b) => a.sort_order - b.sort_order)
+        .forEach((l) => {
+          if (!perCourse[l.course_id]) perCourse[l.course_id] = { total: 0, done: 0 };
+          perCourse[l.course_id].total += 1;
+          if (doneSet.has(l.id)) perCourse[l.course_id].done += 1;
+
+          const p = progressMap[l.id];
+          const base = p?.completed
+            ? 100
+            : p && p.duration_seconds > 0
+              ? Math.min(100, Math.round((p.watched_seconds / p.duration_seconds) * 100))
+              : 0;
+          const examBest = examBestByCourse[l.course_id];
+          const mastery =
+            examBest === undefined ? base : Math.round(0.6 * base + 0.4 * examBest);
+          if (!masteryByCourse[l.course_id]) masteryByCourse[l.course_id] = [];
+          masteryByCourse[l.course_id].push({ id: l.id, title: l.title, mastery });
+        });
 
       const rowList = ((courses as { id: string; title: string }[]) || []).map(
         (c) => ({
@@ -171,9 +241,31 @@ export default function MyProgress() {
           title: c.title,
           total: perCourse[c.id]?.total || 0,
           done: perCourse[c.id]?.done || 0,
+          lessons: masteryByCourse[c.id] || [],
         })
       );
       setRows(rowList);
+
+      const weak: {
+        lesson_title: string;
+        course_title: string;
+        course_id: string;
+        mastery: number;
+      }[] = [];
+      rowList.forEach((r) => {
+        r.lessons.forEach((l) => {
+          if (l.mastery < 80) {
+            weak.push({
+              lesson_title: l.title,
+              course_title: r.title,
+              course_id: r.courseId,
+              mastery: l.mastery,
+            });
+          }
+        });
+      });
+      weak.sort((a, b) => a.mastery - b.mastery);
+      setPlan(weak.slice(0, 6));
       const anyComplete = rowList.some((r) => r.total > 0 && r.done === r.total);
       setPoints(totalDone * 10 + passes * 50 + perfects * 50);
       setBadges(buildBadges(totalDone, passes, perfects, anyComplete));
@@ -243,6 +335,36 @@ export default function MyProgress() {
               <div className="progress-bar">
                 <div className="progress-fill" style={{ width: `${pct}%` }} />
               </div>
+              {r.lessons.length > 0 && (
+                <div style={{ marginTop: "12px" }}>
+                  <p style={{ margin: "0 0 6px", fontSize: "14px", color: "#8fa0b8" }}>
+                    خريطة الإتقان: 🟢 80%+ 🟡 50-79% 🔴 أقل من 50%
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                    {r.lessons.map((l) => (
+                      <span
+                        key={l.id}
+                        title={`${l.title}: ${l.mastery}%`}
+                        style={{
+                          padding: "4px 10px",
+                          borderRadius: "14px",
+                          fontSize: "13px",
+                          border: "1px solid #24395e",
+                          color:
+                            l.mastery >= 80
+                              ? "#2e9e5b"
+                              : l.mastery >= 50
+                                ? "#d4a017"
+                                : "#e06060",
+                        }}
+                      >
+                        {l.mastery >= 80 ? "🟢" : l.mastery >= 50 ? "🟡" : "🔴"}{" "}
+                        {l.title} {l.mastery}%
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
               <a
                 href={`/courses/${r.courseId}`}
                 style={{
@@ -257,6 +379,38 @@ export default function MyProgress() {
             </section>
           );
         })}
+        {!loading && rows.length > 0 && (
+          <section className="course" style={{ display: "block" }}>
+            <h3 style={{ margin: 0, color: "var(--gold)" }}>
+              💡 خطة المذاكرة المقترحة
+            </h3>
+            {plan.length === 0 ? (
+              <p style={{ margin: "8px 0 0" }}>
+                ممتاز! كل دروسك فوق 80% — راجع بس اللي تحب. 🎉
+              </p>
+            ) : (
+              <>
+                <p style={{ margin: "8px 0", fontSize: "14px", color: "#8fa0b8" }}>
+                  مرتبة من الأضعف — ابدأ بيها:
+                </p>
+                {plan.map((p, i) => (
+                  <p key={i} style={{ margin: "8px 0 0" }}>
+                    <strong style={{ color: "#e06060" }}>{p.mastery}%</strong>{" "}
+                    <a
+                      href={`/courses/${p.course_id}`}
+                      style={{ color: "var(--gold)", fontWeight: "bold" }}
+                    >
+                      {p.lesson_title}
+                    </a>{" "}
+                    <span style={{ color: "#8fa0b8", fontSize: "14px" }}>
+                      — {p.course_title}
+                    </span>
+                  </p>
+                ))}
+              </>
+            )}
+          </section>
+        )}
         {notes.length > 0 && (
           <section className="course" style={{ display: "block" }}>
             <h3 style={{ margin: 0, color: "var(--gold)" }}>📝 ملاحظاتك</h3>
