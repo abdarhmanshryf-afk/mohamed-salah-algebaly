@@ -220,8 +220,15 @@ export default function AdminSubscriptions() {
                 </p>
               )}
               {r.review_note && (
-                <p style={{ margin: "6px 0 0", fontSize: "14px", color: "#ffb4b4" }}>
-                  ملاحظة الرفض: {r.review_note}
+                <p
+                  style={{
+                    margin: "6px 0 0",
+                    fontSize: "14px",
+                    color: r.status === "cancelled" ? "#ffb4b4" : "#9fd4ff",
+                  }}
+                >
+                  {r.status === "cancelled" ? "ملاحظة الرفض: " : "ملاحظة: "}
+                  {r.review_note}
                 </p>
               )}
             </div>
