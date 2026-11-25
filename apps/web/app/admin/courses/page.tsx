@@ -11,6 +11,7 @@ type CourseRow = {
   duration_days: number | null;
   is_published: boolean;
   created_at: string;
+  teacher_id: string | null;
 };
 
 type EditState = {
@@ -18,7 +19,10 @@ type EditState = {
   description: string;
   price: string;
   duration_days: string;
+  teacher_id: string;
 };
+
+type TeacherOpt = { id: string; full_name: string | null };
 
 export default function AdminCourses() {
   const [courses, setCourses] = useState<CourseRow[]>([]);
@@ -29,11 +33,14 @@ export default function AdminCourses() {
   const [message, setMessage] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [teachers, setTeachers] = useState<TeacherOpt[]>([]);
+  const [teacherSupported, setTeacherSupported] = useState(true);
   const [edit, setEdit] = useState<EditState>({
     title: "",
     description: "",
     price: "0",
     duration_days: "",
+    teacher_id: "",
   });
 
   function client() {
@@ -45,16 +52,40 @@ export default function AdminCourses() {
 
   async function load() {
     const supabase = client();
-    const { data, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let { data, error }: { data: any[] | null; error: any } = await supabase
       .from("courses")
-      .select("id, title, description, price, duration_days, is_published, created_at")
+      .select("id, title, description, price, duration_days, is_published, created_at, teacher_id")
       .order("created_at", { ascending: false });
+    if (error && /teacher_id/i.test(error.message)) {
+      // عمود تعدد المدرسين لسه ما اتعملش (سكريبت المرحلة 2)
+      setTeacherSupported(false);
+      const fallback = await supabase
+        .from("courses")
+        .select("id, title, description, price, duration_days, is_published, created_at")
+        .order("created_at", { ascending: false });
+      data = fallback.data;
+      error = fallback.error;
+    } else if (!error) {
+      setTeacherSupported(true);
+      const { data: t } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .eq("role", "teacher")
+        .order("full_name");
+      setTeachers((t as TeacherOpt[]) || []);
+    }
     if (error) {
       setMessage("خطأ تحميل الكورسات: " + error.message);
       setLoading(false);
       return;
     }
-    setCourses((data as CourseRow[]) || []);
+    setCourses(
+      (((data as unknown) as Omit<CourseRow, "teacher_id">[]) || []).map((c) => ({
+        ...c,
+        teacher_id: (c as CourseRow).teacher_id ?? null,
+      }))
+    );
 
     const [{ data: lessons }, { data: enrolls }] = await Promise.all([
       supabase.from("lessons").select("course_id"),
@@ -100,6 +131,7 @@ export default function AdminCourses() {
       description: c.description || "",
       price: String(c.price),
       duration_days: c.duration_days ? String(c.duration_days) : "",
+      teacher_id: c.teacher_id || "",
     });
   }
 
@@ -107,15 +139,20 @@ export default function AdminCourses() {
     setBusyId(id);
     setMessage("");
     const supabase = client();
-    const { error } = await supabase
-      .from("courses")
-      .update({
-        title: edit.title.trim(),
-        description: edit.description.trim() || null,
-        price: Number(edit.price) || 0,
-        duration_days: edit.duration_days ? Number(edit.duration_days) : null,
-      })
-      .eq("id", id);
+    const payload: Record<string, unknown> = {
+      title: edit.title.trim(),
+      description: edit.description.trim() || null,
+      price: Number(edit.price) || 0,
+      duration_days: edit.duration_days ? Number(edit.duration_days) : null,
+    };
+    if (teacherSupported) payload.teacher_id = edit.teacher_id || null;
+    let { error } = await supabase.from("courses").update(payload).eq("id", id);
+    if (error && /teacher_id/i.test(error.message)) {
+      delete payload.teacher_id;
+      setTeacherSupported(false);
+      const fallback = await supabase.from("courses").update(payload).eq("id", id);
+      error = fallback.error;
+    }
     if (error) {
       setMessage("تعذر حفظ التعديلات: " + error.message);
     } else {
@@ -215,6 +252,25 @@ export default function AdminCourses() {
                   />
                 </label>
               </div>
+              {teacherSupported && (
+                <label style={{ display: "block", marginTop: "12px" }}>
+                  المدرس المسؤول عن الكورس
+                  <select
+                    style={inputStyle}
+                    value={edit.teacher_id}
+                    onChange={(e) =>
+                      setEdit({ ...edit, teacher_id: e.target.value })
+                    }
+                  >
+                    <option value="">بدون تعيين</option>
+                    {teachers.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.full_name || "مدرس بدون اسم"}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
               <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
                 <button onClick={() => saveEdit(c.id)} disabled={busyId === c.id}>
                   حفظ
@@ -266,6 +322,14 @@ export default function AdminCourses() {
                   اشتراكات نشطة: {activeCounts[c.id] || 0} · طلبات معلقة:{" "}
                   {pendingCounts[c.id] || 0}
                 </p>
+                {teacherSupported && (
+                  <p style={{ margin: "4px 0 0", fontSize: "14px", color: "#8fa0b8" }}>
+                    المدرس:{" "}
+                    {c.teacher_id
+                      ? teachers.find((t) => t.id === c.teacher_id)?.full_name || "معيّن"
+                      : "بدون تعيين"}
+                  </p>
+                )}
               </div>
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "flex-start" }}>
                 <a
