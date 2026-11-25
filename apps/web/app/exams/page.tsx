@@ -110,7 +110,7 @@ export default function ExamsList() {
         {!loading && rows.length === 0 && (
           <p>
             مفيش امتحانات متاحة ليك دلوقتي.{" "}
-            <a href="/courses" style={{ color: "var(--navy)", fontWeight: "bold" }}>
+            <a href="/courses" style={{ color: "var(--gold)", fontWeight: "bold" }}>
               شوف الكورسات
             </a>
           </p>
@@ -118,7 +118,7 @@ export default function ExamsList() {
         {rows.map((r) => (
           <section key={r.id} className="course">
             <div>
-              <h3 style={{ margin: 0, color: "var(--navy)" }}>{r.title}</h3>
+              <h3 style={{ margin: 0, color: "var(--gold)" }}>{r.title}</h3>
               <p style={{ margin: "6px 0 0" }}>
                 {r.courseTitle}
                 {r.best !== null && ` — أفضل نتيجة: ${r.best}%`}

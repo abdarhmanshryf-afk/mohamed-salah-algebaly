@@ -128,7 +128,7 @@ export default function TeacherLive() {
             width: "100%",
             padding: "10px",
             borderRadius: "10px",
-            border: "1px solid #d7dce4",
+            border: "1px solid #24395e",
             fontFamily: "inherit",
             marginBottom: "8px",
           }}
@@ -181,19 +181,19 @@ export default function TeacherLive() {
           <section
             key={s.id}
             style={{
-              border: "1px solid #e0e4ea",
+              border: "1px solid #24395e",
               borderRadius: "12px",
               padding: "14px 16px",
               marginTop: "12px",
-              background: "white",
+              background: "#16294a",
               opacity: s.is_live ? 1 : 0.7,
             }}
           >
-            <strong style={{ color: "var(--navy)" }}>
+            <strong style={{ color: "var(--gold)" }}>
               {s.is_live ? "🔴 " : "⚫ "}
               {s.title}
             </strong>
-            <p style={{ margin: "4px 0", color: "var(--muted)" }}>
+            <p style={{ margin: "4px 0", color: "#8fa0b8" }}>
               {course?.title || ""} —{" "}
               {s.is_live ? "ظاهر للطلاب الآن" : "متوقف"}
             </p>
@@ -202,10 +202,10 @@ export default function TeacherLive() {
                 onClick={() => toggle(s)}
                 style={{
                   padding: "6px 14px",
-                  border: "1px solid var(--navy)",
+                  border: "1px solid var(--gold)",
                   borderRadius: "8px",
-                  background: "white",
-                  color: "var(--navy)",
+                  background: "#16294a",
+                  color: "var(--gold)",
                   cursor: "pointer",
                 }}
               >
@@ -215,10 +215,10 @@ export default function TeacherLive() {
                 onClick={() => remove(s.id)}
                 style={{
                   padding: "6px 14px",
-                  border: "1px solid #b00020",
+                  border: "1px solid #ff6b61",
                   borderRadius: "8px",
-                  background: "white",
-                  color: "#b00020",
+                  background: "#16294a",
+                  color: "#ff6b61",
                   cursor: "pointer",
                 }}
               >

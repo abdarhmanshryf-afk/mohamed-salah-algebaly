@@ -88,7 +88,7 @@ export default function MyLessons() {
         {!loading && rows.length === 0 && (
           <p>
             لسه ما اشتركتش في أي كورس.{" "}
-            <a href="/courses" style={{ color: "var(--navy)", fontWeight: "bold" }}>
+            <a href="/courses" style={{ color: "var(--gold)", fontWeight: "bold" }}>
               شوف الكورسات المتاحة
             </a>
           </p>
@@ -97,7 +97,7 @@ export default function MyLessons() {
         {rows.map((r) => (
           <section key={r.course_id} className="course">
             <div>
-              <h3 style={{ margin: 0, color: "var(--navy)" }}>{r.title}</h3>
+              <h3 style={{ margin: 0, color: "var(--gold)" }}>{r.title}</h3>
               <p style={{ margin: "6px 0 0" }}>
                 {r.status === "active" ? "اشتراكك شغال ✅" : "طلبك قيد المراجعة ⏳"}
               </p>

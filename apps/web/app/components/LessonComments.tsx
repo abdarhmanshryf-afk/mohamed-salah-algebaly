@@ -102,7 +102,7 @@ export default function LessonComments({
     <div
       style={{
         marginTop: "12px",
-        borderTop: "1px solid #e0e4ea",
+        borderTop: "1px solid #24395e",
         paddingTop: "12px",
       }}
     >
@@ -111,7 +111,7 @@ export default function LessonComments({
       {!loaded && <p>جاري تحميل النقاش...</p>}
 
       {loaded && comments.length === 0 && (
-        <p style={{ color: "var(--muted)" }}>
+        <p style={{ color: "#8fa0b8" }}>
           مفيش أسئلة لسه، اسأل أول سؤال 👇
         </p>
       )}
@@ -126,7 +126,7 @@ export default function LessonComments({
           <div
             key={c.id}
             style={{
-              background: teacherBadge ? "#fff8e8" : "#f4f6fa",
+              background: teacherBadge ? "#3a2f14" : "#101d36",
               borderRadius: "10px",
               padding: "10px 14px",
               marginTop: "8px",
@@ -140,7 +140,7 @@ export default function LessonComments({
                 gap: "8px",
               }}
             >
-              <strong style={{ color: "var(--navy)", fontSize: "14px" }}>
+              <strong style={{ color: "var(--gold)", fontSize: "14px" }}>
                 {name}
                 {teacherBadge && (
                   <span
@@ -157,7 +157,7 @@ export default function LessonComments({
                   </span>
                 )}
               </strong>
-              <span style={{ color: "var(--muted)", fontSize: "12px" }}>
+              <span style={{ color: "#8fa0b8", fontSize: "12px" }}>
                 {new Date(c.created_at).toLocaleDateString("ar-EG", {
                   day: "numeric",
                   month: "long",
@@ -168,7 +168,7 @@ export default function LessonComments({
                     style={{
                       border: 0,
                       background: "none",
-                      color: "#b00020",
+                      color: "#ff6b61",
                       cursor: "pointer",
                       fontSize: "12px",
                       marginInlineStart: "8px",
@@ -198,7 +198,7 @@ export default function LessonComments({
             flex: 1,
             padding: "10px 14px",
             borderRadius: "10px",
-            border: "1px solid #d7dce4",
+            border: "1px solid #24395e",
             fontFamily: "inherit",
           }}
         />

@@ -187,7 +187,7 @@ export default function TeacherExams() {
           width: "100%",
           padding: "12px",
           borderRadius: "10px",
-          border: "1px solid #d5dae3",
+          border: "1px solid #24395e",
           fontSize: "16px",
           marginTop: "6px",
         }}
@@ -199,24 +199,24 @@ export default function TeacherExams() {
         ))}
       </select>
 
-      <h2 style={{ color: "var(--navy)", marginTop: "28px" }}>اختبارات الكورس</h2>
+      <h2 style={{ color: "var(--gold)", marginTop: "28px" }}>اختبارات الكورس</h2>
       {exams.length === 0 && <p>لا توجد اختبارات في هذا الكورس بعد.</p>}
       {exams.map((exam) => (
         <section
           key={exam.id}
           style={{
-            border: "1px solid #e0e4ea",
+            border: "1px solid #24395e",
             borderRadius: "12px",
             padding: "14px 16px",
             marginTop: "12px",
-            background: "white",
+            background: "#16294a",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             gap: "10px",
           }}
         >
-          <strong style={{ color: "var(--navy)" }}>
+          <strong style={{ color: "var(--gold)" }}>
             {exam.title} {!exam.is_published && "(مسودة)"}
           </strong>
           <span>
@@ -225,9 +225,9 @@ export default function TeacherExams() {
               style={{
                 padding: "8px 14px",
                 borderRadius: "8px",
-                border: "1px solid var(--navy)",
-                background: "white",
-                color: "var(--navy)",
+                border: "1px solid var(--gold)",
+                background: "#16294a",
+                color: "var(--gold)",
                 cursor: "pointer",
                 marginInlineEnd: "8px",
               }}
@@ -239,9 +239,9 @@ export default function TeacherExams() {
               style={{
                 padding: "8px 14px",
                 borderRadius: "8px",
-                border: "1px solid #b3372f",
-                background: "white",
-                color: "#b3372f",
+                border: "1px solid #ff6b61",
+                background: "#16294a",
+                color: "#ff6b61",
                 cursor: "pointer",
               }}
             >
@@ -251,7 +251,7 @@ export default function TeacherExams() {
         </section>
       ))}
 
-      <h2 style={{ color: "var(--navy)", marginTop: "34px" }}>اختبار جديد</h2>
+      <h2 style={{ color: "var(--gold)", marginTop: "34px" }}>اختبار جديد</h2>
       <label>عنوان الاختبار</label>
       <input
         value={title}
@@ -261,7 +261,7 @@ export default function TeacherExams() {
           width: "100%",
           padding: "12px",
           borderRadius: "10px",
-          border: "1px solid #d5dae3",
+          border: "1px solid #24395e",
           fontSize: "16px",
           marginTop: "6px",
         }}
@@ -271,11 +271,11 @@ export default function TeacherExams() {
         <section
           key={i}
           style={{
-            border: "1px solid #e0e4ea",
+            border: "1px solid #24395e",
             borderRadius: "12px",
             padding: "16px",
             marginTop: "16px",
-            background: "white",
+            background: "#16294a",
           }}
         >
           <label>السؤال {i + 1}</label>
@@ -287,7 +287,7 @@ export default function TeacherExams() {
               width: "100%",
               padding: "12px",
               borderRadius: "10px",
-              border: "1px solid #d5dae3",
+              border: "1px solid #24395e",
               fontSize: "16px",
               marginTop: "6px",
             }}
@@ -318,13 +318,13 @@ export default function TeacherExams() {
                   flex: 1,
                   padding: "10px",
                   borderRadius: "10px",
-                  border: "1px solid #d5dae3",
+                  border: "1px solid #24395e",
                   fontSize: "15px",
                 }}
               />
             </div>
           ))}
-          <p style={{ fontSize: "13px", color: "var(--muted)", margin: "8px 0 0" }}>
+          <p style={{ fontSize: "13px", color: "#8fa0b8", margin: "8px 0 0" }}>
             علّم الدائرة جنب الإجابة الصحيحة
           </p>
           {questions.length > 1 && (
@@ -335,9 +335,9 @@ export default function TeacherExams() {
                 marginTop: "10px",
                 padding: "6px 12px",
                 borderRadius: "8px",
-                border: "1px solid #b3372f",
-                background: "white",
-                color: "#b3372f",
+                border: "1px solid #ff6b61",
+                background: "#16294a",
+                color: "#ff6b61",
                 cursor: "pointer",
                 fontSize: "14px",
               }}
@@ -355,9 +355,9 @@ export default function TeacherExams() {
           marginTop: "16px",
           padding: "10px 20px",
           borderRadius: "10px",
-          border: "1px solid var(--navy)",
-          background: "white",
-          color: "var(--navy)",
+          border: "1px solid var(--gold)",
+          background: "#16294a",
+          color: "var(--gold)",
           fontWeight: "bold",
           cursor: "pointer",
         }}

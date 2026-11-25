@@ -422,14 +422,14 @@ export default function CourseDetails() {
           <section
             key={s.id}
             style={{
-              border: "2px solid #b00020",
+              border: "2px solid #ff6b61",
               borderRadius: "12px",
               padding: "16px",
               marginTop: "16px",
-              background: "white",
+              background: "#16294a",
             }}
           >
-            <h3 style={{ margin: "0 0 10px", color: "#b00020" }}>
+            <h3 style={{ margin: "0 0 10px", color: "#ff6b61" }}>
               🔴 بث مباشر الآن: {s.title}
             </h3>
             <div
@@ -462,8 +462,8 @@ export default function CourseDetails() {
       {!isTeacher && canView && lessons.length > 0 && (
         <div
           style={{
-            background: "white",
-            border: "1px solid #e0e4ea",
+            background: "#16294a",
+            border: "1px solid #24395e",
             borderRadius: "12px",
             padding: "14px 16px",
             marginTop: "12px",
@@ -476,14 +476,14 @@ export default function CourseDetails() {
               marginBottom: "8px",
             }}
           >
-            <strong style={{ color: "var(--navy)" }}>تقدمك في الكورس</strong>
-            <span style={{ color: "var(--muted)" }}>
+            <strong style={{ color: "var(--gold)" }}>تقدمك في الكورس</strong>
+            <span style={{ color: "#8fa0b8" }}>
               خلصت {completedCount} من {lessons.length} درس ({coursePercent}%)
             </span>
           </div>
           <div
             style={{
-              background: "#e8ebf0",
+              background: "#24395e",
               borderRadius: "8px",
               height: "10px",
               overflow: "hidden",
@@ -540,14 +540,14 @@ export default function CourseDetails() {
             <section
               key={lesson.id}
               style={{
-                border: "1px solid #e0e4ea",
+                border: "1px solid #24395e",
                 borderRadius: "12px",
                 padding: "16px",
                 marginTop: "16px",
-                background: "white",
+                background: "#16294a",
               }}
             >
-              <h3 style={{ margin: "0 0 8px", color: "var(--navy)" }}>
+              <h3 style={{ margin: "0 0 8px", color: "var(--gold)" }}>
                 الدرس {lesson.sort_order}: {lesson.title}
                 {!isTeacher && p?.completed && (
                   <span style={{ color: "#2e9e5b", marginInlineStart: "8px" }}>
@@ -560,7 +560,7 @@ export default function CourseDetails() {
               {!isTeacher && lesson.video_path && p && (
                 <div
                   style={{
-                    background: "#e8ebf0",
+                    background: "#24395e",
                     borderRadius: "6px",
                     height: "6px",
                     overflow: "hidden",
@@ -603,10 +603,10 @@ export default function CourseDetails() {
                   onClick={() => openFile(lesson.pdf_path!, lesson.id)}
                   style={{
                     padding: "10px 20px",
-                    border: "1px solid var(--navy)",
+                    border: "1px solid var(--gold)",
                     borderRadius: "10px",
-                    background: "white",
-                    color: "var(--navy)",
+                    background: "#16294a",
+                    color: "var(--gold)",
                     fontWeight: "bold",
                     cursor: "pointer",
                     marginInlineEnd: "8px",
@@ -621,10 +621,10 @@ export default function CourseDetails() {
                 }
                 style={{
                   padding: "10px 16px",
-                  border: "1px solid #d7dce4",
+                  border: "1px solid #24395e",
                   borderRadius: "10px",
-                  background: "white",
-                  color: "var(--muted)",
+                  background: "#16294a",
+                  color: "#8fa0b8",
                   cursor: "pointer",
                 }}
               >
@@ -692,10 +692,10 @@ export default function CourseDetails() {
                         border: "1px dashed var(--gold)",
                         borderRadius: "10px",
                         padding: "12px",
-                        background: "#fffdf5",
+                        background: "#1a2c4d",
                       }}
                     >
-                      <strong style={{ color: "var(--navy)" }}>
+                      <strong style={{ color: "var(--gold)" }}>
                         📝 الواجب: {a.title}
                       </strong>
                       {a.description && (
@@ -738,7 +738,7 @@ export default function CourseDetails() {
                             />
                           </label>
                           {sub && sub.score === null && (
-                            <span style={{ color: "var(--muted)" }}>
+                            <span style={{ color: "#8fa0b8" }}>
                               تم التسليم ⏳ بانتظار التصحيح
                             </span>
                           )}
@@ -770,16 +770,16 @@ export default function CourseDetails() {
 
       {canView && leaderboard.length > 0 && (
         <>
-          <h2 style={{ color: "var(--navy)", marginTop: "30px" }}>
+          <h2 style={{ color: "var(--gold)", marginTop: "30px" }}>
             🏆 لوحة المتفوقين
           </h2>
           <section
             style={{
-              border: "1px solid #e0e4ea",
+              border: "1px solid #24395e",
               borderRadius: "12px",
               padding: "8px 16px",
               marginTop: "16px",
-              background: "white",
+              background: "#16294a",
             }}
           >
             {leaderboard.map((row) => (
@@ -804,10 +804,10 @@ export default function CourseDetails() {
                   {row.student_name}
                 </span>
                 <span>
-                  <strong style={{ color: "var(--navy)" }}>
+                  <strong style={{ color: "var(--gold)" }}>
                     {row.avg_score}%
                   </strong>{" "}
-                  <span style={{ color: "var(--muted)", fontSize: "13px" }}>
+                  <span style={{ color: "#8fa0b8", fontSize: "13px" }}>
                     ({row.exams_taken}{" "}
                     {row.exams_taken === 1 ? "اختبار" : "اختبارات"})
                   </span>
@@ -820,16 +820,16 @@ export default function CourseDetails() {
 
       {canView && exams.length > 0 && (
         <>
-          <h2 style={{ color: "var(--navy)", marginTop: "30px" }}>الاختبارات</h2>
+          <h2 style={{ color: "var(--gold)", marginTop: "30px" }}>الاختبارات</h2>
           {exams.map((exam) => (
             <section
               key={exam.id}
               style={{
-                border: "1px solid #e0e4ea",
+                border: "1px solid #24395e",
                 borderRadius: "12px",
                 padding: "16px",
                 marginTop: "16px",
-                background: "white",
+                background: "#16294a",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -837,7 +837,7 @@ export default function CourseDetails() {
               }}
             >
               <div>
-                <strong style={{ color: "var(--navy)" }}>{exam.title}</strong>
+                <strong style={{ color: "var(--gold)" }}>{exam.title}</strong>
                 {!isTeacher && bestScores[exam.id] !== undefined && (
                   <p style={{ margin: "4px 0 0" }}>
                     أفضل نتيجة: {bestScores[exam.id]}%

@@ -146,7 +146,7 @@ export default function TeacherGrades() {
             style={{
               padding: "10px 14px",
               borderRadius: "10px",
-              border: "1px solid #d7dce4",
+              border: "1px solid #24395e",
               fontFamily: "inherit",
               minWidth: "250px",
             }}
@@ -181,17 +181,17 @@ export default function TeacherGrades() {
             <section
               key={exam.id}
               style={{
-                border: "1px solid #e0e4ea",
+                border: "1px solid #24395e",
                 borderRadius: "12px",
                 padding: "16px",
                 marginTop: "16px",
-                background: "white",
+                background: "#16294a",
               }}
             >
-              <h3 style={{ margin: "0 0 4px", color: "var(--navy)" }}>
+              <h3 style={{ margin: "0 0 4px", color: "var(--gold)" }}>
                 {exam.title}
               </h3>
-              <p style={{ margin: "0 0 12px", color: "var(--muted)" }}>
+              <p style={{ margin: "0 0 12px", color: "#8fa0b8" }}>
                 حلّه {taken.length} من {rows.length} طالب
                 {taken.length > 0 && ` — متوسط الدرجات ${avg}%`}
               </p>
@@ -208,12 +208,12 @@ export default function TeacherGrades() {
                     justifyContent: "space-between",
                     alignItems: "center",
                     padding: "10px 0",
-                    borderTop: "1px solid #eef1f5",
+                    borderTop: "1px solid #24395e",
                   }}
                 >
                   <span>{r.name}</span>
                   {r.bestScore === null ? (
-                    <span style={{ color: "var(--muted)" }}>لم يحل بعد</span>
+                    <span style={{ color: "#8fa0b8" }}>لم يحل بعد</span>
                   ) : (
                     <span>
                       <strong
@@ -225,7 +225,7 @@ export default function TeacherGrades() {
                         {r.bestScore}%
                       </strong>
                       <span
-                        style={{ color: "var(--muted)", fontSize: "13px" }}
+                        style={{ color: "#8fa0b8", fontSize: "13px" }}
                       >
                         {" "}
                         ({r.attempts}{" "}

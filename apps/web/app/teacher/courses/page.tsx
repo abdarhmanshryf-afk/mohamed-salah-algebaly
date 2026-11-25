@@ -217,7 +217,7 @@ export default function TeacherCourses() {
         <section
           key={course.id}
           style={{
-            border: "1px solid #ddd",
+            border: "1px solid #24395e",
             borderRadius: "12px",
             padding: "16px",
             marginTop: "16px",
@@ -225,7 +225,7 @@ export default function TeacherCourses() {
         >
           <h3>
             {course.title}{" "}
-            <span style={{ color: course.is_published ? "green" : "#9b762d" }}>
+            <span style={{ color: course.is_published ? "#2e9e5b" : "var(--gold)" }}>
               {course.is_published ? "(منشور)" : "(مسودة)"}
             </span>
           </h3>
@@ -250,9 +250,9 @@ export default function TeacherCourses() {
             <button
               onClick={() => deleteCourse(course)}
               style={{
-                background: "white",
-                color: "#b00020",
-                border: "1px solid #b00020",
+                background: "#16294a",
+                color: "#ff6b61",
+                border: "1px solid #ff6b61",
                 borderRadius: "8px",
               }}
             >

@@ -146,14 +146,14 @@ export default function Courses() {
       {announcements.length > 0 && (
         <section
           style={{
-            background: "#fff4d9",
+            background: "#1a2c4d",
             border: "1px solid var(--gold)",
             borderRadius: "12px",
             padding: "14px 16px",
             marginTop: "8px",
           }}
         >
-          <strong style={{ color: "var(--navy)" }}>📢 إعلانات الأستاذ</strong>
+          <strong style={{ color: "var(--gold)" }}>📢 إعلانات الأستاذ</strong>
           {announcements.map((a) => (
             <p key={a.id} style={{ margin: "8px 0 0", whiteSpace: "pre-wrap" }}>
               {a.body}
@@ -176,14 +176,14 @@ export default function Courses() {
           <section
             key={course.id}
             style={{
-              border: "1px solid #ddd",
+              border: "1px solid #24395e",
               borderRadius: "12px",
               padding: "16px",
               marginTop: "16px",
             }}
           >
             <h3>
-              <a href={`/courses/${course.id}`} style={{ color: "var(--navy)" }}>
+              <a href={`/courses/${course.id}`} style={{ color: "var(--gold)" }}>
                 {course.title}
               </a>
             </h3>

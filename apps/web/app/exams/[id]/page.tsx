@@ -124,7 +124,7 @@ export default function ExamPage() {
           className="notice"
           style={{ textAlign: "center", fontSize: "18px" }}
         >
-          <strong style={{ fontSize: "34px", color: "var(--navy)" }}>
+          <strong style={{ fontSize: "34px", color: "var(--gold)" }}>
             {result.score}%
           </strong>
           <p>
@@ -143,14 +143,14 @@ export default function ExamPage() {
           <section
             key={q.id}
             style={{
-              border: "1px solid #e0e4ea",
+              border: "1px solid #24395e",
               borderRadius: "12px",
               padding: "16px",
               marginTop: "16px",
-              background: "white",
+              background: "#16294a",
             }}
           >
-            <h3 style={{ margin: "0 0 12px", color: "var(--navy)" }}>
+            <h3 style={{ margin: "0 0 12px", color: "var(--gold)" }}>
               {i + 1}. {q.question_text}
             </h3>
             {q.options.map((opt, k) => (

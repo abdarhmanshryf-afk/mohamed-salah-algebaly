@@ -106,7 +106,7 @@ export default function MyProgress() {
         {!loading && rows.length === 0 && (
           <p>
             لسه ما عندكش اشتراك شغال.{" "}
-            <a href="/courses" style={{ color: "var(--navy)", fontWeight: "bold" }}>
+            <a href="/courses" style={{ color: "var(--gold)", fontWeight: "bold" }}>
               شوف الكورسات
             </a>
           </p>
@@ -119,7 +119,7 @@ export default function MyProgress() {
               className="course"
               style={{ display: "block" }}
             >
-              <h3 style={{ margin: 0, color: "var(--navy)" }}>{r.title}</h3>
+              <h3 style={{ margin: 0, color: "var(--gold)" }}>{r.title}</h3>
               <p style={{ margin: "8px 0" }}>
                 خلّصت {r.done} من {r.total} دروس ({pct}%)
                 {pct === 100 && " 🎉"}
@@ -132,7 +132,7 @@ export default function MyProgress() {
                 style={{
                   display: "inline-block",
                   marginTop: "12px",
-                  color: "var(--navy)",
+                  color: "var(--gold)",
                   fontWeight: "bold",
                 }}
               >
