@@ -26,6 +26,9 @@ export default function Courses() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [ratings, setRatings] = useState<
+    Record<string, { avg: number; count: number }>
+  >({});
   const [announcements, setAnnouncements] = useState<
     { id: string; body: string }[]
   >([]);
@@ -84,6 +87,30 @@ export default function Courses() {
         setCourses(data || []);
       }
 
+      // Ratings need student-features-setup.sql; degrade gracefully.
+      const ratingsRes = await supabase
+        .from("course_ratings")
+        .select("course_id, stars")
+        .eq("is_hidden", false);
+      if (!ratingsRes.error) {
+        const acc: Record<string, { sum: number; count: number }> = {};
+        (ratingsRes.data || []).forEach(
+          (r: { course_id: string; stars: number }) => {
+            if (!acc[r.course_id]) acc[r.course_id] = { sum: 0, count: 0 };
+            acc[r.course_id].sum += r.stars;
+            acc[r.course_id].count += 1;
+          }
+        );
+        const out: Record<string, { avg: number; count: number }> = {};
+        Object.keys(acc).forEach((id) => {
+          out[id] = {
+            avg: Math.round((acc[id].sum / acc[id].count) * 10) / 10,
+            count: acc[id].count,
+          };
+        });
+        setRatings(out);
+      }
+
       const { data: annData } = await supabase
         .from("announcements")
         .select("id, body")
@@ -108,7 +135,12 @@ export default function Courses() {
     return null;
   }
 
-  async function requestSubscription(courseId: string) {
+  async function requestSubscription(courseId: string, price: number) {
+    if (price > 0) {
+      // Paid courses subscribe from the course page (payment proof flow).
+      window.location.href = `/courses/${courseId}`;
+      return;
+    }
     setBusyId(courseId);
     setMessage("");
 
@@ -187,6 +219,12 @@ export default function Courses() {
                 {course.title}
               </a>
             </h3>
+            {ratings[course.id] && (
+              <p style={{ color: "var(--gold)", margin: "4px 0" }}>
+                ⭐ {ratings[course.id].avg} من 5 ({ratings[course.id].count}{" "}
+                تقييم)
+              </p>
+            )}
             <p>{course.description}</p>
             <p>السعر: {course.price} جنيه</p>
             <p>مدة الكورس: {course.duration_days ?? "غير محددة"} يوم</p>
@@ -196,7 +234,7 @@ export default function Courses() {
             {!isTeacher && status === "pending" && <p>طلبك قيد المراجعة ⏳</p>}
             {!isTeacher && !status && (
               <button
-                onClick={() => requestSubscription(course.id)}
+                onClick={() => requestSubscription(course.id, course.price)}
                 disabled={busyId === course.id}
               >
                 {busyId === course.id ? "جاري إرسال الطلب..." : "اشترك الآن"}

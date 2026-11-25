@@ -56,6 +56,15 @@ type Submission = {
   file_path: string;
 };
 
+type RatingRow = {
+  id: string;
+  stars: number;
+  comment: string | null;
+  is_hidden: boolean;
+  created_at: string;
+  profiles: { full_name: string | null } | null;
+};
+
 export default function CourseDetails() {
   const params = useParams();
   const courseId = params.id as string;
@@ -70,6 +79,22 @@ export default function CourseDetails() {
   const [payRef, setPayRef] = useState("");
   const [payFile, setPayFile] = useState<File | null>(null);
   const [payMessage, setPayMessage] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [favorites, setFavorites] = useState<Record<string, boolean>>({});
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [openNotes, setOpenNotes] = useState<string | null>(null);
+  const [savingNote, setSavingNote] = useState(false);
+  const [featuresOn, setFeaturesOn] = useState(true);
+  const [myStars, setMyStars] = useState(0);
+  const [myComment, setMyComment] = useState("");
+  const [ratingSaved, setRatingSaved] = useState(false);
+  const [ratingAvg, setRatingAvg] = useState<{ avg: number; count: number } | null>(null);
+  const [ratingsList, setRatingsList] = useState<RatingRow[]>([]);
+  const [certBusy, setCertBusy] = useState(false);
+  const [certPreview, setCertPreview] = useState<string | null>(null);
+  const [certMeta, setCertMeta] = useState<{ code: string; date: string } | null>(null);
+  const certPdfRef = useRef<{ save: (n: string) => void } | null>(null);
+  const certNameRef = useRef("certificate.pdf");
   const [studentId, setStudentId] = useState("");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -113,12 +138,13 @@ export default function CourseDetails() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("role")
+        .select("role, full_name")
         .eq("id", user.id)
         .single();
 
       const teacher = profile?.role === "teacher";
       setIsTeacher(teacher);
+      setStudentName(profile?.full_name || "");
 
       const { data: courseData } = await supabase
         .from("courses")
@@ -213,6 +239,47 @@ export default function CourseDetails() {
           };
         });
         setProgress(map);
+
+        // Student features need student-features-setup.sql; degrade gracefully.
+        const [favRes, noteRes] = await Promise.all([
+          supabase.from("favorites").select("lesson_id").eq("student_id", user.id),
+          supabase.from("lesson_notes").select("lesson_id, note").eq("student_id", user.id),
+        ]);
+        if (favRes.error || noteRes.error) {
+          setFeaturesOn(false);
+        } else {
+          const fmap: Record<string, boolean> = {};
+          (favRes.data || []).forEach((f: { lesson_id: string }) => {
+            fmap[f.lesson_id] = true;
+          });
+          setFavorites(fmap);
+          const nmap: Record<string, string> = {};
+          (noteRes.data || []).forEach((n: { lesson_id: string; note: string }) => {
+            nmap[n.lesson_id] = n.note;
+          });
+          setNotes(nmap);
+
+          const { data: myR } = await supabase
+            .from("course_ratings")
+            .select("stars, comment")
+            .eq("student_id", user.id)
+            .eq("course_id", courseId)
+            .maybeSingle();
+          if (myR) {
+            setMyStars(myR.stars);
+            setMyComment(myR.comment || "");
+            setRatingSaved(true);
+          }
+        }
+      }
+
+      const ratingsRes = await supabase
+        .from("course_ratings")
+        .select("id, stars, comment, is_hidden, created_at, profiles(full_name)")
+        .eq("course_id", courseId)
+        .order("created_at", { ascending: false });
+      if (!ratingsRes.error) {
+        applyRatings((ratingsRes.data as unknown as RatingRow[]) || []);
       }
 
       const { data: liveData } = await supabase
@@ -458,6 +525,154 @@ export default function CourseDetails() {
     setBusy(false);
   }
 
+  function applyRatings(rows: RatingRow[]) {
+    setRatingsList(rows);
+    const visible = rows.filter((r) => !r.is_hidden);
+    if (visible.length > 0) {
+      const avg = visible.reduce((s, r) => s + r.stars, 0) / visible.length;
+      setRatingAvg({ avg: Math.round(avg * 10) / 10, count: visible.length });
+    } else {
+      setRatingAvg(null);
+    }
+  }
+
+  async function toggleFavorite(lessonId: string) {
+    if (!studentId || isTeacher) return;
+    const supabase = client();
+    if (favorites[lessonId]) {
+      const { error } = await supabase
+        .from("favorites")
+        .delete()
+        .eq("student_id", studentId)
+        .eq("lesson_id", lessonId);
+      if (!error) setFavorites((p) => ({ ...p, [lessonId]: false }));
+    } else {
+      const { error } = await supabase
+        .from("favorites")
+        .insert({ student_id: studentId, lesson_id: lessonId });
+      if (!error) setFavorites((p) => ({ ...p, [lessonId]: true }));
+    }
+  }
+
+  async function saveNote(lessonId: string) {
+    if (!studentId || isTeacher) return;
+    setSavingNote(true);
+    const supabase = client();
+    const text = notes[lessonId] || "";
+    if (!text.trim()) {
+      await supabase
+        .from("lesson_notes")
+        .delete()
+        .eq("student_id", studentId)
+        .eq("lesson_id", lessonId);
+    } else {
+      await supabase.from("lesson_notes").upsert(
+        { student_id: studentId, lesson_id: lessonId, note: text.trim() },
+        { onConflict: "student_id,lesson_id" }
+      );
+    }
+    setSavingNote(false);
+    setOpenNotes(null);
+  }
+
+  async function submitRating() {
+    if (!studentId || myStars === 0) return;
+    const supabase = client();
+    const { error } = await supabase.from("course_ratings").upsert(
+      {
+        student_id: studentId,
+        course_id: courseId,
+        stars: myStars,
+        comment: myComment.trim() || null,
+      },
+      { onConflict: "student_id,course_id" }
+    );
+    if (error) {
+      setMessage("التقييمات لسه محتاجة سكريبت الإعداد student-features-setup.sql يتشغّل.");
+      return;
+    }
+    setRatingSaved(true);
+    const { data } = await supabase
+      .from("course_ratings")
+      .select("id, stars, comment, is_hidden, created_at, profiles(full_name)")
+      .eq("course_id", courseId)
+      .order("created_at", { ascending: false });
+    applyRatings((data as unknown as RatingRow[]) || []);
+  }
+
+  async function hideRating(id: string) {
+    const supabase = client();
+    const { error } = await supabase
+      .from("course_ratings")
+      .update({ is_hidden: true })
+      .eq("id", id);
+    if (!error) {
+      const next = ratingsList.map((r) =>
+        r.id === id ? { ...r, is_hidden: true } : r
+      );
+      applyRatings(next);
+    }
+  }
+
+  async function generateCertificate() {
+    if (!studentId || !course) return;
+    setCertBusy(true);
+    setMessage("");
+    const supabase = client();
+    let certRowId = "";
+    let issuedAt = new Date().toISOString();
+    const { data: existing } = await supabase
+      .from("certificates")
+      .select("id, issued_at")
+      .eq("student_id", studentId)
+      .eq("course_id", courseId)
+      .maybeSingle();
+    if (existing) {
+      certRowId = existing.id;
+      issuedAt = existing.issued_at;
+    } else {
+      const { data: inserted, error } = await supabase
+        .from("certificates")
+        .insert({ student_id: studentId, course_id: courseId })
+        .select("id, issued_at")
+        .single();
+      if (error || !inserted) {
+        setMessage("الشهادات لسه محتاجة سكريبت الإعداد student-features-setup.sql يتشغّل.");
+        setCertBusy(false);
+        return;
+      }
+      certRowId = inserted.id;
+      issuedAt = inserted.issued_at;
+    }
+    const code = "ITQAN-" + certRowId.replace(/-/g, "").slice(0, 8).toUpperCase();
+    setCertMeta({ code, date: new Date(issuedAt).toLocaleDateString("ar-EG") });
+    await new Promise((r) => setTimeout(r, 150));
+    try {
+      const el = document.getElementById("certificate-render");
+      if (!el) throw new Error("certificate element missing");
+      const html2canvas = (await import("html2canvas")).default;
+      const { jsPDF } = await import("jspdf");
+      const canvas = await html2canvas(el, {
+        backgroundColor: "#0c1a33",
+        scale: 2,
+      });
+      const img = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "px",
+        format: [canvas.width, canvas.height],
+        hotfixes: ["px_scaling"],
+      });
+      pdf.addImage(img, "PNG", 0, 0, canvas.width, canvas.height);
+      certPdfRef.current = pdf as unknown as { save: (n: string) => void };
+      certNameRef.current = `certificate-${code}.pdf`;
+      setCertPreview(img);
+    } catch {
+      setMessage("حصل خطأ أثناء تجهيز الشهادة، جرب تاني.");
+    }
+    setCertBusy(false);
+  }
+
   if (loading) {
     return <main className="subpage">جاري تحميل الكورس...</main>;
   }
@@ -480,6 +695,11 @@ export default function CourseDetails() {
       <a href="/courses">← الكورسات</a>
 
       <h1>{course.title}</h1>
+      {ratingAvg && (
+        <p style={{ color: "var(--gold)", margin: "4px 0" }}>
+          ⭐ {ratingAvg.avg} من 5 ({ratingAvg.count} تقييم)
+        </p>
+      )}
       <p>{course.description}</p>
 
       {message && <p role="alert">{message}</p>}
@@ -566,6 +786,92 @@ export default function CourseDetails() {
             />
           </div>
         </div>
+      )}
+
+      {canView && studentId && !isTeacher && coursePercent === 100 && (
+        <div style={{ marginTop: "16px" }}>
+          <button
+            onClick={generateCertificate}
+            disabled={certBusy}
+            style={{
+              padding: "12px 24px",
+              border: "none",
+              borderRadius: "10px",
+              background: "var(--gold)",
+              color: "#17233a",
+              fontWeight: "bold",
+              fontSize: "1rem",
+              cursor: "pointer",
+            }}
+          >
+            {certBusy ? "جاري تجهيز الشهادة..." : "🎓 تحميل شهادة الإتمام"}
+          </button>
+        </div>
+      )}
+
+      {canView && studentId && !isTeacher && featuresOn && (
+        <section
+          style={{
+            border: "1px solid #24395e",
+            borderRadius: "12px",
+            padding: "16px",
+            marginTop: "16px",
+            background: "#16294a",
+          }}
+        >
+          <h3 style={{ margin: "0 0 8px", color: "var(--gold)" }}>قيّم الكورس</h3>
+          <div style={{ fontSize: "1.6rem", direction: "ltr", textAlign: "right" }}>
+            {[1, 2, 3, 4, 5].map((s) => (
+              <span
+                key={s}
+                onClick={() => setMyStars(s)}
+                style={{
+                  cursor: "pointer",
+                  color: s <= myStars ? "var(--gold)" : "#3a4d70",
+                }}
+              >
+                ★
+              </span>
+            ))}
+          </div>
+          <textarea
+            value={myComment}
+            onChange={(e) => setMyComment(e.target.value)}
+            placeholder="اكتب رأيك في الكورس (اختياري)"
+            rows={3}
+            style={{
+              width: "100%",
+              marginTop: "8px",
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #24395e",
+              background: "#0c1a33",
+              color: "#e8ecf4",
+              boxSizing: "border-box",
+            }}
+          />
+          <button
+            onClick={submitRating}
+            disabled={myStars === 0}
+            style={{
+              marginTop: "8px",
+              padding: "10px 20px",
+              border: "none",
+              borderRadius: "10px",
+              background: myStars === 0 ? "#3a4d70" : "var(--gold)",
+              color: myStars === 0 ? "#8fa0b8" : "#17233a",
+              fontWeight: "bold",
+              cursor: myStars === 0 ? "default" : "pointer",
+            }}
+          >
+            {ratingSaved ? "حدّث تقييمك" : "احفظ التقييم"}
+          </button>
+          {ratingSaved && (
+            <span style={{ color: "#2e9e5b", marginInlineStart: "10px" }}>
+              ✓ تقييمك محفوظ
+            </span>
+          )}
+        </section>
       )}
 
       {!canView && (
@@ -808,6 +1114,80 @@ export default function CourseDetails() {
               >
                 💬 النقاش
               </button>
+              {!isTeacher && studentId && featuresOn && (
+                <>
+                  <button
+                    onClick={() => toggleFavorite(lesson.id)}
+                    title={favorites[lesson.id] ? "شيل من المفضلة" : "ضيف للمفضلة"}
+                    style={{
+                      padding: "10px 14px",
+                      border: "1px solid #24395e",
+                      borderRadius: "10px",
+                      background: favorites[lesson.id] ? "#3a2f10" : "#16294a",
+                      color: favorites[lesson.id] ? "var(--gold)" : "#8fa0b8",
+                      cursor: "pointer",
+                      marginInlineStart: "8px",
+                    }}
+                  >
+                    {favorites[lesson.id] ? "★" : "☆"}
+                  </button>
+                  <button
+                    onClick={() =>
+                      setOpenNotes(openNotes === lesson.id ? null : lesson.id)
+                    }
+                    title="ملاحظاتك عن الدرس"
+                    style={{
+                      padding: "10px 14px",
+                      border: "1px solid #24395e",
+                      borderRadius: "10px",
+                      background: "#16294a",
+                      color: notes[lesson.id] ? "var(--gold)" : "#8fa0b8",
+                      cursor: "pointer",
+                      marginInlineStart: "8px",
+                    }}
+                  >
+                    📝
+                  </button>
+                </>
+              )}
+
+              {openNotes === lesson.id && (
+                <div style={{ marginTop: "12px" }}>
+                  <textarea
+                    value={notes[lesson.id] || ""}
+                    onChange={(e) =>
+                      setNotes((p) => ({ ...p, [lesson.id]: e.target.value }))
+                    }
+                    placeholder="اكتب ملاحظاتك عن الدرس ده..."
+                    rows={3}
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      border: "1px solid #24395e",
+                      background: "#0c1a33",
+                      color: "#e8ecf4",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                  <button
+                    onClick={() => saveNote(lesson.id)}
+                    disabled={savingNote}
+                    style={{
+                      marginTop: "8px",
+                      padding: "8px 18px",
+                      border: "none",
+                      borderRadius: "8px",
+                      background: "var(--gold)",
+                      color: "#17233a",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {savingNote ? "جاري الحفظ..." : "احفظ الملاحظة"}
+                  </button>
+                </div>
+              )}
 
               {openVideo?.id === lesson.id && (
                 <video
@@ -1042,6 +1422,246 @@ export default function CourseDetails() {
             </section>
           ))}
         </>
+      )}
+
+      {(ratingsList.filter((r) => !r.is_hidden).length > 0 ||
+        (isTeacher && ratingsList.length > 0)) && (
+        <section
+          style={{
+            border: "1px solid #24395e",
+            borderRadius: "12px",
+            padding: "16px",
+            marginTop: "16px",
+            background: "#16294a",
+          }}
+        >
+          <h3 style={{ margin: "0 0 12px", color: "var(--gold)" }}>
+            آراء الطلاب
+          </h3>
+          {ratingsList.map((r) => {
+            if (r.is_hidden && !isTeacher) return null;
+            return (
+              <div
+                key={r.id}
+                style={{
+                  borderTop: "1px solid #24395e",
+                  padding: "10px 0",
+                  opacity: r.is_hidden ? 0.5 : 1,
+                }}
+              >
+                <div style={{ direction: "ltr", textAlign: "right" }}>
+                  <span style={{ color: "var(--gold)", letterSpacing: "2px" }}>
+                    {"★".repeat(r.stars)}
+                  </span>
+                  <span style={{ color: "#3a4d70", letterSpacing: "2px" }}>
+                    {"★".repeat(5 - r.stars)}
+                  </span>
+                </div>
+                <strong>{r.profiles?.full_name || "طالب"}</strong>
+                {r.is_hidden && isTeacher && (
+                  <span style={{ color: "#c0392b", marginInlineStart: "8px" }}>
+                    (مخفي)
+                  </span>
+                )}
+                {r.comment && <p style={{ margin: "4px 0 0" }}>{r.comment}</p>}
+                {isTeacher && !r.is_hidden && (
+                  <button
+                    onClick={() => hideRating(r.id)}
+                    style={{
+                      marginTop: "6px",
+                      padding: "4px 12px",
+                      border: "1px solid #c0392b",
+                      borderRadius: "8px",
+                      background: "transparent",
+                      color: "#c0392b",
+                      cursor: "pointer",
+                      fontSize: "0.85rem",
+                    }}
+                  >
+                    إخفاء التعليق
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </section>
+      )}
+
+      {certPreview && (
+        <div
+          onClick={() => setCertPreview(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 50,
+            padding: "16px",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "#16294a",
+              borderRadius: "12px",
+              padding: "16px",
+              maxWidth: "900px",
+              width: "100%",
+            }}
+          >
+            <img
+              src={certPreview}
+              alt="شهادة الإتمام"
+              style={{ width: "100%", borderRadius: "8px" }}
+            />
+            <div style={{ marginTop: "12px", textAlign: "center" }}>
+              <button
+                onClick={() => certPdfRef.current?.save(certNameRef.current)}
+                style={{
+                  padding: "12px 24px",
+                  border: "none",
+                  borderRadius: "10px",
+                  background: "var(--gold)",
+                  color: "#17233a",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                ⬇ تحميل الشهادة PDF
+              </button>
+              <button
+                onClick={() => setCertPreview(null)}
+                style={{
+                  padding: "12px 24px",
+                  marginInlineStart: "10px",
+                  border: "1px solid #24395e",
+                  borderRadius: "10px",
+                  background: "transparent",
+                  color: "#8fa0b8",
+                  cursor: "pointer",
+                }}
+              >
+                قفل
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {certMeta && course && (
+        <div
+          id="certificate-render"
+          dir="rtl"
+          style={{
+            position: "fixed",
+            left: "-3000px",
+            top: 0,
+            width: "1120px",
+            height: "792px",
+            background: "#0c1a33",
+            color: "#e8ecf4",
+            fontFamily: "inherit",
+            boxSizing: "border-box",
+            padding: "40px",
+          }}
+        >
+          <div
+            style={{
+              border: "3px solid #c9a227",
+              borderRadius: "12px",
+              height: "100%",
+              boxSizing: "border-box",
+              padding: "12px",
+            }}
+          >
+            <div
+              style={{
+                border: "1px solid #c9a227",
+                borderRadius: "8px",
+                height: "100%",
+                boxSizing: "border-box",
+                padding: "40px 56px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-between",
+                textAlign: "center",
+              }}
+            >
+              <div>
+                <div style={{ color: "#c9a227", fontSize: "22px" }}>
+                  منصة متقن
+                </div>
+                <div
+                  style={{
+                    color: "#c9a227",
+                    fontSize: "44px",
+                    fontWeight: "bold",
+                    marginTop: "16px",
+                  }}
+                >
+                  شهادة إتمام
+                </div>
+                <div style={{ color: "#8fa0b8", fontSize: "18px", marginTop: "24px" }}>
+                  تشهد منصة متقن بأن
+                </div>
+                <div
+                  style={{
+                    fontSize: "38px",
+                    fontWeight: "bold",
+                    marginTop: "8px",
+                  }}
+                >
+                  {studentName || "الطالب"}
+                </div>
+                <div style={{ color: "#8fa0b8", fontSize: "18px", marginTop: "16px" }}>
+                  قد أتم بنجاح جميع دروس كورس
+                </div>
+                <div
+                  style={{
+                    color: "#c9a227",
+                    fontSize: "28px",
+                    fontWeight: "bold",
+                    marginTop: "8px",
+                  }}
+                >
+                  {course.title}
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  alignItems: "flex-end",
+                }}
+              >
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: "20px", fontWeight: "bold" }}>
+                    محمد صلاح الجبالي
+                  </div>
+                  <div
+                    style={{
+                      borderTop: "1px solid #8fa0b8",
+                      marginTop: "6px",
+                      paddingTop: "6px",
+                      color: "#8fa0b8",
+                      fontSize: "14px",
+                    }}
+                  >
+                    المدرّس
+                  </div>
+                </div>
+                <div style={{ color: "#8fa0b8", fontSize: "14px" }}>
+                  <div>تاريخ الإصدار: {certMeta.date}</div>
+                  <div style={{ marginTop: "4px" }}>رقم الشهادة: {certMeta.code}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );

@@ -10,10 +10,18 @@ type Row = {
   review_note: string | null;
 };
 
+type FavRow = {
+  lesson_id: string;
+  title: string;
+  course_id: string;
+  course_title: string;
+};
+
 export default function MyLessons() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [favorites, setFavorites] = useState<FavRow[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -55,6 +63,42 @@ export default function MyLessons() {
       } else {
         list = withNote.data || [];
       }
+      // Favorites need student-features-setup.sql; degrade gracefully.
+      const favRes = await supabase
+        .from("favorites")
+        .select("lesson_id")
+        .eq("student_id", user.id);
+      if (!favRes.error && (favRes.data || []).length > 0) {
+        const lessonIds = (favRes.data || []).map(
+          (f: { lesson_id: string }) => f.lesson_id
+        );
+        const { data: favLessons } = await supabase
+          .from("lessons")
+          .select("id, title, course_id")
+          .in("id", lessonIds);
+        const favCourseIds = Array.from(
+          new Set((favLessons || []).map((l: { course_id: string }) => l.course_id))
+        );
+        const { data: favCourses } = await supabase
+          .from("courses")
+          .select("id, title")
+          .in("id", favCourseIds);
+        const favTitles: Record<string, string> = {};
+        (favCourses || []).forEach((c: { id: string; title: string }) => {
+          favTitles[c.id] = c.title;
+        });
+        setFavorites(
+          (favLessons || []).map(
+            (l: { id: string; title: string; course_id: string }) => ({
+              lesson_id: l.id,
+              title: l.title,
+              course_id: l.course_id,
+              course_title: favTitles[l.course_id] || "كورس",
+            })
+          )
+        );
+      }
+
       if (list.length === 0) {
         setLoading(false);
         return;
@@ -132,6 +176,24 @@ export default function MyLessons() {
             )}
           </section>
         ))}
+        {favorites.length > 0 && (
+          <section className="course" style={{ display: "block" }}>
+            <h3 style={{ margin: 0, color: "var(--gold)" }}>⭐ المفضلة</h3>
+            {favorites.map((f) => (
+              <p key={f.lesson_id} style={{ margin: "8px 0 0" }}>
+                <a
+                  href={`/courses/${f.course_id}`}
+                  style={{ color: "var(--gold)", fontWeight: "bold" }}
+                >
+                  {f.title}
+                </a>{" "}
+                <span style={{ color: "#8fa0b8", fontSize: "14px" }}>
+                  — {f.course_title}
+                </span>
+              </p>
+            ))}
+          </section>
+        )}
       </div>
     </main>
   );
