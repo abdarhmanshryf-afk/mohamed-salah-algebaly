@@ -143,6 +143,10 @@ export default function MyLessons() {
           <a href="/support" style={{ color: "var(--gold)" }}>
             🛟 عندك مشكلة؟ كلم الدعم من هنا
           </a>
+          {"  ·  "}
+          <a href="/assistant" style={{ color: "var(--gold)" }}>
+            🤖 اسأل مساعد متقن الذكي
+          </a>
         </p>
         {loading && <p>جاري التحميل...</p>}
         {!loading && rows.length === 0 && (
