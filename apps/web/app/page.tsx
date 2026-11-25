@@ -98,7 +98,7 @@ export default async function Home() {
         <Faq />
       </section>
       <section className="teacher">
-        <div className="teacher-photo" aria-hidden="true">م</div>
+        <div className="teacher-photo"><img src="/teacher.jpg" alt="الأستاذ محمد صلاح الجبالي" /></div>
         <div>
           <h2>عن الأستاذ</h2>
           <p>

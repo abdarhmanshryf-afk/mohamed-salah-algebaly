@@ -22,7 +22,7 @@
 .teacher{background:#0c1a33;padding:52px 8%;border-top:1px solid #1d3358;display:flex;align-items:center;gap:26px;flex-wrap:wrap}
 .teacher h2{font-size:22px;color:white;margin:0 0 10px}
 .teacher p{color:#c5cfdd;font-size:15px;line-height:1.9;max-width:560px;margin:0}
-.teacher-photo{width:110px;height:110px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:42px;font-weight:800;flex-shrink:0;background:#16294a;overflow:hidden}
+.teacher-photo{width:130px;height:130px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:42px;font-weight:800;flex-shrink:0;background:#16294a;overflow:hidden}
 .teacher-photo img{width:100%;height:100%;object-fit:cover}
 
 /* Rich footer */
