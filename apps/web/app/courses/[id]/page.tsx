@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import LessonComments from "../../components/LessonComments";
 import { PAYMENT_RECEIVER_NUMBER } from "../../config";
+import { logPaymentEvent } from "../../lib/paymentEvents";
 
 type Course = {
   id: string;
@@ -604,6 +605,22 @@ export default function CourseDetails() {
       if (course && course.price > 0) setPayMessage(msg);
       else setMessage(msg);
     } else {
+      const { data: created } = await supabase
+        .from("enrollments")
+        .select("id")
+        .eq("student_id", studentId)
+        .eq("course_id", courseId)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      if (created && created[0]) {
+        await logPaymentEvent(
+          supabase,
+          created[0].id,
+          "submitted",
+          course && course.price > 0 ? course.price : null,
+          ref && ref.trim() ? "مرجع الدفع: " + ref.trim() : null
+        );
+      }
       setShowPayModal(false);
       setMessage(
         course && course.price > 0

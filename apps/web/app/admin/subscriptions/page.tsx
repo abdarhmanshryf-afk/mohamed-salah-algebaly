@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import { logPaymentEvent } from "../../lib/paymentEvents";
 
 type SubRow = {
   id: string;
@@ -104,7 +105,10 @@ export default function AdminSubscriptions() {
       })
       .eq("id", row.id);
     if (error) setMessage("تعذر قبول الطلب: " + error.message);
-    else await load();
+    else {
+      await logPaymentEvent(supabase, row.id, "approved", row.courses?.price);
+      await load();
+    }
     setBusyId(null);
   }
 
@@ -129,7 +133,10 @@ export default function AdminSubscriptions() {
       error = fallback.error;
     }
     if (error) setMessage("تعذر رفض الطلب: " + error.message);
-    else await load();
+    else {
+      await logPaymentEvent(supabase, row.id, "rejected", row.courses?.price, note.trim() || null);
+      await load();
+    }
     setBusyId(null);
   }
 

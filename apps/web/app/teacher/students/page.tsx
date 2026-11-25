@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import { logPaymentEvent } from "../../lib/paymentEvents";
 
 type Enrollment = {
   id: string;
@@ -16,6 +17,7 @@ type CourseOpt = {
   id: string;
   title: string;
   duration_days: number | null;
+  price: number | null;
 };
 
 type Student = {
@@ -74,7 +76,7 @@ export default function TeacherStudents() {
       );
       const { data } = await supabase
         .from("courses")
-        .select("id, title, duration_days")
+        .select("id, title, duration_days, price")
         .order("created_at");
       setCourses((data as CourseOpt[]) || []);
     }
@@ -167,6 +169,21 @@ export default function TeacherStudents() {
           ")"
       );
     } else {
+      const enrollmentId = existing ? existing.id : undefined;
+      if (!enrollmentId) {
+        const { data: created } = await supabase
+          .from("enrollments")
+          .select("id")
+          .eq("student_id", addStudentId)
+          .eq("course_id", addCourseId)
+          .order("created_at", { ascending: false })
+          .limit(1);
+        if (created && created[0]) {
+          await logPaymentEvent(supabase, created[0].id, "manual_add", course.price, MANUAL_NOTE);
+        }
+      } else {
+        await logPaymentEvent(supabase, enrollmentId, "manual_add", course.price, MANUAL_NOTE);
+      }
       setAddMessage(
         "تم ✅ " +
           (student.full_name || "الطالب") +
