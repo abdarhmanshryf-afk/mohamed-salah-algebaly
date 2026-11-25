@@ -92,3 +92,5 @@ body{background:#0c1a33;color:#dce3ee}
 .auth-links{color:#8fa0b8}
 .auth-links a{color:var(--gold)}
 @media(max-width:600px){.subpage h1{font-size:26px}}
+
+html{background:#0c1a33}
