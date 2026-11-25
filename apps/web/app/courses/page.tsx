@@ -25,9 +25,10 @@ export default function Courses() {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       );
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } =
+        await supabase.auth.getUser();
 
-      if (!user) {
+      if (authError || !user) {
         window.location.href = "/login";
         return;
       }
@@ -46,7 +47,7 @@ export default function Courses() {
         .eq("is_published", true);
 
       if (error) {
-        setMessage("تعذر تحميل الكورسات حاليًا.");
+        setMessage("خطأ تحميل الكورسات: " + error.message);
       } else {
         setCourses(data || []);
       }
