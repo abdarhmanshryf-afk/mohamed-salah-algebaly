@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import { askItqanAI } from "../lib/ai";
 
 type LessonMastery = {
   id: string;
@@ -50,6 +51,8 @@ export default function MyProgress() {
   const [dueReview, setDueReview] = useState(0);
   const [profileName, setProfileName] = useState("");
   const [reportBusy, setReportBusy] = useState(false);
+  const [aiBusy, setAiBusy] = useState<"" | "study-plan" | "weakness">("");
+  const [aiReply, setAiReply] = useState("");
   const [reportMeta, setReportMeta] = useState<{
     month: string;
     exams: { title: string; score: number }[];
@@ -295,6 +298,34 @@ export default function MyProgress() {
     load();
   }, []);
 
+  async function askAI(mode: "study-plan" | "weakness") {
+    setAiBusy(mode);
+    setAiReply("");
+    const coursesSummary = rows
+      .map((r) => `${r.title}: خلّص ${r.done} من ${r.total} دروس`)
+      .join("\n");
+    const attemptsSummary = attemptsListRef.current
+      .slice(0, 15)
+      .map((a) => {
+        const t = examsRef.current.find((e) => e.id === a.exam_id)?.title || "امتحان";
+        return `${t}: ${a.score}%`;
+      })
+      .join("\n");
+    const weakLessons = rows
+      .flatMap((r) => r.lessons.map((l) => ({ course: r.title, ...l })))
+      .filter((l) => l.mastery < 50)
+      .slice(0, 12)
+      .map((l) => `${l.title} (${l.course}): إتقان ${l.mastery}%`)
+      .join("\n");
+    const context =
+      `الطالب: ${profileName || "طالب"}\nنقاطه: ${points}\n\nتقدمه في الكورسات:\n${coursesSummary || "لسه مفيش"}` +
+      `\n\nدرجات امتحاناته:\n${attemptsSummary || "لسه مفيش"}` +
+      `\n\nدروس إتقانها ضعيف (أقل من 50%):\n${weakLessons || "مفيش"}`;
+    const reply = await askItqanAI(mode, context);
+    setAiReply(reply);
+    setAiBusy("");
+  }
+
   async function generateReport() {
     setReportBusy(true);
     const now = new Date();
@@ -411,6 +442,38 @@ export default function MyProgress() {
                 </span>
               ))}
             </div>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
+              <button
+                onClick={() => askAI("study-plan")}
+                disabled={aiBusy !== ""}
+                style={{ background: "#24395e" }}
+              >
+                {aiBusy === "study-plan" ? "المساعد بيخطط..." : "📅 اعملي خطة مذاكرة"}
+              </button>
+              <button
+                onClick={() => askAI("weakness")}
+                disabled={aiBusy !== ""}
+                style={{ background: "#24395e" }}
+              >
+                {aiBusy === "weakness" ? "المساعد بيحلّل..." : "🎯 نقاط ضعفي المتوقعة"}
+              </button>
+            </div>
+            {aiReply && (
+              <div
+                style={{
+                  background: "#1a2c4b",
+                  borderRadius: "10px",
+                  padding: "12px",
+                  marginTop: "10px",
+                  fontSize: "15px",
+                }}
+              >
+                <p style={{ margin: 0, color: "var(--gold)", fontSize: "13px" }}>
+                  🤖 مساعد متقن
+                </p>
+                <p style={{ margin: "6px 0 0", whiteSpace: "pre-wrap" }}>{aiReply}</p>
+              </div>
+            )}
           </section>
         )}
         {rows.map((r) => {

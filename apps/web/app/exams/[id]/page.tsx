@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
+import { askItqanAI } from "../../lib/ai";
 
 type Question = {
   id: string;
@@ -29,6 +30,8 @@ export default function ExamPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiReply, setAiReply] = useState("");
 
   const client = () =>
     createBrowserClient(
@@ -113,6 +116,38 @@ export default function ExamPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  async function analyzeMistakes() {
+    if (!result) return;
+    setAiLoading(true);
+    setAiReply("");
+    const supabase = client();
+    // الطالب سلّم خلاص — نجيب الإجابات الصح عشان نشرح له غلطاته (متاحة للقراءة زي صفحة المراجعة)
+    const { data: qs } = await supabase
+      .from("questions")
+      .select("id, question_text, correct_answer")
+      .eq("exam_id", examId);
+    const wrong = ((qs as { id: string; question_text: string; correct_answer: string }[]) || [])
+      .filter((q) => answers[q.id] && answers[q.id] !== q.correct_answer)
+      .slice(0, 8);
+    if (wrong.length === 0) {
+      setAiReply("مفيش أخطاء واضعة — نتيجتك كاملة أو قريبة منها 🎉");
+      setAiLoading(false);
+      return;
+    }
+    const context =
+      `امتحان: ${examTitle}\nنتيجة الطالب: ${result.score}% (${result.correct} من ${result.total})\n` +
+      "الأسئلة اللي غلط فيها:\n" +
+      wrong
+        .map(
+          (q, i) =>
+            `${i + 1}) السؤال: ${q.question_text}\nإجابة الطالب: ${answers[q.id]}\nالإجابة الصحيحة: ${q.correct_answer}`
+        )
+        .join("\n");
+    const reply = await askItqanAI("exam-analysis", context);
+    setAiReply(reply);
+    setAiLoading(false);
+  }
+
   if (loading) {
     return <main className="subpage">جاري تحميل الاختبار...</main>;
   }
@@ -136,6 +171,28 @@ export default function ExamPage() {
             أجبت صح على {result.correct} من {result.total} أسئلة
             {result.score >= 50 ? " 🎉" : " — راجع الدروس وحاول تاني 💪"}
           </p>
+          {result.correct < result.total && !aiReply && (
+            <button onClick={analyzeMistakes} disabled={aiLoading}>
+              {aiLoading ? "المساعد بيحلّل..." : "🤖 حلّل أخطائي بالذكاء الاصطناعي"}
+            </button>
+          )}
+          {aiReply && (
+            <div
+              style={{
+                textAlign: "right",
+                background: "#1a2c4b",
+                borderRadius: "10px",
+                padding: "12px",
+                marginTop: "10px",
+                fontSize: "15px",
+              }}
+            >
+              <p style={{ margin: 0, color: "var(--gold)", fontSize: "13px" }}>
+                🤖 تحليل مساعد متقن
+              </p>
+              <p style={{ margin: "6px 0 0", whiteSpace: "pre-wrap" }}>{aiReply}</p>
+            </div>
+          )}
         </div>
       )}
 
