@@ -95,6 +95,13 @@ export default function CourseDetails() {
   const [certMeta, setCertMeta] = useState<{ code: string; date: string } | null>(null);
   const certPdfRef = useRef<{ save: (n: string) => void } | null>(null);
   const certNameRef = useRef("certificate.pdf");
+  const [chapters, setChapters] = useState<
+    Record<string, { id: string; title: string; seconds: number }[]>
+  >({});
+  const [chaptersOn, setChaptersOn] = useState(true);
+  const [newCh, setNewCh] = useState<Record<string, { title: string; time: string }>>({});
+  const [audioOnly, setAudioOnly] = useState<Record<string, boolean>>({});
+  const pendingSeekRef = useRef<Record<string, number>>({});
   const [studentId, setStudentId] = useState("");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -169,6 +176,28 @@ export default function CourseDetails() {
       const list = (lessonData as Lesson[]) || [];
       setLessons(list);
       setCanView(teacher || list.length > 0);
+
+      // Chapters need phase1-features.sql; degrade gracefully.
+      const videoIds = list.filter((l) => l.video_path).map((l) => l.id);
+      if (videoIds.length > 0) {
+        const chRes = await supabase
+          .from("lesson_chapters")
+          .select("id, lesson_id, title, seconds")
+          .in("lesson_id", videoIds)
+          .order("seconds");
+        if (chRes.error) {
+          setChaptersOn(false);
+        } else {
+          const cmap: Record<string, { id: string; title: string; seconds: number }[]> = {};
+          (chRes.data || []).forEach(
+            (c: { id: string; lesson_id: string; title: string; seconds: number }) => {
+              if (!cmap[c.lesson_id]) cmap[c.lesson_id] = [];
+              cmap[c.lesson_id].push({ id: c.id, title: c.title, seconds: c.seconds });
+            }
+          );
+          setChapters(cmap);
+        }
+      }
 
       const { data: examData } = await supabase
         .from("exams")
@@ -425,6 +454,67 @@ export default function CourseDetails() {
       ? data.signedUrl
       : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1${data.signedUrl}`;
     setOpenVideo({ id: lesson.id, url: full });
+  }
+
+  function fmtTime(total: number) {
+    const m = Math.floor(total / 60);
+    const s = total % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }
+
+  function parseTime(t: string): number | null {
+    const m = t.trim().match(/^(\d+):(\d{1,2})$/);
+    if (m) return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+    const n = parseInt(t.trim(), 10);
+    return isNaN(n) ? null : n;
+  }
+
+  function seekChapter(lesson: Lesson, seconds: number) {
+    if (openVideo?.id === lesson.id) {
+      const v = document.querySelector<HTMLVideoElement>(
+        `video[data-lesson="${lesson.id}"]`
+      );
+      if (v) v.currentTime = seconds;
+    } else {
+      pendingSeekRef.current[lesson.id] = seconds;
+      playVideo(lesson);
+    }
+  }
+
+  async function addChapter(lessonId: string) {
+    const draft = newCh[lessonId];
+    if (!draft?.title.trim()) return;
+    const seconds = parseTime(draft.time || "0");
+    if (seconds === null) return;
+    const supabase = client();
+    const { data, error } = await supabase
+      .from("lesson_chapters")
+      .insert({ lesson_id: lessonId, title: draft.title.trim(), seconds })
+      .select("id, title, seconds")
+      .single();
+    if (error) {
+      setMessage("الفصول لسه محتاجة سكريبت phase1-features.sql يتشغّل.");
+      return;
+    }
+    setChapters((p) => ({
+      ...p,
+      [lessonId]: [...(p[lessonId] || []), data].sort((a, b) => a.seconds - b.seconds),
+    }));
+    setNewCh((p) => ({ ...p, [lessonId]: { title: "", time: "" } }));
+  }
+
+  async function deleteChapter(lessonId: string, chapterId: string) {
+    const supabase = client();
+    const { error } = await supabase
+      .from("lesson_chapters")
+      .delete()
+      .eq("id", chapterId);
+    if (!error) {
+      setChapters((p) => ({
+        ...p,
+        [lessonId]: (p[lessonId] || []).filter((c) => c.id !== chapterId),
+      }));
+    }
   }
 
   async function submitAssignment(assignmentId: string, file: File) {
@@ -1192,6 +1282,7 @@ export default function CourseDetails() {
               {openVideo?.id === lesson.id && (
                 <video
                   src={openVideo.url}
+                  data-lesson={lesson.id}
                   controls
                   playsInline
                   preload="metadata"
@@ -1199,9 +1290,16 @@ export default function CourseDetails() {
                     width: "100%",
                     marginTop: "12px",
                     borderRadius: "10px",
+                    ...(audioOnly[lesson.id] ? { height: "48px" } : {}),
                   }}
                   onLoadedMetadata={(e) => {
                     const v = e.currentTarget;
+                    const pending = pendingSeekRef.current[lesson.id];
+                    if (pending !== undefined) {
+                      v.currentTime = pending;
+                      delete pendingSeekRef.current[lesson.id];
+                      return;
+                    }
                     const saved = progress[lesson.id];
                     if (
                       saved &&
@@ -1238,6 +1336,147 @@ export default function CourseDetails() {
                     )
                   }
                 />
+              )}
+
+              {openVideo?.id === lesson.id && (
+                <div style={{ marginTop: "8px", fontSize: "14px" }}>
+                  <button
+                    onClick={() =>
+                      setAudioOnly((p) => ({ ...p, [lesson.id]: !p[lesson.id] }))
+                    }
+                    style={{
+                      padding: "6px 14px",
+                      border: "1px solid #24395e",
+                      borderRadius: "8px",
+                      background: audioOnly[lesson.id] ? "#3a2f10" : "#16294a",
+                      color: audioOnly[lesson.id] ? "var(--gold)" : "#8fa0b8",
+                      cursor: "pointer",
+                    }}
+                  >
+                    🎧 صوت بس (يوفّر باقة)
+                  </button>
+                  <a
+                    href={openVideo.url}
+                    download
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      marginInlineStart: "10px",
+                      padding: "6px 14px",
+                      border: "1px solid #24395e",
+                      borderRadius: "8px",
+                      background: "#16294a",
+                      color: "#8fa0b8",
+                      textDecoration: "none",
+                    }}
+                  >
+                    ⬇ تحميل الفيديو
+                  </a>
+                </div>
+              )}
+
+              {lesson.video_path && chaptersOn && canView && (
+                <div style={{ marginTop: "10px" }}>
+                  {(chapters[lesson.id] || []).length > 0 && (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                      {(chapters[lesson.id] || []).map((c) => (
+                        <span key={c.id}>
+                          <button
+                            onClick={() => seekChapter(lesson, c.seconds)}
+                            style={{
+                              padding: "4px 12px",
+                              border: "1px solid #24395e",
+                              borderRadius: "14px",
+                              background: "#0c1a33",
+                              color: "var(--gold)",
+                              cursor: "pointer",
+                              fontSize: "13px",
+                            }}
+                          >
+                            ▸ {fmtTime(c.seconds)} {c.title}
+                          </button>
+                          {isTeacher && (
+                            <button
+                              onClick={() => deleteChapter(lesson.id, c.id)}
+                              title="امسح الفصل"
+                              style={{
+                                border: "none",
+                                background: "transparent",
+                                color: "#c0392b",
+                                cursor: "pointer",
+                                fontSize: "13px",
+                              }}
+                            >
+                              ×
+                            </button>
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {isTeacher && (
+                    <div style={{ marginTop: "8px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                      <input
+                        value={newCh[lesson.id]?.title || ""}
+                        onChange={(e) =>
+                          setNewCh((p) => ({
+                            ...p,
+                            [lesson.id]: {
+                              title: e.target.value,
+                              time: p[lesson.id]?.time || "",
+                            },
+                          }))
+                        }
+                        placeholder="اسم الفصل"
+                        style={{
+                          padding: "6px 10px",
+                          borderRadius: "8px",
+                          border: "1px solid #24395e",
+                          background: "#0c1a33",
+                          color: "#e8ecf4",
+                          width: "140px",
+                        }}
+                      />
+                      <input
+                        value={newCh[lesson.id]?.time || ""}
+                        onChange={(e) =>
+                          setNewCh((p) => ({
+                            ...p,
+                            [lesson.id]: {
+                              title: p[lesson.id]?.title || "",
+                              time: e.target.value,
+                            },
+                          }))
+                        }
+                        placeholder="م:ثث مثل 2:30"
+                        style={{
+                          padding: "6px 10px",
+                          borderRadius: "8px",
+                          border: "1px solid #24395e",
+                          background: "#0c1a33",
+                          color: "#e8ecf4",
+                          width: "110px",
+                          direction: "ltr",
+                        }}
+                      />
+                      <button
+                        onClick={() => addChapter(lesson.id)}
+                        style={{
+                          padding: "6px 14px",
+                          border: "none",
+                          borderRadius: "8px",
+                          background: "var(--gold)",
+                          color: "#17233a",
+                          fontWeight: "bold",
+                          cursor: "pointer",
+                          fontSize: "13px",
+                        }}
+                      >
+                        + فصل
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
 
               {assignments
