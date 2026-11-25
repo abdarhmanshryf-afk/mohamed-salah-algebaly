@@ -167,7 +167,7 @@ export default async function Home() {
         <div>
           <h2>عن الأستاذ</h2>
           <p>
-            <strong style={{ color: "white" }}>محمد صلاح الجبالي</strong> —
+            <strong style={{ color: "var(--text)" }}>محمد صلاح الجبالي</strong> —
             مدرّس لغة عربية، بيبسّط النحو والبلاغة والإملاء بأمثلة من الحياة
             اليومية، عشان تحب العربي وتتقنه.
           </p>

@@ -353,7 +353,7 @@ export default function AdminCourses() {
                   disabled={busyId === c.id}
                   style={{
                     background: c.is_published ? "var(--warning-bg)" : "var(--success-bg)",
-                    color: "white",
+                    color: c.is_published ? "var(--warning)" : "var(--success)",
                   }}
                 >
                   {c.is_published ? "إيقاف النشر" : "نشر"}

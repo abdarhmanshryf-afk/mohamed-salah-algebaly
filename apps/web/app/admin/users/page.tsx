@@ -259,7 +259,7 @@ export default function AdminUsers() {
               disabled={busyId === u.id}
               style={{
                 background: u.banned_at ? "var(--success-bg)" : "var(--warning-bg)",
-                color: "white",
+                color: u.banned_at ? "var(--success)" : "var(--warning)",
               }}
             >
               {u.banned_at ? "فك الإيقاف" : "إيقاف الحساب"}
