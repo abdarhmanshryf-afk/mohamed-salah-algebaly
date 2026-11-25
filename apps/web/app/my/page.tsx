@@ -147,6 +147,10 @@ export default function MyLessons() {
           <a href="/assistant" style={{ color: "var(--gold)" }}>
             🤖 اسأل مساعد متقن الذكي
           </a>
+          {"  ·  "}
+          <a href="/groups" style={{ color: "var(--gold)" }}>
+            👥 مجموعاتي
+          </a>
         </p>
         {loading && <p>جاري التحميل...</p>}
         {!loading && rows.length === 0 && (

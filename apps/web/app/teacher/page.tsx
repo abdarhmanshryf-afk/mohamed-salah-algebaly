@@ -148,6 +148,10 @@ export default function TeacherHome() {
           <h3>تذاكر الدعم</h3>
           <p>رد على استفسارات ومشاكل الطلاب.</p>
         </a>
+        <a className="card" href="/teacher/groups">
+          <h3>المجموعات</h3>
+          <p>اعمل مجموعات لطلابك بأكواد دعوة.</p>
+        </a>
       </div>
     </main>
   );
