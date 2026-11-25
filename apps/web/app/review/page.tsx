@@ -100,7 +100,7 @@ export default function ReviewPage() {
       </header>
       <div className="subpage">
         <h1>🔁 المراجعة الذكية</h1>
-        <p style={{ color: "#8fa0b8" }}>
+        <p style={{ color: "var(--text-muted)" }}>
           الأسئلة اللي غلطت فيها بترجع لك هنا: بعد يوم، بعد 3 أيام، بعد أسبوع —
           لحد ما تثبتها.
         </p>
@@ -123,13 +123,13 @@ export default function ReviewPage() {
               className="course"
               style={{ display: "block" }}
             >
-              <p style={{ margin: 0, fontSize: "13px", color: "#8fa0b8" }}>
+              <p style={{ margin: 0, fontSize: "13px", color: "var(--text-muted)" }}>
                 من اختبار: {q.exams?.title || "اختبار"}
               </p>
               <h3 style={{ margin: "8px 0" }}>{q.question_text}</h3>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                 {(q.options || []).map((opt) => {
-                  let bg = "#16294a";
+                  let bg = "var(--surface)";
                   let color = "#e8ecf4";
                   if (answered) {
                     if (opt === q.correct_answer) {
@@ -147,7 +147,7 @@ export default function ReviewPage() {
                       disabled={answered}
                       style={{
                         padding: "8px 16px",
-                        border: "1px solid #24395e",
+                        border: "1px solid var(--border)",
                         borderRadius: "10px",
                         background: bg,
                         color,
@@ -174,7 +174,7 @@ export default function ReviewPage() {
                       border: "none",
                       borderRadius: "8px",
                       background: "var(--gold)",
-                      color: "#17233a",
+                      color: "var(--gold-ink)",
                       fontWeight: "bold",
                       cursor: "pointer",
                     }}

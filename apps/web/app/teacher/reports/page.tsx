@@ -81,7 +81,7 @@ export default function TeacherReports() {
   return (
     <main className="subpage">
       <h1>📄 تقرير طالب الشهري</h1>
-      <p style={{ color: "#8fa0b8" }}>
+      <p style={{ color: "var(--text-muted)" }}>
         اختار الطالب والشهر وهتشوف امتحاناته ودروسه واشتراكاته — ومن المتصفح تقدر تطبعه PDF.
       </p>
       <section className="course" style={{ display: "block" }}>

@@ -141,7 +141,7 @@ export default function StudentChallenges() {
                   <p style={{ margin: "4px 0 0", fontSize: "14px" }}>{c.description}</p>
                 )}
                 {c.ends_at && (
-                  <p style={{ margin: "4px 0 0", fontSize: "12px", color: expired ? "#ffb4b4" : "#8fa0b8" }}>
+                  <p style={{ margin: "4px 0 0", fontSize: "12px", color: expired ? "var(--error)" : "var(--text-muted)" }}>
                     {expired ? "انتهى" : "آخر موعد: " + new Date(c.ends_at).toLocaleDateString("ar-EG")}
                   </p>
                 )}
@@ -154,7 +154,7 @@ export default function StudentChallenges() {
                   {e && !e.completed && (
                     <>
                       <span style={{ fontSize: "14px" }}>تقدمك: <strong>{e.progress}</strong></span>
-                      <button onClick={() => bumpProgress(c, 1)} disabled={busyId === c.id} style={{ background: "#24395e" }}>
+                      <button onClick={() => bumpProgress(c, 1)} disabled={busyId === c.id} style={{ background: "var(--border)" }}>
                         +1
                       </button>
                       <button onClick={() => markDone(c)} disabled={busyId === c.id}>
@@ -163,7 +163,7 @@ export default function StudentChallenges() {
                     </>
                   )}
                   {e && e.completed && (
-                    <span style={{ color: "#9fe6a0" }}>مكتمل 🎉 كسبت {c.points} نقطة</span>
+                    <span style={{ color: "var(--success)" }}>مكتمل 🎉 كسبت {c.points} نقطة</span>
                   )}
                 </div>
               </section>

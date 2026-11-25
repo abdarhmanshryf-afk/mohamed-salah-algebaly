@@ -279,8 +279,8 @@ export default function AdminCourses() {
                   onClick={() => setEditingId(null)}
                   style={{
                     background: "transparent",
-                    border: "1px solid #24395e",
-                    color: "#c5cfdd",
+                    border: "1px solid var(--border)",
+                    color: "var(--text-soft)",
                   }}
                 >
                   إلغاء
@@ -306,7 +306,7 @@ export default function AdminCourses() {
                         padding: "3px 10px",
                         borderRadius: "12px",
                         background: "#3a3f4a",
-                        color: "#c5cfdd",
+                        color: "var(--text-soft)",
                       }}
                     >
                       غير منشور
@@ -323,7 +323,7 @@ export default function AdminCourses() {
                   {pendingCounts[c.id] || 0}
                 </p>
                 {teacherSupported && (
-                  <p style={{ margin: "4px 0 0", fontSize: "14px", color: "#8fa0b8" }}>
+                  <p style={{ margin: "4px 0 0", fontSize: "14px", color: "var(--text-muted)" }}>
                     المدرس:{" "}
                     {c.teacher_id
                       ? teachers.find((t) => t.id === c.teacher_id)?.full_name || "معيّن"
@@ -352,7 +352,7 @@ export default function AdminCourses() {
                   onClick={() => togglePublish(c)}
                   disabled={busyId === c.id}
                   style={{
-                    background: c.is_published ? "#8a6d1f" : "#2f5d3f",
+                    background: c.is_published ? "var(--warning-bg)" : "var(--success-bg)",
                     color: "white",
                   }}
                 >
@@ -361,7 +361,7 @@ export default function AdminCourses() {
                 <button
                   onClick={() => deleteCourse(c)}
                   disabled={busyId === c.id}
-                  style={{ background: "#8a2f2f", color: "white" }}
+                  style={{ background: "var(--error-bg)", color: "white" }}
                 >
                   حذف
                 </button>

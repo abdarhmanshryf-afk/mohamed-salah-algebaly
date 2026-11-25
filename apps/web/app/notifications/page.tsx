@@ -84,7 +84,7 @@ export default function NotificationsPage() {
         {!loading && supported && (
           <>
             {unreadCount > 0 && (
-              <button onClick={markAllRead} style={{ marginBottom: "10px", background: "#24395e" }}>
+              <button onClick={markAllRead} style={{ marginBottom: "10px", background: "var(--border)" }}>
                 تحديد الكل كمقروء ({unreadCount})
               </button>
             )}
@@ -105,7 +105,7 @@ export default function NotificationsPage() {
                   {n.body && (
                     <p style={{ margin: "4px 0 0", fontSize: "14px" }}>{n.body}</p>
                   )}
-                  <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#8fa0b8" }}>
+                  <p style={{ margin: "4px 0 0", fontSize: "12px", color: "var(--text-muted)" }}>
                     {new Date(n.created_at).toLocaleString("ar-EG")}
                   </p>
                 </section>

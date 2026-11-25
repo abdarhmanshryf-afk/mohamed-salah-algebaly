@@ -187,7 +187,7 @@ export default function TeacherExams() {
           width: "100%",
           padding: "12px",
           borderRadius: "10px",
-          border: "1px solid #24395e",
+          border: "1px solid var(--border)",
           fontSize: "16px",
           marginTop: "6px",
         }}
@@ -205,11 +205,11 @@ export default function TeacherExams() {
         <section
           key={exam.id}
           style={{
-            border: "1px solid #24395e",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
             padding: "14px 16px",
             marginTop: "12px",
-            background: "#16294a",
+            background: "var(--surface)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -226,7 +226,7 @@ export default function TeacherExams() {
                 padding: "8px 14px",
                 borderRadius: "8px",
                 border: "1px solid var(--gold)",
-                background: "#16294a",
+                background: "var(--surface)",
                 color: "var(--gold)",
                 cursor: "pointer",
                 marginInlineEnd: "8px",
@@ -240,7 +240,7 @@ export default function TeacherExams() {
                 padding: "8px 14px",
                 borderRadius: "8px",
                 border: "1px solid #ff6b61",
-                background: "#16294a",
+                background: "var(--surface)",
                 color: "#ff6b61",
                 cursor: "pointer",
               }}
@@ -261,7 +261,7 @@ export default function TeacherExams() {
           width: "100%",
           padding: "12px",
           borderRadius: "10px",
-          border: "1px solid #24395e",
+          border: "1px solid var(--border)",
           fontSize: "16px",
           marginTop: "6px",
         }}
@@ -271,11 +271,11 @@ export default function TeacherExams() {
         <section
           key={i}
           style={{
-            border: "1px solid #24395e",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
             padding: "16px",
             marginTop: "16px",
-            background: "#16294a",
+            background: "var(--surface)",
           }}
         >
           <label>السؤال {i + 1}</label>
@@ -287,7 +287,7 @@ export default function TeacherExams() {
               width: "100%",
               padding: "12px",
               borderRadius: "10px",
-              border: "1px solid #24395e",
+              border: "1px solid var(--border)",
               fontSize: "16px",
               marginTop: "6px",
             }}
@@ -318,13 +318,13 @@ export default function TeacherExams() {
                   flex: 1,
                   padding: "10px",
                   borderRadius: "10px",
-                  border: "1px solid #24395e",
+                  border: "1px solid var(--border)",
                   fontSize: "15px",
                 }}
               />
             </div>
           ))}
-          <p style={{ fontSize: "13px", color: "#8fa0b8", margin: "8px 0 0" }}>
+          <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: "8px 0 0" }}>
             علّم الدائرة جنب الإجابة الصحيحة
           </p>
           {questions.length > 1 && (
@@ -336,7 +336,7 @@ export default function TeacherExams() {
                 padding: "6px 12px",
                 borderRadius: "8px",
                 border: "1px solid #ff6b61",
-                background: "#16294a",
+                background: "var(--surface)",
                 color: "#ff6b61",
                 cursor: "pointer",
                 fontSize: "14px",
@@ -356,7 +356,7 @@ export default function TeacherExams() {
           padding: "10px 20px",
           borderRadius: "10px",
           border: "1px solid var(--gold)",
-          background: "#16294a",
+          background: "var(--surface)",
           color: "var(--gold)",
           fontWeight: "bold",
           cursor: "pointer",
@@ -375,7 +375,7 @@ export default function TeacherExams() {
             border: 0,
             borderRadius: "10px",
             background: "var(--gold)",
-            color: "#17233a",
+            color: "var(--gold-ink)",
             fontSize: "17px",
             fontWeight: "bold",
             cursor: "pointer",

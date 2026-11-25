@@ -180,7 +180,7 @@ export default function ExamPage() {
             <div
               style={{
                 textAlign: "right",
-                background: "#1a2c4b",
+                background: "var(--surface-2)",
                 borderRadius: "10px",
                 padding: "12px",
                 marginTop: "10px",
@@ -205,11 +205,11 @@ export default function ExamPage() {
           <section
             key={q.id}
             style={{
-              border: "1px solid #24395e",
+              border: "1px solid var(--border)",
               borderRadius: "12px",
               padding: "16px",
               marginTop: "16px",
-              background: "#16294a",
+              background: "var(--surface)",
             }}
           >
             <h3 style={{ margin: "0 0 12px", color: "var(--gold)" }}>
@@ -259,7 +259,7 @@ export default function ExamPage() {
             border: 0,
             borderRadius: "10px",
             background: "var(--gold)",
-            color: "#17233a",
+            color: "var(--gold-ink)",
             fontSize: "17px",
             fontWeight: "bold",
             cursor: "pointer",

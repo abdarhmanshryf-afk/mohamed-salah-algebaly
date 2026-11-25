@@ -90,7 +90,7 @@ export default function TeacherGroups() {
   return (
     <main className="subpage">
       <h1>👥 المجموعات</h1>
-      <p style={{ color: "#8fa0b8" }}>
+      <p style={{ color: "var(--text-muted)" }}>
         اعمل مجموعة لطلابك وابعتلهم كود الدعوة — هيدخلوا بيه من صفحتهم.
       </p>
       {loading && <p>جاري التحميل...</p>}
@@ -124,7 +124,7 @@ export default function TeacherGroups() {
                 <strong>{g.name}</strong>
                 <span
                   style={{
-                    background: "#24395e",
+                    background: "var(--border)",
                     borderRadius: "6px",
                     padding: "4px 10px",
                     fontFamily: "monospace",
@@ -135,17 +135,17 @@ export default function TeacherGroups() {
                 </span>
               </div>
               <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
-                <button onClick={() => showMembers(g)} style={{ background: "#24395e" }}>
+                <button onClick={() => showMembers(g)} style={{ background: "var(--border)" }}>
                   الأعضاء
                 </button>
-                <button onClick={() => removeGroup(g.id)} style={{ background: "#5c2b2b" }}>
+                <button onClick={() => removeGroup(g.id)} style={{ background: "var(--error-bg)" }}>
                   مسح
                 </button>
               </div>
               {membersOf === g.id && (
                 <div style={{ marginTop: "8px" }}>
                   {members.length === 0 && (
-                    <p style={{ color: "#8fa0b8", fontSize: "14px" }}>مفيش أعضاء لسه — ابعت الكود لطلابك.</p>
+                    <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>مفيش أعضاء لسه — ابعت الكود لطلابك.</p>
                   )}
                   {members.map((m) => (
                     <p key={m.student_id} style={{ margin: "4px 0", fontSize: "14px" }}>

@@ -96,7 +96,7 @@ export default function ProfilePage() {
         {!loading && (
           <>
             <section className="course" style={{ display: "block" }}>
-              <p style={{ margin: 0, fontSize: "14px", color: "#8fa0b8" }}>الاسم</p>
+              <p style={{ margin: 0, fontSize: "14px", color: "var(--text-muted)" }}>الاسم</p>
               <div style={{ display: "flex", gap: "8px", marginTop: "6px", flexWrap: "wrap" }}>
                 <input
                   type="text"
@@ -140,7 +140,7 @@ export default function ProfilePage() {
                 </a>
               </p>
             </section>
-            <button onClick={logout} style={{ background: "#5c2b2b", marginTop: "10px" }}>
+            <button onClick={logout} style={{ background: "var(--error-bg)", marginTop: "10px" }}>
               تسجيل الخروج
             </button>
           </>

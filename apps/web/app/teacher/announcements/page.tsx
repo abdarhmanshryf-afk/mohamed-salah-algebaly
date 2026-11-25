@@ -89,7 +89,7 @@ export default function TeacherAnnouncements() {
             width: "100%",
             padding: "12px",
             borderRadius: "10px",
-            border: "1px solid #24395e",
+            border: "1px solid var(--border)",
             fontFamily: "inherit",
             resize: "vertical",
           }}
@@ -103,7 +103,7 @@ export default function TeacherAnnouncements() {
             border: 0,
             borderRadius: "10px",
             background: "var(--gold)",
-            color: "#17233a",
+            color: "var(--gold-ink)",
             fontWeight: "bold",
             cursor: "pointer",
           }}
@@ -120,11 +120,11 @@ export default function TeacherAnnouncements() {
         <section
           key={a.id}
           style={{
-            border: "1px solid #24395e",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
             padding: "14px 16px",
             marginTop: "12px",
-            background: a.is_active ? "#16294a" : "#101d36",
+            background: a.is_active ? "var(--surface)" : "var(--bg-2)",
             opacity: a.is_active ? 1 : 0.7,
           }}
         >
@@ -137,7 +137,7 @@ export default function TeacherAnnouncements() {
               alignItems: "center",
             }}
           >
-            <span style={{ color: "#8fa0b8", fontSize: "13px" }}>
+            <span style={{ color: "var(--text-muted)", fontSize: "13px" }}>
               {new Date(a.created_at).toLocaleDateString("ar-EG", {
                 day: "numeric",
                 month: "long",
@@ -149,7 +149,7 @@ export default function TeacherAnnouncements() {
               onClick={() => toggle(a)}
               style={{
                 border: "1px solid var(--gold)",
-                background: "#16294a",
+                background: "var(--surface)",
                 color: "var(--gold)",
                 borderRadius: "8px",
                 padding: "4px 12px",
@@ -162,7 +162,7 @@ export default function TeacherAnnouncements() {
               onClick={() => remove(a.id)}
               style={{
                 border: "1px solid #ff6b61",
-                background: "#16294a",
+                background: "var(--surface)",
                 color: "#ff6b61",
                 borderRadius: "8px",
                 padding: "4px 12px",

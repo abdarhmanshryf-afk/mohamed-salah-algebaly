@@ -157,9 +157,9 @@ export default function AdminUsers() {
       style={{
         padding: "8px 16px",
         borderRadius: "20px",
-        border: `1px solid ${roleFilter === key ? "var(--gold)" : "#24395e"}`,
+        border: `1px solid ${roleFilter === key ? "var(--gold)" : "var(--border)"}`,
         background: roleFilter === key ? "var(--gold)" : "transparent",
-        color: roleFilter === key ? "#17233a" : "#c5cfdd",
+        color: roleFilter === key ? "var(--gold-ink)" : "var(--text-soft)",
       }}
     >
       {label}
@@ -226,8 +226,8 @@ export default function AdminUsers() {
                   fontSize: "12px",
                   padding: "3px 10px",
                   borderRadius: "12px",
-                  border: "1px solid #24395e",
-                  color: "#c5cfdd",
+                  border: "1px solid var(--border)",
+                  color: "var(--text-soft)",
                 }}
               >
                 {roleLabels[u.role] || u.role}
@@ -239,7 +239,7 @@ export default function AdminUsers() {
                     padding: "3px 10px",
                     borderRadius: "12px",
                     background: "#5a1f1f",
-                    color: "#ffb4b4",
+                    color: "var(--error)",
                   }}
                 >
                   موقوف 🚫
@@ -258,7 +258,7 @@ export default function AdminUsers() {
               onClick={() => toggleBan(u)}
               disabled={busyId === u.id}
               style={{
-                background: u.banned_at ? "#2f5d3f" : "#8a6d1f",
+                background: u.banned_at ? "var(--success-bg)" : "var(--warning-bg)",
                 color: "white",
               }}
             >
@@ -267,7 +267,7 @@ export default function AdminUsers() {
             <button
               onClick={() => deleteUser(u)}
               disabled={busyId === u.id}
-              style={{ background: "#8a2f2f", color: "white" }}
+              style={{ background: "var(--error-bg)", color: "white" }}
             >
               حذف نهائي
             </button>

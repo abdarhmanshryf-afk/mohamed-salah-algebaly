@@ -128,7 +128,7 @@ export default function TeacherLive() {
             width: "100%",
             padding: "10px",
             borderRadius: "10px",
-            border: "1px solid #24395e",
+            border: "1px solid var(--border)",
             fontFamily: "inherit",
             marginBottom: "8px",
           }}
@@ -181,11 +181,11 @@ export default function TeacherLive() {
           <section
             key={s.id}
             style={{
-              border: "1px solid #24395e",
+              border: "1px solid var(--border)",
               borderRadius: "12px",
               padding: "14px 16px",
               marginTop: "12px",
-              background: "#16294a",
+              background: "var(--surface)",
               opacity: s.is_live ? 1 : 0.7,
             }}
           >
@@ -193,7 +193,7 @@ export default function TeacherLive() {
               {s.is_live ? "🔴 " : "⚫ "}
               {s.title}
             </strong>
-            <p style={{ margin: "4px 0", color: "#8fa0b8" }}>
+            <p style={{ margin: "4px 0", color: "var(--text-muted)" }}>
               {course?.title || ""} —{" "}
               {s.is_live ? "ظاهر للطلاب الآن" : "متوقف"}
             </p>
@@ -204,7 +204,7 @@ export default function TeacherLive() {
                   padding: "6px 14px",
                   border: "1px solid var(--gold)",
                   borderRadius: "8px",
-                  background: "#16294a",
+                  background: "var(--surface)",
                   color: "var(--gold)",
                   cursor: "pointer",
                 }}
@@ -217,7 +217,7 @@ export default function TeacherLive() {
                   padding: "6px 14px",
                   border: "1px solid #ff6b61",
                   borderRadius: "8px",
-                  background: "#16294a",
+                  background: "var(--surface)",
                   color: "#ff6b61",
                   cursor: "pointer",
                 }}

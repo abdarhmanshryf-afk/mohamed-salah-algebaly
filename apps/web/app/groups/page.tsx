@@ -120,7 +120,7 @@ export default function StudentGroups() {
               <section key={g.id} className="course" style={{ display: "block" }}>
                 <strong>{g.name}</strong>
                 <div style={{ marginTop: "8px" }}>
-                  <button onClick={() => showMembers(g)} style={{ background: "#24395e" }}>
+                  <button onClick={() => showMembers(g)} style={{ background: "var(--border)" }}>
                     زمايلك في المجموعة
                   </button>
                 </div>

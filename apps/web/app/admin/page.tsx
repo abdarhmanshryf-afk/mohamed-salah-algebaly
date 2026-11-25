@@ -130,7 +130,7 @@ export default function AdminHome() {
               minWidth: 0,
             }}
           >
-            <span style={{ fontSize: "11px", color: "#c5cfdd" }}>{v || ""}</span>
+            <span style={{ fontSize: "11px", color: "var(--text-soft)" }}>{v || ""}</span>
             <div
               style={{
                 width: "100%",
@@ -209,7 +209,7 @@ export default function AdminHome() {
               <div style={{ fontSize: "26px", fontWeight: "bold", color: "var(--gold)" }}>
                 {byStatus[k] || 0}
               </div>
-              <div style={{ color: "#c5cfdd", fontSize: "14px" }}>{label}</div>
+              <div style={{ color: "var(--text-soft)", fontSize: "14px" }}>{label}</div>
             </div>
           ))}
         </div>

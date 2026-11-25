@@ -43,9 +43,9 @@ export default function AdminNav() {
               style={{
                 padding: "7px 14px",
                 borderRadius: "20px",
-                border: `1px solid ${active ? "var(--gold)" : "#24395e"}`,
+                border: `1px solid ${active ? "var(--gold)" : "var(--border)"}`,
                 background: active ? "var(--gold)" : "transparent",
-                color: active ? "#17233a" : "#c5cfdd",
+                color: active ? "var(--gold-ink)" : "var(--text-soft)",
                 fontWeight: "bold",
                 fontSize: "14px",
                 whiteSpace: "nowrap",

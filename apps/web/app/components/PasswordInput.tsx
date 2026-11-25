@@ -84,7 +84,7 @@ export default function PasswordInput({
           border: "none",
           cursor: "pointer",
           padding: "2px",
-          color: "#8fa0b8",
+          color: "var(--text-muted)",
           display: "flex",
           alignItems: "center",
         }}

@@ -102,7 +102,7 @@ export default function LessonComments({
     <div
       style={{
         marginTop: "12px",
-        borderTop: "1px solid #24395e",
+        borderTop: "1px solid var(--border)",
         paddingTop: "12px",
       }}
     >
@@ -111,7 +111,7 @@ export default function LessonComments({
       {!loaded && <p>جاري تحميل النقاش...</p>}
 
       {loaded && comments.length === 0 && (
-        <p style={{ color: "#8fa0b8" }}>
+        <p style={{ color: "var(--text-muted)" }}>
           مفيش أسئلة لسه، اسأل أول سؤال 👇
         </p>
       )}
@@ -126,7 +126,7 @@ export default function LessonComments({
           <div
             key={c.id}
             style={{
-              background: teacherBadge ? "#3a2f14" : "#101d36",
+              background: teacherBadge ? "#3a2f14" : "var(--bg-2)",
               borderRadius: "10px",
               padding: "10px 14px",
               marginTop: "8px",
@@ -146,7 +146,7 @@ export default function LessonComments({
                   <span
                     style={{
                       background: "var(--gold)",
-                      color: "#17233a",
+                      color: "var(--gold-ink)",
                       borderRadius: "6px",
                       padding: "1px 8px",
                       fontSize: "12px",
@@ -157,7 +157,7 @@ export default function LessonComments({
                   </span>
                 )}
               </strong>
-              <span style={{ color: "#8fa0b8", fontSize: "12px" }}>
+              <span style={{ color: "var(--text-muted)", fontSize: "12px" }}>
                 {new Date(c.created_at).toLocaleDateString("ar-EG", {
                   day: "numeric",
                   month: "long",
@@ -198,7 +198,7 @@ export default function LessonComments({
             flex: 1,
             padding: "10px 14px",
             borderRadius: "10px",
-            border: "1px solid #24395e",
+            border: "1px solid var(--border)",
             fontFamily: "inherit",
           }}
         />
@@ -210,7 +210,7 @@ export default function LessonComments({
             border: 0,
             borderRadius: "10px",
             background: "var(--gold)",
-            color: "#17233a",
+            color: "var(--gold-ink)",
             fontWeight: "bold",
             cursor: "pointer",
           }}

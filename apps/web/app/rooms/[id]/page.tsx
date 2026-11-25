@@ -176,7 +176,7 @@ export default function RoomPage() {
               className="course"
               style={{ display: "block", textAlign: "center" }}
             >
-              <p style={{ margin: 0, color: "#8fa0b8" }}>
+              <p style={{ margin: 0, color: "var(--text-muted)" }}>
                 {room.phase === "study" ? "📖 وقت المذاكرة" : "☕ وقت الراحة"}
               </p>
               <p
@@ -190,7 +190,7 @@ export default function RoomPage() {
               >
                 {mm}:{ss}
               </p>
-              <p style={{ margin: 0, fontSize: "13px", color: "#8fa0b8" }}>
+              <p style={{ margin: 0, fontSize: "13px", color: "var(--text-muted)" }}>
                 {room.phase === "study"
                   ? "ركز في مذاكرتك — الراحة جاية"
                   : "خد نفسك — المذاكرة هترجع"}
@@ -206,7 +206,7 @@ export default function RoomPage() {
                   new Date(m.last_seen_at).getTime() > onlineCutoff;
                 return (
                   <p key={m.student_id} style={{ margin: "6px 0 0" }}>
-                    <span style={{ color: online ? "#2e9e5b" : "#3a4d70" }}>
+                    <span style={{ color: online ? "#2e9e5b" : "var(--text-dim)" }}>
                       ●
                     </span>{" "}
                     {m.profiles?.full_name || "طالب"}

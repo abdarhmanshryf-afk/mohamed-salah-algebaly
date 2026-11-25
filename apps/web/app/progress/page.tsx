@@ -345,7 +345,7 @@ export default function MyProgress() {
       if (!el) throw new Error("missing");
       const html2canvas = (await import("html2canvas")).default;
       const { jsPDF } = await import("jspdf");
-      const canvas = await html2canvas(el, { backgroundColor: "#0c1a33", scale: 2 });
+      const canvas = await html2canvas(el, { backgroundColor: "var(--bg)", scale: 2 });
       const img = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
         orientation: "portrait",
@@ -377,7 +377,7 @@ export default function MyProgress() {
               style={{
                 padding: "10px 18px",
                 borderRadius: "10px",
-                background: "#16294a",
+                background: "var(--surface)",
                 border: "1px solid var(--gold)",
                 color: "var(--gold)",
                 fontWeight: "bold",
@@ -396,7 +396,7 @@ export default function MyProgress() {
                 display: "inline-block",
                 padding: "10px 18px",
                 borderRadius: "10px",
-                background: "#3a2f10",
+                background: "var(--gold-dim)",
                 border: "1px solid var(--gold)",
                 color: "var(--gold)",
                 fontWeight: "bold",
@@ -432,9 +432,9 @@ export default function MyProgress() {
                   style={{
                     padding: "6px 12px",
                     borderRadius: "20px",
-                    border: "1px solid #24395e",
-                    background: b.earned ? "#3a2f10" : "transparent",
-                    color: b.earned ? "var(--gold)" : "#3a4d70",
+                    border: "1px solid var(--border)",
+                    background: b.earned ? "var(--gold-dim)" : "transparent",
+                    color: b.earned ? "var(--gold)" : "var(--text-dim)",
                     fontSize: "14px",
                   }}
                 >
@@ -446,14 +446,14 @@ export default function MyProgress() {
               <button
                 onClick={() => askAI("study-plan")}
                 disabled={aiBusy !== ""}
-                style={{ background: "#24395e" }}
+                style={{ background: "var(--border)" }}
               >
                 {aiBusy === "study-plan" ? "المساعد بيخطط..." : "📅 اعملي خطة مذاكرة"}
               </button>
               <button
                 onClick={() => askAI("weakness")}
                 disabled={aiBusy !== ""}
-                style={{ background: "#24395e" }}
+                style={{ background: "var(--border)" }}
               >
                 {aiBusy === "weakness" ? "المساعد بيحلّل..." : "🎯 نقاط ضعفي المتوقعة"}
               </button>
@@ -461,7 +461,7 @@ export default function MyProgress() {
             {aiReply && (
               <div
                 style={{
-                  background: "#1a2c4b",
+                  background: "var(--surface-2)",
                   borderRadius: "10px",
                   padding: "12px",
                   marginTop: "10px",
@@ -494,7 +494,7 @@ export default function MyProgress() {
               </div>
               {r.lessons.length > 0 && (
                 <div style={{ marginTop: "12px" }}>
-                  <p style={{ margin: "0 0 6px", fontSize: "14px", color: "#8fa0b8" }}>
+                  <p style={{ margin: "0 0 6px", fontSize: "14px", color: "var(--text-muted)" }}>
                     خريطة الإتقان: 🟢 80%+ 🟡 50-79% 🔴 أقل من 50%
                   </p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
@@ -506,7 +506,7 @@ export default function MyProgress() {
                           padding: "4px 10px",
                           borderRadius: "14px",
                           fontSize: "13px",
-                          border: "1px solid #24395e",
+                          border: "1px solid var(--border)",
                           color:
                             l.mastery >= 80
                               ? "#2e9e5b"
@@ -547,7 +547,7 @@ export default function MyProgress() {
               </p>
             ) : (
               <>
-                <p style={{ margin: "8px 0", fontSize: "14px", color: "#8fa0b8" }}>
+                <p style={{ margin: "8px 0", fontSize: "14px", color: "var(--text-muted)" }}>
                   مرتبة من الأضعف — ابدأ بيها:
                 </p>
                 {plan.map((p, i) => (
@@ -559,7 +559,7 @@ export default function MyProgress() {
                     >
                       {p.lesson_title}
                     </a>{" "}
-                    <span style={{ color: "#8fa0b8", fontSize: "14px" }}>
+                    <span style={{ color: "var(--text-muted)", fontSize: "14px" }}>
                       — {p.course_title}
                     </span>
                   </p>
@@ -577,7 +577,7 @@ export default function MyProgress() {
               left: "-3000px",
               top: 0,
               width: "794px",
-              background: "#0c1a33",
+              background: "var(--bg)",
               color: "#e8ecf4",
               fontFamily: "inherit",
               boxSizing: "border-box",
@@ -596,18 +596,18 @@ export default function MyProgress() {
                 <div style={{ color: "#c9a227", fontSize: "30px", fontWeight: "bold" }}>
                   تقرير شهر {reportMeta.month}
                 </div>
-                <div style={{ color: "#8fa0b8", fontSize: "14px", marginTop: "6px" }}>
+                <div style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "6px" }}>
                   الطالب: {profileName || "—"} — صدر في {reportMeta.date}
                 </div>
               </div>
-              <div style={{ borderTop: "1px solid #24395e", padding: "14px 0" }}>
+              <div style={{ borderTop: "1px solid var(--border)", padding: "14px 0" }}>
                 <strong style={{ color: "#c9a227" }}>النقاط والشارات</strong>
                 <p style={{ margin: "6px 0" }}>
                   مجموع النقاط: <strong>{points}</strong> — الشارات المكتسبة:{" "}
                   {badges.filter((b) => b.earned).map((b) => b.name).join("، ") || "لسه"}
                 </p>
               </div>
-              <div style={{ borderTop: "1px solid #24395e", padding: "14px 0" }}>
+              <div style={{ borderTop: "1px solid var(--border)", padding: "14px 0" }}>
                 <strong style={{ color: "#c9a227" }}>تقدم الكورسات</strong>
                 {rows.map((r) => (
                   <p key={r.courseId} style={{ margin: "6px 0" }}>
@@ -616,10 +616,10 @@ export default function MyProgress() {
                   </p>
                 ))}
               </div>
-              <div style={{ borderTop: "1px solid #24395e", padding: "14px 0" }}>
+              <div style={{ borderTop: "1px solid var(--border)", padding: "14px 0" }}>
                 <strong style={{ color: "#c9a227" }}>امتحانات الشهر ده</strong>
                 {reportMeta.exams.length === 0 ? (
-                  <p style={{ margin: "6px 0", color: "#8fa0b8" }}>
+                  <p style={{ margin: "6px 0", color: "var(--text-muted)" }}>
                     مفيش امتحانات الشهر ده.
                   </p>
                 ) : (
@@ -630,7 +630,7 @@ export default function MyProgress() {
                   ))
                 )}
               </div>
-              <p style={{ color: "#8fa0b8", fontSize: "12px", textAlign: "center" }}>
+              <p style={{ color: "var(--text-muted)", fontSize: "12px", textAlign: "center" }}>
                 الأستاذ محمد صلاح الجبالي — منصة متقن
               </p>
             </div>
@@ -642,7 +642,7 @@ export default function MyProgress() {
             {notes.map((n) => (
               <div
                 key={n.lesson_id}
-                style={{ borderTop: "1px solid #24395e", padding: "8px 0" }}
+                style={{ borderTop: "1px solid var(--border)", padding: "8px 0" }}
               >
                 <a
                   href={`/courses/${n.course_id}`}
@@ -650,7 +650,7 @@ export default function MyProgress() {
                 >
                   {n.lesson_title}
                 </a>{" "}
-                <span style={{ color: "#8fa0b8", fontSize: "14px" }}>
+                <span style={{ color: "var(--text-muted)", fontSize: "14px" }}>
                   — {n.course_title}
                 </span>
                 <p style={{ margin: "4px 0 0", whiteSpace: "pre-wrap" }}>

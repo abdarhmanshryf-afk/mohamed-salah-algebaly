@@ -139,14 +139,14 @@ export default function TeacherTickets() {
             >
               <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "6px" }}>
                 <strong>{t.subject}</strong>
-                <span style={{ color: t.status === "open" ? "#ffe28a" : "#8fa0b8" }}>
+                <span style={{ color: t.status === "open" ? "var(--warning)" : "var(--text-muted)" }}>
                   {statusLabels[t.status] || t.status}
                 </span>
               </div>
               <p style={{ margin: "4px 0 0", fontSize: "13px" }}>
                 {t.profiles?.full_name || "طالب"}
               </p>
-              <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#8fa0b8" }}>
+              <p style={{ margin: "4px 0 0", fontSize: "12px", color: "var(--text-muted)" }}>
                 {new Date(t.updated_at).toLocaleString("ar-EG")}
               </p>
             </section>
@@ -161,14 +161,14 @@ export default function TeacherTickets() {
           </button>
           <section className="course" style={{ display: "block" }}>
             <h3 style={{ marginTop: 0, color: "var(--gold)" }}>{openTicket.subject}</h3>
-            <p style={{ fontSize: "12px", color: "#8fa0b8", margin: "0 0 10px" }}>
+            <p style={{ fontSize: "12px", color: "var(--text-muted)", margin: "0 0 10px" }}>
               {openTicket.profiles?.full_name || "طالب"} — {statusLabels[openTicket.status] || openTicket.status}
             </p>
             {messages.map((m) => (
               <div
                 key={m.id}
                 style={{
-                  background: m.is_staff ? "#1a2c4b" : "#24395e",
+                  background: m.is_staff ? "var(--surface-2)" : "var(--border)",
                   borderRadius: "8px",
                   padding: "8px 10px",
                   marginBottom: "8px",
@@ -178,7 +178,7 @@ export default function TeacherTickets() {
                   {m.is_staff ? "أنت (الإدارة)" : "الطالب"}
                 </p>
                 <p style={{ margin: "4px 0 0", whiteSpace: "pre-wrap" }}>{m.body}</p>
-                <p style={{ margin: "4px 0 0", fontSize: "11px", color: "#8fa0b8" }}>
+                <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--text-muted)" }}>
                   {new Date(m.created_at).toLocaleString("ar-EG")}
                 </p>
               </div>

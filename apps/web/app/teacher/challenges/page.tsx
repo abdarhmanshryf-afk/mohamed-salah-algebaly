@@ -86,7 +86,7 @@ export default function TeacherChallenges() {
   return (
     <main className="subpage">
       <h1>🏆 التحديات</h1>
-      <p style={{ color: "#8fa0b8" }}>
+      <p style={{ color: "var(--text-muted)" }}>
         اعمل تحديات لطلابك بنقاط — كل واحد بيشارك وبيسجّل تقدمه.
       </p>
       {loading && <p>جاري التحميل...</p>}
@@ -148,15 +148,15 @@ export default function TeacherChallenges() {
                 <span style={{ color: "var(--gold)" }}>{c.points} نقطة</span>
               </div>
               {c.description && <p style={{ margin: "4px 0 0", fontSize: "14px" }}>{c.description}</p>}
-              <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#8fa0b8" }}>
+              <p style={{ margin: "4px 0 0", fontSize: "12px", color: "var(--text-muted)" }}>
                 {c.active ? "شغال ✅" : "متوقف ⏸"}
                 {c.ends_at && " — آخر موعد: " + new Date(c.ends_at).toLocaleDateString("ar-EG")}
               </p>
               <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
-                <button onClick={() => toggle(c)} style={{ background: "#24395e" }}>
+                <button onClick={() => toggle(c)} style={{ background: "var(--border)" }}>
                   {c.active ? "إيقاف" : "تشغيل"}
                 </button>
-                <button onClick={() => remove(c.id)} style={{ background: "#5c2b2b" }}>
+                <button onClick={() => remove(c.id)} style={{ background: "var(--error-bg)" }}>
                   مسح
                 </button>
               </div>

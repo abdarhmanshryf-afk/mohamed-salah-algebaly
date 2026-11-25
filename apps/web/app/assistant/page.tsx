@@ -51,7 +51,7 @@ export default function AssistantPage() {
       </header>
       <div className="subpage" style={{ maxWidth: "700px" }}>
         <h1>🤖 مساعد متقن</h1>
-        <p style={{ color: "#8fa0b8", marginTop: 0 }}>
+        <p style={{ color: "var(--text-muted)", marginTop: 0 }}>
           اسأل أي حاجة في اللغة العربية أو المذاكرة والمساعد هيرد عليك.
         </p>
 
@@ -61,7 +61,7 @@ export default function AssistantPage() {
               <button
                 key={s}
                 onClick={() => send(s)}
-                style={{ textAlign: "right", background: "#24395e" }}
+                style={{ textAlign: "right", background: "var(--border)" }}
               >
                 {s}
               </button>
@@ -73,7 +73,7 @@ export default function AssistantPage() {
           <div
             key={i}
             style={{
-              background: m.role === "assistant" ? "#1a2c4b" : "#24395e",
+              background: m.role === "assistant" ? "var(--surface-2)" : "var(--border)",
               borderRadius: "10px",
               padding: "10px 12px",
               marginBottom: "8px",
@@ -85,7 +85,7 @@ export default function AssistantPage() {
             <p style={{ margin: "4px 0 0", whiteSpace: "pre-wrap" }}>{m.text}</p>
           </div>
         ))}
-        {busy && <p style={{ color: "#8fa0b8" }}>المساعد بيفكر… 🤔</p>}
+        {busy && <p style={{ color: "var(--text-muted)" }}>المساعد بيفكر… 🤔</p>}
         <div ref={bottomRef} />
 
         <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>

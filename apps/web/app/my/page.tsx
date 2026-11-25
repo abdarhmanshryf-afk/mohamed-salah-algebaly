@@ -177,7 +177,7 @@ export default function MyLessons() {
                 {r.status === "expired" && "اشتراكك انتهى — جدد من صفحة الكورس"}
               </p>
               {r.status === "cancelled" && r.review_note && (
-                <p style={{ margin: "4px 0 0", fontSize: "14px", color: "#ffb4b4" }}>
+                <p style={{ margin: "4px 0 0", fontSize: "14px", color: "var(--error)" }}>
                   السبب: {r.review_note}
                 </p>
               )}
@@ -204,7 +204,7 @@ export default function MyLessons() {
                 >
                   {f.title}
                 </a>{" "}
-                <span style={{ color: "#8fa0b8", fontSize: "14px" }}>
+                <span style={{ color: "var(--text-muted)", fontSize: "14px" }}>
                   — {f.course_title}
                 </span>
               </p>

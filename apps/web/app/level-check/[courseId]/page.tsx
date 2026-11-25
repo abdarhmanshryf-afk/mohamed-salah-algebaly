@@ -180,14 +180,14 @@ export default function LevelCheck() {
 
         {!loading && !notReady && current && !done && (
           <>
-            <p style={{ color: "#8fa0b8" }}>
+            <p style={{ color: "var(--text-muted)" }}>
               ⏱ {mm}:{ss} — سؤال {asked.length + 1} من {MAX_QUESTIONS} كحد أقصى
             </p>
             <section className="course" style={{ display: "block" }}>
               <h3 style={{ margin: "0 0 10px" }}>{current.question_text}</h3>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                 {(current.options || []).map((opt) => {
-                  let bg = "#16294a";
+                  let bg = "var(--surface)";
                   let color = "#e8ecf4";
                   if (picked) {
                     if (opt === current.correct_answer) {
@@ -205,7 +205,7 @@ export default function LevelCheck() {
                       disabled={!!picked}
                       style={{
                         padding: "8px 16px",
-                        border: "1px solid #24395e",
+                        border: "1px solid var(--border)",
                         borderRadius: "10px",
                         background: bg,
                         color,
@@ -226,7 +226,7 @@ export default function LevelCheck() {
                     border: "none",
                     borderRadius: "10px",
                     background: "var(--gold)",
-                    color: "#17233a",
+                    color: "var(--gold-ink)",
                     fontWeight: "bold",
                     cursor: "pointer",
                   }}
@@ -248,7 +248,7 @@ export default function LevelCheck() {
               جاوبت صح على {log.filter((l) => l.correct).length} من {log.length}{" "}
               سؤال
             </p>
-            <p style={{ color: "#8fa0b8" }}>{levelText[level].advice}</p>
+            <p style={{ color: "var(--text-muted)" }}>{levelText[level].advice}</p>
             <a
               href="/progress"
               style={{
@@ -257,7 +257,7 @@ export default function LevelCheck() {
                 padding: "10px 22px",
                 borderRadius: "10px",
                 background: "var(--gold)",
-                color: "#17233a",
+                color: "var(--gold-ink)",
                 fontWeight: "bold",
                 textDecoration: "none",
               }}

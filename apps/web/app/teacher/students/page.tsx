@@ -267,9 +267,9 @@ export default function TeacherStudents() {
                   marginTop: "6px",
                   padding: "10px 12px",
                   borderRadius: "10px",
-                  border: `1px solid ${addStudentId === s.id ? "var(--gold)" : "#24395e"}`,
-                  background: addStudentId === s.id ? "#1d3358" : "#101d36",
-                  color: addStudentId === s.id ? "var(--gold)" : "#c5cfdd",
+                  border: `1px solid ${addStudentId === s.id ? "var(--gold)" : "var(--border)"}`,
+                  background: addStudentId === s.id ? "var(--border)" : "var(--bg-2)",
+                  color: addStudentId === s.id ? "var(--gold)" : "var(--text-soft)",
                 }}
               >
                 {s.full_name || "بدون اسم"} — {s.phone || "بدون هاتف"}
@@ -297,7 +297,7 @@ export default function TeacherStudents() {
         <section
           key={student.id}
           style={{
-            border: "1px solid #24395e",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
             padding: "16px",
             marginTop: "16px",

@@ -217,7 +217,7 @@ export default function TeacherCourses() {
         <section
           key={course.id}
           style={{
-            border: "1px solid #24395e",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
             padding: "16px",
             marginTop: "16px",
@@ -240,7 +240,7 @@ export default function TeacherCourses() {
                 padding: "8px 16px",
                 borderRadius: "8px",
                 background: "var(--gold)",
-                color: "#17233a",
+                color: "var(--gold-ink)",
                 fontWeight: "bold",
                 display: "inline-block",
               }}
@@ -250,7 +250,7 @@ export default function TeacherCourses() {
             <button
               onClick={() => deleteCourse(course)}
               style={{
-                background: "#16294a",
+                background: "var(--surface)",
                 color: "#ff6b61",
                 border: "1px solid #ff6b61",
                 borderRadius: "8px",

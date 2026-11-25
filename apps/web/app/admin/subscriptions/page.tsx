@@ -179,9 +179,9 @@ export default function AdminSubscriptions() {
             style={{
               padding: "8px 16px",
               borderRadius: "20px",
-              border: `1px solid ${filter === t.key ? "var(--gold)" : "#24395e"}`,
+              border: `1px solid ${filter === t.key ? "var(--gold)" : "var(--border)"}`,
               background: filter === t.key ? "var(--gold)" : "transparent",
-              color: filter === t.key ? "#17233a" : "#c5cfdd",
+              color: filter === t.key ? "var(--gold-ink)" : "var(--text-soft)",
             }}
           >
             {t.label} ({t.key === "all" ? rows.length : rows.filter((r) => r.status === t.key).length})
@@ -206,7 +206,7 @@ export default function AdminSubscriptions() {
             <div style={{ minWidth: "230px", flex: 1 }}>
               <h3 style={{ margin: 0 }}>
                 {r.profiles?.full_name || "طالب بدون اسم"}{" "}
-                <span style={{ fontSize: "13px", color: "#c5cfdd" }}>
+                <span style={{ fontSize: "13px", color: "var(--text-soft)" }}>
                   {statusLabels[r.status] || r.status}
                 </span>
               </h3>
@@ -231,7 +231,7 @@ export default function AdminSubscriptions() {
                   style={{
                     margin: "6px 0 0",
                     fontSize: "14px",
-                    color: r.status === "cancelled" ? "#ffb4b4" : "#9fd4ff",
+                    color: r.status === "cancelled" ? "var(--error)" : "var(--info)",
                   }}
                 >
                   {r.status === "cancelled" ? "ملاحظة الرفض: " : "ملاحظة: "}
@@ -256,7 +256,7 @@ export default function AdminSubscriptions() {
                 <button
                   onClick={() => approve(r)}
                   disabled={busyId === r.id}
-                  style={{ background: "#2f5d3f", color: "white" }}
+                  style={{ background: "var(--success-bg)", color: "white" }}
                 >
                   قبول وتفعيل
                 </button>
@@ -265,7 +265,7 @@ export default function AdminSubscriptions() {
                 <button
                   onClick={() => reject(r)}
                   disabled={busyId === r.id}
-                  style={{ background: "#8a2f2f", color: "white" }}
+                  style={{ background: "var(--error-bg)", color: "white" }}
                 >
                   {r.status === "active" ? "إلغاء الاشتراك" : "رفض"}
                 </button>

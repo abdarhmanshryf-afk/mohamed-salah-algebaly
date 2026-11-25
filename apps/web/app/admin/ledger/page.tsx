@@ -16,11 +16,11 @@ type LedgerRow = {
 };
 
 const eventLabels: Record<string, { label: string; color: string }> = {
-  submitted: { label: "طلب دفع جديد", color: "#9fd4ff" },
-  approved: { label: "تم القبول ✅", color: "#9fe6a0" },
-  rejected: { label: "اترفض ❌", color: "#ffb4b4" },
-  manual_add: { label: "إضافة يدوية", color: "#ffe28a" },
-  refunded: { label: "استرجاع", color: "#ffb4b4" },
+  submitted: { label: "طلب دفع جديد", color: "var(--info)" },
+  approved: { label: "تم القبول ✅", color: "var(--success)" },
+  rejected: { label: "اترفض ❌", color: "var(--error)" },
+  manual_add: { label: "إضافة يدوية", color: "var(--warning)" },
+  refunded: { label: "استرجاع", color: "var(--error)" },
 };
 
 export default function AdminLedger() {
@@ -60,7 +60,7 @@ export default function AdminLedger() {
   return (
     <main className="subpage">
       <h1>💰 دفتر الحسابات</h1>
-      <p style={{ color: "#8fa0b8" }}>
+      <p style={{ color: "var(--text-muted)" }}>
         كل حركة دفع على المنصة: طلبات جديدة، قبول، رفض، وإضافات يدوية.
       </p>
       {loading && <p>جاري التحميل...</p>}
@@ -76,7 +76,7 @@ export default function AdminLedger() {
       {!loading && supported && (
         <>
           <section className="course" style={{ display: "block", textAlign: "center" }}>
-            <p style={{ margin: 0, fontSize: "13px", color: "#8fa0b8" }}>
+            <p style={{ margin: 0, fontSize: "13px", color: "var(--text-muted)" }}>
               إجمالي المقبوضات المسجّلة
             </p>
             <p style={{ margin: "6px 0 0", fontSize: "22px", fontWeight: "bold", color: "var(--gold)" }}>
@@ -85,7 +85,7 @@ export default function AdminLedger() {
           </section>
           {rows.length === 0 && <p>مفيش حركات مسجّلة لسه.</p>}
           {rows.map((r) => {
-            const meta = eventLabels[r.event] || { label: r.event, color: "#9fd4ff" };
+            const meta = eventLabels[r.event] || { label: r.event, color: "var(--info)" };
             return (
               <section key={r.id} className="course" style={{ display: "block" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "6px" }}>
@@ -97,11 +97,11 @@ export default function AdminLedger() {
                   {r.amount != null && <> — <strong>{r.amount} جنيه</strong></>}
                 </p>
                 {r.note && (
-                  <p style={{ margin: "4px 0 0", fontSize: "13px", color: "#8fa0b8" }}>
+                  <p style={{ margin: "4px 0 0", fontSize: "13px", color: "var(--text-muted)" }}>
                     {r.note}
                   </p>
                 )}
-                <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#8fa0b8" }}>
+                <p style={{ margin: "4px 0 0", fontSize: "12px", color: "var(--text-muted)" }}>
                   {new Date(r.created_at).toLocaleString("ar-EG")}
                 </p>
               </section>

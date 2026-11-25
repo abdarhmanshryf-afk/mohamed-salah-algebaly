@@ -151,7 +151,7 @@ export default function TeacherRequests() {
         <section
           key={request.id}
           style={{
-            border: "1px solid #24395e",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
             padding: "16px",
             marginTop: "16px",

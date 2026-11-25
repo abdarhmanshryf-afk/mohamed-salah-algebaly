@@ -123,7 +123,7 @@ export default function RoomsPage() {
       </header>
       <div className="subpage">
         <h1>📚 غرف المذاكرة</h1>
-        <p style={{ color: "#8fa0b8" }}>
+        <p style={{ color: "var(--text-muted)" }}>
           اذاكر مع زمايلك: مؤقت 25 دقيقة مذاكرة + 5 راحة، من غير شات — بس حضور
           وتشجيع.
         </p>
@@ -147,8 +147,8 @@ export default function RoomsPage() {
                     minWidth: "180px",
                     padding: "10px",
                     borderRadius: "8px",
-                    border: "1px solid #24395e",
-                    background: "#0c1a33",
+                    border: "1px solid var(--border)",
+                    background: "var(--bg)",
                     color: "#e8ecf4",
                   }}
                 />
@@ -160,7 +160,7 @@ export default function RoomsPage() {
                     border: "none",
                     borderRadius: "10px",
                     background: "var(--gold)",
-                    color: "#17233a",
+                    color: "var(--gold-ink)",
                     fontWeight: "bold",
                     cursor: "pointer",
                   }}

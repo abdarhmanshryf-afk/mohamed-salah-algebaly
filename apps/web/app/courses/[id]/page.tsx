@@ -760,7 +760,7 @@ export default function CourseDetails() {
       const html2canvas = (await import("html2canvas")).default;
       const { jsPDF } = await import("jspdf");
       const canvas = await html2canvas(el, {
-        backgroundColor: "#0c1a33",
+        backgroundColor: "var(--bg)",
         scale: 2,
       });
       const img = canvas.toDataURL("image/png");
@@ -820,7 +820,7 @@ export default function CourseDetails() {
               borderRadius: "12px",
               padding: "16px",
               marginTop: "16px",
-              background: "#16294a",
+              background: "var(--surface)",
             }}
           >
             <h3 style={{ margin: "0 0 10px", color: "#ff6b61" }}>
@@ -856,8 +856,8 @@ export default function CourseDetails() {
       {!isTeacher && canView && lessons.length > 0 && (
         <div
           style={{
-            background: "#16294a",
-            border: "1px solid #24395e",
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
             padding: "14px 16px",
             marginTop: "12px",
@@ -871,13 +871,13 @@ export default function CourseDetails() {
             }}
           >
             <strong style={{ color: "var(--gold)" }}>تقدمك في الكورس</strong>
-            <span style={{ color: "#8fa0b8" }}>
+            <span style={{ color: "var(--text-muted)" }}>
               خلصت {completedCount} من {lessons.length} درس ({coursePercent}%)
             </span>
           </div>
           <div
             style={{
-              background: "#24395e",
+              background: "var(--border)",
               borderRadius: "8px",
               height: "10px",
               overflow: "hidden",
@@ -924,7 +924,7 @@ export default function CourseDetails() {
               border: "none",
               borderRadius: "10px",
               background: "var(--gold)",
-              color: "#17233a",
+              color: "var(--gold-ink)",
               fontWeight: "bold",
               fontSize: "1rem",
               cursor: "pointer",
@@ -938,11 +938,11 @@ export default function CourseDetails() {
       {canView && studentId && !isTeacher && featuresOn && (
         <section
           style={{
-            border: "1px solid #24395e",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
             padding: "16px",
             marginTop: "16px",
-            background: "#16294a",
+            background: "var(--surface)",
           }}
         >
           <h3 style={{ margin: "0 0 8px", color: "var(--gold)" }}>قيّم الكورس</h3>
@@ -953,7 +953,7 @@ export default function CourseDetails() {
                 onClick={() => setMyStars(s)}
                 style={{
                   cursor: "pointer",
-                  color: s <= myStars ? "var(--gold)" : "#3a4d70",
+                  color: s <= myStars ? "var(--gold)" : "var(--text-dim)",
                 }}
               >
                 ★
@@ -970,8 +970,8 @@ export default function CourseDetails() {
               marginTop: "8px",
               padding: "10px",
               borderRadius: "8px",
-              border: "1px solid #24395e",
-              background: "#0c1a33",
+              border: "1px solid var(--border)",
+              background: "var(--bg)",
               color: "#e8ecf4",
               boxSizing: "border-box",
             }}
@@ -984,8 +984,8 @@ export default function CourseDetails() {
               padding: "10px 20px",
               border: "none",
               borderRadius: "10px",
-              background: myStars === 0 ? "#3a4d70" : "var(--gold)",
-              color: myStars === 0 ? "#8fa0b8" : "#17233a",
+              background: myStars === 0 ? "var(--text-dim)" : "var(--gold)",
+              color: myStars === 0 ? "var(--text-muted)" : "var(--gold-ink)",
               fontWeight: "bold",
               cursor: myStars === 0 ? "default" : "pointer",
             }}
@@ -1098,7 +1098,7 @@ export default function CourseDetails() {
               />
             </label>
             {payMessage && (
-              <p role="alert" style={{ color: "#ffb4b4" }}>
+              <p role="alert" style={{ color: "var(--error)" }}>
                 {payMessage}
               </p>
             )}
@@ -1121,8 +1121,8 @@ export default function CourseDetails() {
                 onClick={() => setShowPayModal(false)}
                 style={{
                   background: "transparent",
-                  border: "1px solid #24395e",
-                  color: "#c5cfdd",
+                  border: "1px solid var(--border)",
+                  color: "var(--text-soft)",
                 }}
               >
                 إلغاء
@@ -1150,11 +1150,11 @@ export default function CourseDetails() {
             <section
               key={lesson.id}
               style={{
-                border: "1px solid #24395e",
+                border: "1px solid var(--border)",
                 borderRadius: "12px",
                 padding: "16px",
                 marginTop: "16px",
-                background: "#16294a",
+                background: "var(--surface)",
               }}
             >
               <h3 style={{ margin: "0 0 8px", color: "var(--gold)" }}>
@@ -1170,7 +1170,7 @@ export default function CourseDetails() {
               {!isTeacher && lesson.video_path && p && (
                 <div
                   style={{
-                    background: "#24395e",
+                    background: "var(--border)",
                     borderRadius: "6px",
                     height: "6px",
                     overflow: "hidden",
@@ -1196,7 +1196,7 @@ export default function CourseDetails() {
                     border: 0,
                     borderRadius: "10px",
                     background: "var(--gold)",
-                    color: "#17233a",
+                    color: "var(--gold-ink)",
                     fontWeight: "bold",
                     cursor: "pointer",
                     marginInlineEnd: "8px",
@@ -1215,7 +1215,7 @@ export default function CourseDetails() {
                     padding: "10px 20px",
                     border: "1px solid var(--gold)",
                     borderRadius: "10px",
-                    background: "#16294a",
+                    background: "var(--surface)",
                     color: "var(--gold)",
                     fontWeight: "bold",
                     cursor: "pointer",
@@ -1231,10 +1231,10 @@ export default function CourseDetails() {
                 }
                 style={{
                   padding: "10px 16px",
-                  border: "1px solid #24395e",
+                  border: "1px solid var(--border)",
                   borderRadius: "10px",
-                  background: "#16294a",
-                  color: "#8fa0b8",
+                  background: "var(--surface)",
+                  color: "var(--text-muted)",
                   cursor: "pointer",
                 }}
               >
@@ -1247,10 +1247,10 @@ export default function CourseDetails() {
                     title={favorites[lesson.id] ? "شيل من المفضلة" : "ضيف للمفضلة"}
                     style={{
                       padding: "10px 14px",
-                      border: "1px solid #24395e",
+                      border: "1px solid var(--border)",
                       borderRadius: "10px",
-                      background: favorites[lesson.id] ? "#3a2f10" : "#16294a",
-                      color: favorites[lesson.id] ? "var(--gold)" : "#8fa0b8",
+                      background: favorites[lesson.id] ? "var(--gold-dim)" : "var(--surface)",
+                      color: favorites[lesson.id] ? "var(--gold)" : "var(--text-muted)",
                       cursor: "pointer",
                       marginInlineStart: "8px",
                     }}
@@ -1264,10 +1264,10 @@ export default function CourseDetails() {
                     title="ملاحظاتك عن الدرس"
                     style={{
                       padding: "10px 14px",
-                      border: "1px solid #24395e",
+                      border: "1px solid var(--border)",
                       borderRadius: "10px",
-                      background: "#16294a",
-                      color: notes[lesson.id] ? "var(--gold)" : "#8fa0b8",
+                      background: "var(--surface)",
+                      color: notes[lesson.id] ? "var(--gold)" : "var(--text-muted)",
                       cursor: "pointer",
                       marginInlineStart: "8px",
                     }}
@@ -1290,8 +1290,8 @@ export default function CourseDetails() {
                       width: "100%",
                       padding: "10px",
                       borderRadius: "8px",
-                      border: "1px solid #24395e",
-                      background: "#0c1a33",
+                      border: "1px solid var(--border)",
+                      background: "var(--bg)",
                       color: "#e8ecf4",
                       boxSizing: "border-box",
                     }}
@@ -1305,7 +1305,7 @@ export default function CourseDetails() {
                       border: "none",
                       borderRadius: "8px",
                       background: "var(--gold)",
-                      color: "#17233a",
+                      color: "var(--gold-ink)",
                       fontWeight: "bold",
                       cursor: "pointer",
                     }}
@@ -1382,10 +1382,10 @@ export default function CourseDetails() {
                     }
                     style={{
                       padding: "6px 14px",
-                      border: "1px solid #24395e",
+                      border: "1px solid var(--border)",
                       borderRadius: "8px",
-                      background: audioOnly[lesson.id] ? "#3a2f10" : "#16294a",
-                      color: audioOnly[lesson.id] ? "var(--gold)" : "#8fa0b8",
+                      background: audioOnly[lesson.id] ? "var(--gold-dim)" : "var(--surface)",
+                      color: audioOnly[lesson.id] ? "var(--gold)" : "var(--text-muted)",
                       cursor: "pointer",
                     }}
                   >
@@ -1399,10 +1399,10 @@ export default function CourseDetails() {
                     style={{
                       marginInlineStart: "10px",
                       padding: "6px 14px",
-                      border: "1px solid #24395e",
+                      border: "1px solid var(--border)",
                       borderRadius: "8px",
-                      background: "#16294a",
-                      color: "#8fa0b8",
+                      background: "var(--surface)",
+                      color: "var(--text-muted)",
                       textDecoration: "none",
                     }}
                   >
@@ -1421,9 +1421,9 @@ export default function CourseDetails() {
                             onClick={() => seekChapter(lesson, c.seconds)}
                             style={{
                               padding: "4px 12px",
-                              border: "1px solid #24395e",
+                              border: "1px solid var(--border)",
                               borderRadius: "14px",
-                              background: "#0c1a33",
+                              background: "var(--bg)",
                               color: "var(--gold)",
                               cursor: "pointer",
                               fontSize: "13px",
@@ -1467,8 +1467,8 @@ export default function CourseDetails() {
                         style={{
                           padding: "6px 10px",
                           borderRadius: "8px",
-                          border: "1px solid #24395e",
-                          background: "#0c1a33",
+                          border: "1px solid var(--border)",
+                          background: "var(--bg)",
                           color: "#e8ecf4",
                           width: "140px",
                         }}
@@ -1488,8 +1488,8 @@ export default function CourseDetails() {
                         style={{
                           padding: "6px 10px",
                           borderRadius: "8px",
-                          border: "1px solid #24395e",
-                          background: "#0c1a33",
+                          border: "1px solid var(--border)",
+                          background: "var(--bg)",
                           color: "#e8ecf4",
                           width: "110px",
                           direction: "ltr",
@@ -1502,7 +1502,7 @@ export default function CourseDetails() {
                           border: "none",
                           borderRadius: "8px",
                           background: "var(--gold)",
-                          color: "#17233a",
+                          color: "var(--gold-ink)",
                           fontWeight: "bold",
                           cursor: "pointer",
                           fontSize: "13px",
@@ -1527,7 +1527,7 @@ export default function CourseDetails() {
                         border: "1px dashed var(--gold)",
                         borderRadius: "10px",
                         padding: "12px",
-                        background: "#1a2c4d",
+                        background: "var(--surface-2)",
                       }}
                     >
                       <strong style={{ color: "var(--gold)" }}>
@@ -1551,7 +1551,7 @@ export default function CourseDetails() {
                               padding: "8px 16px",
                               borderRadius: "8px",
                               background: "var(--gold)",
-                              color: "#17233a",
+                              color: "var(--gold-ink)",
                               fontWeight: "bold",
                               cursor: "pointer",
                             }}
@@ -1573,7 +1573,7 @@ export default function CourseDetails() {
                             />
                           </label>
                           {sub && sub.score === null && (
-                            <span style={{ color: "#8fa0b8" }}>
+                            <span style={{ color: "var(--text-muted)" }}>
                               تم التسليم ⏳ بانتظار التصحيح
                             </span>
                           )}
@@ -1610,11 +1610,11 @@ export default function CourseDetails() {
           </h2>
           <section
             style={{
-              border: "1px solid #24395e",
+              border: "1px solid var(--border)",
               borderRadius: "12px",
               padding: "8px 16px",
               marginTop: "16px",
-              background: "#16294a",
+              background: "var(--surface)",
             }}
           >
             {leaderboard.map((row) => (
@@ -1642,7 +1642,7 @@ export default function CourseDetails() {
                   <strong style={{ color: "var(--gold)" }}>
                     {row.avg_score}%
                   </strong>{" "}
-                  <span style={{ color: "#8fa0b8", fontSize: "13px" }}>
+                  <span style={{ color: "var(--text-muted)", fontSize: "13px" }}>
                     ({row.exams_taken}{" "}
                     {row.exams_taken === 1 ? "اختبار" : "اختبارات"})
                   </span>
@@ -1660,11 +1660,11 @@ export default function CourseDetails() {
             <section
               key={exam.id}
               style={{
-                border: "1px solid #24395e",
+                border: "1px solid var(--border)",
                 borderRadius: "12px",
                 padding: "16px",
                 marginTop: "16px",
-                background: "#16294a",
+                background: "var(--surface)",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -1685,7 +1685,7 @@ export default function CourseDetails() {
                   padding: "10px 20px",
                   borderRadius: "10px",
                   background: "var(--gold)",
-                  color: "#17233a",
+                  color: "var(--gold-ink)",
                   fontWeight: "bold",
                   whiteSpace: "nowrap",
                 }}
@@ -1703,11 +1703,11 @@ export default function CourseDetails() {
         (isTeacher && ratingsList.length > 0)) && (
         <section
           style={{
-            border: "1px solid #24395e",
+            border: "1px solid var(--border)",
             borderRadius: "12px",
             padding: "16px",
             marginTop: "16px",
-            background: "#16294a",
+            background: "var(--surface)",
           }}
         >
           <h3 style={{ margin: "0 0 12px", color: "var(--gold)" }}>
@@ -1719,7 +1719,7 @@ export default function CourseDetails() {
               <div
                 key={r.id}
                 style={{
-                  borderTop: "1px solid #24395e",
+                  borderTop: "1px solid var(--border)",
                   padding: "10px 0",
                   opacity: r.is_hidden ? 0.5 : 1,
                 }}
@@ -1728,7 +1728,7 @@ export default function CourseDetails() {
                   <span style={{ color: "var(--gold)", letterSpacing: "2px" }}>
                     {"★".repeat(r.stars)}
                   </span>
-                  <span style={{ color: "#3a4d70", letterSpacing: "2px" }}>
+                  <span style={{ color: "var(--text-dim)", letterSpacing: "2px" }}>
                     {"★".repeat(5 - r.stars)}
                   </span>
                 </div>
@@ -1779,7 +1779,7 @@ export default function CourseDetails() {
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              background: "#16294a",
+              background: "var(--surface)",
               borderRadius: "12px",
               padding: "16px",
               maxWidth: "900px",
@@ -1799,7 +1799,7 @@ export default function CourseDetails() {
                   border: "none",
                   borderRadius: "10px",
                   background: "var(--gold)",
-                  color: "#17233a",
+                  color: "var(--gold-ink)",
                   fontWeight: "bold",
                   cursor: "pointer",
                 }}
@@ -1811,10 +1811,10 @@ export default function CourseDetails() {
                 style={{
                   padding: "12px 24px",
                   marginInlineStart: "10px",
-                  border: "1px solid #24395e",
+                  border: "1px solid var(--border)",
                   borderRadius: "10px",
                   background: "transparent",
-                  color: "#8fa0b8",
+                  color: "var(--text-muted)",
                   cursor: "pointer",
                 }}
               >
@@ -1835,7 +1835,7 @@ export default function CourseDetails() {
             top: 0,
             width: "1120px",
             height: "792px",
-            background: "#0c1a33",
+            background: "var(--bg)",
             color: "#e8ecf4",
             fontFamily: "inherit",
             boxSizing: "border-box",
@@ -1879,7 +1879,7 @@ export default function CourseDetails() {
                 >
                   شهادة إتمام
                 </div>
-                <div style={{ color: "#8fa0b8", fontSize: "18px", marginTop: "24px" }}>
+                <div style={{ color: "var(--text-muted)", fontSize: "18px", marginTop: "24px" }}>
                   تشهد منصة متقن بأن
                 </div>
                 <div
@@ -1891,7 +1891,7 @@ export default function CourseDetails() {
                 >
                   {studentName || "الطالب"}
                 </div>
-                <div style={{ color: "#8fa0b8", fontSize: "18px", marginTop: "16px" }}>
+                <div style={{ color: "var(--text-muted)", fontSize: "18px", marginTop: "16px" }}>
                   قد أتم بنجاح جميع دروس كورس
                 </div>
                 <div
@@ -1919,17 +1919,17 @@ export default function CourseDetails() {
                   </div>
                   <div
                     style={{
-                      borderTop: "1px solid #8fa0b8",
+                      borderTop: "1px solid var(--text-muted)",
                       marginTop: "6px",
                       paddingTop: "6px",
-                      color: "#8fa0b8",
+                      color: "var(--text-muted)",
                       fontSize: "14px",
                     }}
                   >
                     المدرّس
                   </div>
                 </div>
-                <div style={{ color: "#8fa0b8", fontSize: "14px" }}>
+                <div style={{ color: "var(--text-muted)", fontSize: "14px" }}>
                   <div>تاريخ الإصدار: {certMeta.date}</div>
                   <div style={{ marginTop: "4px" }}>رقم الشهادة: {certMeta.code}</div>
                 </div>

@@ -240,7 +240,7 @@ export default function TeacherAssignments() {
             style={{
               padding: "10px 14px",
               borderRadius: "10px",
-              border: "1px solid #24395e",
+              border: "1px solid var(--border)",
               fontFamily: "inherit",
               minWidth: "250px",
             }}
@@ -265,7 +265,7 @@ export default function TeacherAssignments() {
               width: "100%",
               padding: "10px",
               borderRadius: "10px",
-              border: "1px solid #24395e",
+              border: "1px solid var(--border)",
               fontFamily: "inherit",
               marginBottom: "8px",
             }}
@@ -302,7 +302,7 @@ export default function TeacherAssignments() {
               border: 0,
               borderRadius: "10px",
               background: "var(--gold)",
-              color: "#17233a",
+              color: "var(--gold-ink)",
               fontWeight: "bold",
               cursor: "pointer",
             }}
@@ -325,17 +325,17 @@ export default function TeacherAssignments() {
           <section
             key={a.id}
             style={{
-              border: "1px solid #24395e",
+              border: "1px solid var(--border)",
               borderRadius: "12px",
               padding: "16px",
               marginTop: "16px",
-              background: "#16294a",
+              background: "var(--surface)",
             }}
           >
             <h3 style={{ margin: "0 0 4px", color: "var(--gold)" }}>
               {a.title}
             </h3>
-            <p style={{ margin: "0 0 8px", color: "#8fa0b8" }}>
+            <p style={{ margin: "0 0 8px", color: "var(--text-muted)" }}>
               {lesson ? `الدرس ${lesson.sort_order}: ${lesson.title}` : ""}
               {a.description ? ` — ${a.description}` : ""}
             </p>
@@ -347,7 +347,7 @@ export default function TeacherAssignments() {
                   border: 0,
                   borderRadius: "8px",
                   background: "var(--gold)",
-                  color: "#17233a",
+                  color: "var(--gold-ink)",
                   cursor: "pointer",
                 }}
               >
@@ -359,7 +359,7 @@ export default function TeacherAssignments() {
                   padding: "8px 16px",
                   border: "1px solid #ff6b61",
                   borderRadius: "8px",
-                  background: "#16294a",
+                  background: "var(--surface)",
                   color: "#ff6b61",
                   cursor: "pointer",
                 }}
@@ -372,7 +372,7 @@ export default function TeacherAssignments() {
               <div
                 style={{
                   marginTop: "12px",
-                  borderTop: "1px solid #24395e",
+                  borderTop: "1px solid var(--border)",
                   paddingTop: "12px",
                 }}
               >
@@ -381,7 +381,7 @@ export default function TeacherAssignments() {
                   <div
                     key={s.id}
                     style={{
-                      background: "#101d36",
+                      background: "var(--bg-2)",
                       borderRadius: "10px",
                       padding: "12px",
                       marginTop: "8px",
@@ -399,7 +399,7 @@ export default function TeacherAssignments() {
                       <strong style={{ color: "var(--gold)" }}>
                         {s.studentName}
                       </strong>
-                      <span style={{ color: "#8fa0b8", fontSize: "13px" }}>
+                      <span style={{ color: "var(--text-muted)", fontSize: "13px" }}>
                         {new Date(s.submitted_at).toLocaleDateString("ar-EG", {
                           day: "numeric",
                           month: "long",
@@ -423,7 +423,7 @@ export default function TeacherAssignments() {
                           padding: "6px 14px",
                           border: "1px solid var(--gold)",
                           borderRadius: "8px",
-                          background: "#16294a",
+                          background: "var(--surface)",
                           color: "var(--gold)",
                           cursor: "pointer",
                         }}
@@ -449,7 +449,7 @@ export default function TeacherAssignments() {
                           width: "110px",
                           padding: "6px 10px",
                           borderRadius: "8px",
-                          border: "1px solid #24395e",
+                          border: "1px solid var(--border)",
                         }}
                       />
                       <input
@@ -469,7 +469,7 @@ export default function TeacherAssignments() {
                           minWidth: "150px",
                           padding: "6px 10px",
                           borderRadius: "8px",
-                          border: "1px solid #24395e",
+                          border: "1px solid var(--border)",
                         }}
                       />
                       <button

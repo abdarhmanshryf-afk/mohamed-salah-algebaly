@@ -178,7 +178,7 @@ export default function Courses() {
       {announcements.length > 0 && (
         <section
           style={{
-            background: "#1a2c4d",
+            background: "var(--surface-2)",
             border: "1px solid var(--gold)",
             borderRadius: "12px",
             padding: "14px 16px",
@@ -208,7 +208,7 @@ export default function Courses() {
           <section
             key={course.id}
             style={{
-              border: "1px solid #24395e",
+              border: "1px solid var(--border)",
               borderRadius: "12px",
               padding: "16px",
               marginTop: "16px",

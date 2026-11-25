@@ -37,13 +37,13 @@ function BarChart({ title, rows }: { title: string; rows: DayRow[] }) {
             style={{
               flex: 1,
               height: `${Math.max(4, (r.count / max) * 100)}%`,
-              background: r.count > 0 ? "var(--gold)" : "#24395e",
+              background: r.count > 0 ? "var(--gold)" : "var(--border)",
               borderRadius: "3px 3px 0 0",
             }}
           />
         ))}
       </div>
-      <p style={{ margin: "6px 0 0", fontSize: "12px", color: "#8fa0b8" }}>
+      <p style={{ margin: "6px 0 0", fontSize: "12px", color: "var(--text-muted)" }}>
         آخر 14 يوم — مرّر على أي عمود يقولك التاريخ والعدد
       </p>
     </section>
@@ -175,7 +175,7 @@ export default function AdminAnalytics() {
                 className="course"
                 style={{ display: "block", textAlign: "center" }}
               >
-                <p style={{ margin: 0, fontSize: "13px", color: "#8fa0b8" }}>
+                <p style={{ margin: 0, fontSize: "13px", color: "var(--text-muted)" }}>
                   {c.label}
                 </p>
                 <p
