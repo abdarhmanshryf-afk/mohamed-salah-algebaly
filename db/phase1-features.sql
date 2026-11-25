@@ -125,6 +125,46 @@ drop policy if exists members_delete_own on public.study_room_members;
 create policy members_delete_own on public.study_room_members
   for delete to authenticated using (auth.uid() = student_id);
 
+-- 5) دالة جدولة المراجعة بعد الامتحان (الأسئلة الغلط ترجع)
+create or replace function public.schedule_review(p_exam_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_answers jsonb;
+  v_q record;
+  v_ans text;
+begin
+  select answers into v_answers
+  from public.exam_attempts
+  where exam_id = p_exam_id and student_id = auth.uid()
+  order by created_at desc
+  limit 1;
+  if v_answers is null then
+    return;
+  end if;
+  for v_q in
+    select id, correct_answer from public.questions where exam_id = p_exam_id
+  loop
+    v_ans := v_answers ->> v_q.id::text;
+    if v_ans is null or v_ans <> v_q.correct_answer then
+      insert into public.review_schedule
+        (student_id, question_id, stage, due_at, last_result)
+      values (auth.uid(), v_q.id, 0, now() + interval '1 day', false)
+      on conflict (student_id, question_id) do update
+        set stage = 0,
+            due_at = now() + interval '1 day',
+            last_result = false,
+            updated_at = now();
+    end if;
+  end loop;
+end;
+$$;
+revoke all on function public.schedule_review(uuid) from public, anon;
+grant execute on function public.schedule_review(uuid) to authenticated;
+
 -- صلاحيات
 grant select, insert, delete on public.lesson_chapters to authenticated;
 grant update on public.lesson_chapters to authenticated;
@@ -133,7 +173,7 @@ grant select, insert on public.level_checks to authenticated;
 grant select, insert, update, delete on public.study_rooms to authenticated;
 grant select, insert, update, delete on public.study_room_members to authenticated;
 
--- تحقق: المفروض يطلع 6 صفوف
+-- تحقق: المفروض يطلع 7 صفوف
 select 'lesson_chapters' as check_item, count(*)::int as found
 from pg_tables where schemaname='public' and tablename='lesson_chapters'
 union all
@@ -151,4 +191,7 @@ from pg_tables where schemaname='public' and tablename='study_room_members'
 union all
 select 'questions.difficulty column', count(*)::int
 from information_schema.columns
-where table_schema='public' and table_name='questions' and column_name='difficulty';
+where table_schema='public' and table_name='questions' and column_name='difficulty'
+union all
+select 'function schedule_review', count(*)::int
+from pg_proc where proname = 'schedule_review';

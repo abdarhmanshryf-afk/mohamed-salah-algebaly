@@ -47,6 +47,7 @@ export default function MyProgress() {
   const [points, setPoints] = useState(0);
   const [badges, setBadges] = useState<{ icon: string; name: string; earned: boolean }[]>([]);
   const [notes, setNotes] = useState<NoteRow[]>([]);
+  const [dueReview, setDueReview] = useState(0);
   const [plan, setPlan] = useState<
     { lesson_title: string; course_title: string; course_id: string; mastery: number }[]
   >([]);
@@ -87,7 +88,7 @@ export default function MyProgress() {
       );
 
       // Points/badges/notes data. Notes need student-features-setup.sql.
-      const [attemptsRes, notesRes, allProgressRes] = await Promise.all([
+      const [attemptsRes, notesRes, allProgressRes, dueRes] = await Promise.all([
         supabase
           .from("exam_attempts")
           .select("exam_id, score")
@@ -100,7 +101,13 @@ export default function MyProgress() {
           .from("lesson_progress")
           .select("lesson_id, completed")
           .eq("student_id", user.id),
+        supabase
+          .from("review_schedule")
+          .select("id")
+          .eq("student_id", user.id)
+          .lte("due_at", new Date().toISOString()),
       ]);
+      if (!dueRes.error) setDueReview((dueRes.data || []).length);
       const totalDone = (allProgressRes.data || []).filter(
         (p: { completed: boolean }) => p.completed
       ).length;
@@ -282,6 +289,25 @@ export default function MyProgress() {
       <div className="subpage">
         <h1>تقدمي</h1>
         {loading && <p>جاري التحميل...</p>}
+        {!loading && dueReview > 0 && (
+          <p>
+            <a
+              href="/review"
+              style={{
+                display: "inline-block",
+                padding: "10px 18px",
+                borderRadius: "10px",
+                background: "#3a2f10",
+                border: "1px solid var(--gold)",
+                color: "var(--gold)",
+                fontWeight: "bold",
+                textDecoration: "none",
+              }}
+            >
+              🔁 عندك {dueReview} سؤال مستحق المراجعة — ابدأ المراجعة
+            </a>
+          </p>
+        )}
         {!loading && rows.length === 0 && (
           <p>
             لسه ما عندكش اشتراك شغال.{" "}

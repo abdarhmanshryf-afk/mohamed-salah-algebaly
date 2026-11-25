@@ -104,6 +104,11 @@ export default function ExamPage() {
     }
 
     setResult(data as Result);
+    // Spaced repetition: schedule wrong questions for review.
+    // Needs phase1-features.sql; ignore errors so exam flow never breaks.
+    supabase
+      .rpc("schedule_review", { p_exam_id: examId })
+      .then(() => {});
     setSubmitting(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
