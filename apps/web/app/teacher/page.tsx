@@ -101,6 +101,18 @@ export default function TeacherHome() {
           <h3>الدرجات</h3>
           <p>نتائج الطلاب في الاختبارات ومين لسه ما حلش.</p>
         </a>
+        <a className="card" href="/teacher/announcements">
+          <h3>الإعلانات</h3>
+          <p>اكتب إعلان يظهر لكل الطلاب على المنصة.</p>
+        </a>
+        <a className="card" href="/teacher/assignments">
+          <h3>الواجبات</h3>
+          <p>أضف واجب على درس وصحح حلول الطلاب.</p>
+        </a>
+        <a className="card" href="/teacher/live">
+          <h3>البث المباشر</h3>
+          <p>ابدأ حصة لايف لطلاب كورس من جوه المنصة.</p>
+        </a>
         <a className="card" href="/teacher/students">
           <h3>إدارة الطلاب</h3>
           <p>عرض الطلاب واشتراكاتهم في الكورسات.</p>

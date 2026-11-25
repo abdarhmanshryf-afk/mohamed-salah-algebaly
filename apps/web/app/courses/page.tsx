@@ -26,6 +26,9 @@ export default function Courses() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [announcements, setAnnouncements] = useState<
+    { id: string; body: string }[]
+  >([]);
 
   const client = () =>
     createBrowserClient(
@@ -81,6 +84,14 @@ export default function Courses() {
         setCourses(data || []);
       }
 
+      const { data: annData } = await supabase
+        .from("announcements")
+        .select("id, body")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(3);
+      setAnnouncements(annData || []);
+
       if (profile?.role !== "teacher") {
         await loadEnrollments(supabase, user.id);
       }
@@ -131,6 +142,25 @@ export default function Courses() {
 
       <h1>مرحبًا بك يا {studentName} ❤️</h1>
       <p>أهلًا بك في منصة متقن.</p>
+
+      {announcements.length > 0 && (
+        <section
+          style={{
+            background: "#fff4d9",
+            border: "1px solid var(--gold)",
+            borderRadius: "12px",
+            padding: "14px 16px",
+            marginTop: "8px",
+          }}
+        >
+          <strong style={{ color: "var(--navy)" }}>📢 إعلانات الأستاذ</strong>
+          {announcements.map((a) => (
+            <p key={a.id} style={{ margin: "8px 0 0", whiteSpace: "pre-wrap" }}>
+              {a.body}
+            </p>
+          ))}
+        </section>
+      )}
 
       <h2>كورسات اللغة العربية</h2>
 

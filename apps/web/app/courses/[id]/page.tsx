@@ -32,6 +32,29 @@ type Progress = {
   completed: boolean;
 };
 
+type LiveSession = { id: string; title: string; youtube_id: string };
+
+type LeaderRow = {
+  rank: number;
+  student_name: string;
+  avg_score: number;
+  exams_taken: number;
+};
+
+type Assignment = {
+  id: string;
+  lesson_id: string;
+  title: string;
+  description: string | null;
+};
+
+type Submission = {
+  assignment_id: string;
+  score: number | null;
+  feedback: string | null;
+  file_path: string;
+};
+
 export default function CourseDetails() {
   const params = useParams();
   const courseId = params.id as string;
@@ -52,6 +75,13 @@ export default function CourseDetails() {
   const [exams, setExams] = useState<Exam[]>([]);
   const [bestScores, setBestScores] = useState<Record<string, number>>({});
   const [progress, setProgress] = useState<Record<string, Progress>>({});
+  const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderRow[]>([]);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [submissions, setSubmissions] = useState<Record<string, Submission>>(
+    {}
+  );
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
   const lastSaveRef = useRef<Record<string, number>>({});
 
   const client = () =>
@@ -158,6 +188,42 @@ export default function CourseDetails() {
           };
         });
         setProgress(map);
+      }
+
+      const { data: liveData } = await supabase
+        .from("live_sessions")
+        .select("id, title, youtube_id")
+        .eq("course_id", courseId)
+        .eq("is_live", true);
+      setLiveSessions((liveData as LiveSession[]) || []);
+
+      const { data: lbData } = await supabase.rpc("course_leaderboard", {
+        p_course_id: courseId,
+      });
+      setLeaderboard((lbData as LeaderRow[]) || []);
+
+      if (list.length > 0) {
+        const { data: asgData } = await supabase
+          .from("assignments")
+          .select("id, lesson_id, title, description")
+          .in(
+            "lesson_id",
+            list.map((l) => l.id)
+          );
+        const asgList = (asgData as Assignment[]) || [];
+        setAssignments(asgList);
+
+        if (!teacher && asgList.length > 0) {
+          const { data: subData } = await supabase
+            .from("assignment_submissions")
+            .select("assignment_id, score, feedback, file_path")
+            .eq("student_id", user.id);
+          const subMap: Record<string, Submission> = {};
+          ((subData as Submission[]) || []).forEach((s) => {
+            subMap[s.assignment_id] = s;
+          });
+          setSubmissions(subMap);
+        }
       }
 
       setLoading(false);
@@ -269,6 +335,46 @@ export default function CourseDetails() {
     setOpenVideo({ id: lesson.id, url: full });
   }
 
+  async function submitAssignment(assignmentId: string, file: File) {
+    if (isTeacher || !studentId) return;
+    setUploadingId(assignmentId);
+    setMessage("");
+    const supabase = client();
+    const path = `${studentId}/${assignmentId}-${file.name}`;
+    const { error: uploadError } = await supabase.storage
+      .from("submissions")
+      .upload(path, file, { upsert: true });
+    if (uploadError) {
+      setMessage("الملف ما اترفعش، جرب تاني.");
+      setUploadingId(null);
+      return;
+    }
+    const { error } = await supabase.from("assignment_submissions").upsert(
+      {
+        assignment_id: assignmentId,
+        student_id: studentId,
+        file_path: path,
+        submitted_at: new Date().toISOString(),
+      },
+      { onConflict: "assignment_id,student_id" }
+    );
+    if (error) {
+      setMessage("التسليم ما اتسجلش: " + error.message);
+    } else {
+      setMessage("تم تسليم الواجب ✅ الأستاذ هيصححه قريبًا.");
+      setSubmissions((prev) => ({
+        ...prev,
+        [assignmentId]: {
+          assignment_id: assignmentId,
+          score: prev[assignmentId]?.score ?? null,
+          feedback: prev[assignmentId]?.feedback ?? null,
+          file_path: path,
+        },
+      }));
+    }
+    setUploadingId(null);
+  }
+
   async function requestSubscription() {
     setBusy(true);
     setMessage("");
@@ -310,6 +416,48 @@ export default function CourseDetails() {
       <p>{course.description}</p>
 
       {message && <p role="alert">{message}</p>}
+
+      {canView &&
+        liveSessions.map((s) => (
+          <section
+            key={s.id}
+            style={{
+              border: "2px solid #b00020",
+              borderRadius: "12px",
+              padding: "16px",
+              marginTop: "16px",
+              background: "white",
+            }}
+          >
+            <h3 style={{ margin: "0 0 10px", color: "#b00020" }}>
+              🔴 بث مباشر الآن: {s.title}
+            </h3>
+            <div
+              style={{
+                position: "relative",
+                paddingBottom: "56.25%",
+                height: 0,
+                borderRadius: "10px",
+                overflow: "hidden",
+              }}
+            >
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${s.youtube_id}`}
+                title={s.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  border: 0,
+                }}
+              />
+            </div>
+          </section>
+        ))}
 
       {!isTeacher && canView && lessons.length > 0 && (
         <div
@@ -532,6 +680,83 @@ export default function CourseDetails() {
                 />
               )}
 
+              {assignments
+                .filter((a) => a.lesson_id === lesson.id)
+                .map((a) => {
+                  const sub = submissions[a.id];
+                  return (
+                    <div
+                      key={a.id}
+                      style={{
+                        marginTop: "12px",
+                        border: "1px dashed var(--gold)",
+                        borderRadius: "10px",
+                        padding: "12px",
+                        background: "#fffdf5",
+                      }}
+                    >
+                      <strong style={{ color: "var(--navy)" }}>
+                        📝 الواجب: {a.title}
+                      </strong>
+                      {a.description && (
+                        <p style={{ margin: "4px 0" }}>{a.description}</p>
+                      )}
+                      {!isTeacher && (
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "10px",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                            marginTop: "6px",
+                          }}
+                        >
+                          <label
+                            style={{
+                              padding: "8px 16px",
+                              borderRadius: "8px",
+                              background: "var(--navy)",
+                              color: "white",
+                              fontWeight: "bold",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {uploadingId === a.id
+                              ? "جاري الرفع..."
+                              : sub
+                                ? "📤 أعد رفع الحل"
+                                : "📤 ارفع حلك"}
+                            <input
+                              type="file"
+                              style={{ display: "none" }}
+                              disabled={uploadingId === a.id}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) submitAssignment(a.id, f);
+                                e.target.value = "";
+                              }}
+                            />
+                          </label>
+                          {sub && sub.score === null && (
+                            <span style={{ color: "var(--muted)" }}>
+                              تم التسليم ⏳ بانتظار التصحيح
+                            </span>
+                          )}
+                          {sub && sub.score !== null && (
+                            <span>
+                              درجتك:{" "}
+                              <strong style={{ color: "#2e9e5b" }}>
+                                {sub.score}/100
+                              </strong>
+                              {sub.feedback && ` — ${sub.feedback}`}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
               {openComments === lesson.id && (
                 <LessonComments
                   lessonId={lesson.id}
@@ -542,6 +767,56 @@ export default function CourseDetails() {
             </section>
           );
         })}
+
+      {canView && leaderboard.length > 0 && (
+        <>
+          <h2 style={{ color: "var(--navy)", marginTop: "30px" }}>
+            🏆 لوحة المتفوقين
+          </h2>
+          <section
+            style={{
+              border: "1px solid #e0e4ea",
+              borderRadius: "12px",
+              padding: "8px 16px",
+              marginTop: "16px",
+              background: "white",
+            }}
+          >
+            {leaderboard.map((row) => (
+              <div
+                key={row.rank}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "10px 0",
+                  borderTop: row.rank > 1 ? "1px solid #eef1f5" : 0,
+                }}
+              >
+                <span>
+                  {row.rank === 1
+                    ? "🥇"
+                    : row.rank === 2
+                      ? "🥈"
+                      : row.rank === 3
+                        ? "🥉"
+                        : `${row.rank}.`}{" "}
+                  {row.student_name}
+                </span>
+                <span>
+                  <strong style={{ color: "var(--navy)" }}>
+                    {row.avg_score}%
+                  </strong>{" "}
+                  <span style={{ color: "var(--muted)", fontSize: "13px" }}>
+                    ({row.exams_taken}{" "}
+                    {row.exams_taken === 1 ? "اختبار" : "اختبارات"})
+                  </span>
+                </span>
+              </div>
+            ))}
+          </section>
+        </>
+      )}
 
       {canView && exams.length > 0 && (
         <>
