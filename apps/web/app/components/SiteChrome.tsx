@@ -46,6 +46,7 @@ const items = [
 
 const hiddenPrefixes = [
   "/teacher",
+  "/admin",
   "/login",
   "/register",
   "/forgot-password",

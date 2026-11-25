@@ -13,6 +13,7 @@ type Stats = {
 export default function TeacherHome() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [message, setMessage] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     async function loadStats() {
@@ -20,6 +21,22 @@ export default function TeacherHome() {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       );
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        if (user.id === "1297f9ef-89c8-45d9-82a4-01d5f48206fc") {
+          setIsAdmin(true);
+        } else {
+          const { data: prof } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", user.id)
+            .single();
+          if (prof?.role === "admin") setIsAdmin(true);
+        }
+      }
 
       const [students, courses, pending, active] = await Promise.all([
         supabase
@@ -85,6 +102,12 @@ export default function TeacherHome() {
       )}
 
       <div className="cards" style={{ marginTop: "30px" }}>
+        {isAdmin && (
+          <a className="card" href="/admin">
+            <h3>لوحة الإدارة 👑</h3>
+            <p>إدارة المستخدمين والكورسات والاشتراكات والإحصائيات.</p>
+          </a>
+        )}
         <a className="card" href="/teacher/requests">
           <h3>طلبات الاشتراك</h3>
           <p>قبول أو رفض طلبات الطلاب وتحديد مدة الاشتراك.</p>

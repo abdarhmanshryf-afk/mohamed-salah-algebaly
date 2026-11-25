@@ -36,7 +36,7 @@ export default async function TeacherLayout({
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "teacher") {
+  if (profile?.role !== "teacher" && profile?.role !== "admin") {
     redirect("/courses");
   }
 

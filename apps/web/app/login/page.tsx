@@ -39,18 +39,38 @@ export default function Login() {
 
     // The selector is only a signpost: the role always comes from the
     // database, never from what the user picked here.
-    const { data: profile } = await supabase
+    // banned_at is added by the admin setup SQL; fall back pre-setup.
+    let profile: { role: string; banned_at?: string | null } | null = null;
+    const withBan = await supabase
       .from("profiles")
-      .select("role")
+      .select("role, banned_at")
       .eq("id", data.user.id)
       .single();
+    if (withBan.error) {
+      const basic = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
+      profile = basic.data;
+    } else {
+      profile = withBan.data;
+    }
 
-    if (accountType === "teacher" && profile?.role === "teacher") {
+    if (profile?.banned_at) {
+      await supabase.auth.signOut();
+      setMessage("حسابك موقوف مؤقتًا. تواصل مع الدعم لو عندك استفسار.");
+      setLoading(false);
+      return;
+    }
+
+    const isStaff = profile?.role === "teacher" || profile?.role === "admin";
+    if (accountType === "teacher" && isStaff) {
       window.location.href = "/teacher";
       return;
     }
 
-    if (accountType === "teacher" && profile?.role !== "teacher") {
+    if (accountType === "teacher" && !isStaff) {
       setMessage("هذا الحساب حساب طالب، جارِ تحويلك لصفحة الكورسات.");
     }
 

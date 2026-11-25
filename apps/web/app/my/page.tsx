@@ -7,6 +7,7 @@ type Row = {
   course_id: string;
   status: string;
   title: string;
+  review_note: string | null;
 };
 
 export default function MyLessons() {
@@ -39,12 +40,21 @@ export default function MyLessons() {
         return;
       }
 
-      const { data: enrollments } = await supabase
+      // review_note is added by the admin setup SQL; fall back pre-setup.
+      let list: { course_id: string; status: string; review_note?: string | null }[];
+      const withNote = await supabase
         .from("enrollments")
-        .select("course_id, status")
+        .select("course_id, status, review_note")
         .eq("student_id", user.id);
-
-      const list = enrollments || [];
+      if (withNote.error) {
+        const basic = await supabase
+          .from("enrollments")
+          .select("course_id, status")
+          .eq("student_id", user.id);
+        list = basic.data || [];
+      } else {
+        list = withNote.data || [];
+      }
       if (list.length === 0) {
         setLoading(false);
         return;
@@ -64,10 +74,11 @@ export default function MyLessons() {
       });
 
       setRows(
-        list.map((e: { course_id: string; status: string }) => ({
+        list.map((e) => ({
           course_id: e.course_id,
           status: e.status,
           title: titles[e.course_id] || "كورس",
+          review_note: e.review_note || null,
         }))
       );
       setLoading(false);
@@ -99,16 +110,24 @@ export default function MyLessons() {
             <div>
               <h3 style={{ margin: 0, color: "var(--gold)" }}>{r.title}</h3>
               <p style={{ margin: "6px 0 0" }}>
-                {r.status === "active" ? "اشتراكك شغال ✅" : "طلبك قيد المراجعة ⏳"}
+                {r.status === "active" && "اشتراكك شغال ✅"}
+                {r.status === "pending" && "طلبك قيد المراجعة ⏳"}
+                {r.status === "cancelled" && "طلبك اترفض ❌"}
+                {r.status === "expired" && "اشتراكك انتهى — جدد من صفحة الكورس"}
               </p>
+              {r.status === "cancelled" && r.review_note && (
+                <p style={{ margin: "4px 0 0", fontSize: "14px", color: "#ffb4b4" }}>
+                  السبب: {r.review_note}
+                </p>
+              )}
             </div>
-            {r.status === "active" && (
+            {(r.status === "active" || r.status === "cancelled" || r.status === "expired") && (
               <a
                 href={`/courses/${r.course_id}`}
                 className="cta"
                 style={{ marginTop: 0, padding: "10px 24px", fontSize: 15 }}
               >
-                ادخل الكورس
+                {r.status === "active" ? "ادخل الكورس" : "صفحة الكورس"}
               </a>
             )}
           </section>

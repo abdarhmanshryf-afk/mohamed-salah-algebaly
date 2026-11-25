@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import LessonComments from "../../components/LessonComments";
+import { PAYMENT_RECEIVER_NUMBER } from "../../config";
 
 type Course = {
   id: string;
@@ -64,6 +65,11 @@ export default function CourseDetails() {
   const [canView, setCanView] = useState(false);
   const [isTeacher, setIsTeacher] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [reviewNote, setReviewNote] = useState("");
+  const [showPayModal, setShowPayModal] = useState(false);
+  const [payRef, setPayRef] = useState("");
+  const [payFile, setPayFile] = useState<File | null>(null);
+  const [payMessage, setPayMessage] = useState("");
   const [studentId, setStudentId] = useState("");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -162,15 +168,34 @@ export default function CourseDetails() {
       }
 
       if (!teacher) {
-        const { data: enrollment } = await supabase
+        // review_note is added by the admin setup SQL; fall back pre-setup.
+        let enrollment: { status: string; review_note?: string | null }[] | null;
+        const withNote = await supabase
           .from("enrollments")
-          .select("status")
+          .select("status, review_note, created_at")
           .eq("student_id", user.id)
-          .eq("course_id", courseId);
+          .eq("course_id", courseId)
+          .order("created_at", { ascending: false });
+        if (withNote.error) {
+          const basic = await supabase
+            .from("enrollments")
+            .select("status")
+            .eq("student_id", user.id)
+            .eq("course_id", courseId);
+          enrollment = basic.data;
+        } else {
+          enrollment = withNote.data;
+        }
         if (enrollment && enrollment.length > 0) {
-          setStatus(
-            enrollment.some((e) => e.status === "active") ? "active" : "pending"
-          );
+          if (enrollment.some((e) => e.status === "active")) {
+            setStatus("active");
+          } else if (enrollment.some((e) => e.status === "pending")) {
+            setStatus("pending");
+          } else {
+            setStatus("cancelled");
+            const note = enrollment.find((e) => e.review_note)?.review_note;
+            if (note) setReviewNote(note);
+          }
         }
 
         const { data: progressData } = await supabase
@@ -375,17 +400,57 @@ export default function CourseDetails() {
     setUploadingId(null);
   }
 
-  async function requestSubscription() {
+  function openSubscribe() {
+    if (course && course.price > 0) {
+      setPayRef("");
+      setPayFile(null);
+      setPayMessage("");
+      setShowPayModal(true);
+    } else {
+      submitSubscription(null, null);
+    }
+  }
+
+  async function submitSubscription(ref: string | null, file: File | null) {
     setBusy(true);
     setMessage("");
+    setPayMessage("");
     const supabase = client();
-    const { error } = await supabase
-      .from("enrollments")
-      .insert({ student_id: studentId, course_id: courseId });
+
+    let proofPath: string | null = null;
+    if (file) {
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const path = `${studentId}/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("payment-proofs")
+        .upload(path, file, { contentType: file.type || undefined });
+      // Bucket created by the setup SQL; if missing, continue without the file.
+      if (!upErr) proofPath = path;
+    }
+
+    const fullRow = {
+      student_id: studentId,
+      course_id: courseId,
+      payment_reference: ref && ref.trim() ? ref.trim() : null,
+      payment_proof_path: proofPath,
+    };
+    let { error } = await supabase.from("enrollments").insert(fullRow);
+    if (error && /payment_|proof/i.test(error.message)) {
+      // Columns not added yet (setup SQL pending) — plain request instead.
+      const fallback = await supabase
+        .from("enrollments")
+        .insert({ student_id: studentId, course_id: courseId });
+      error = fallback.error;
+    }
     if (error) {
-      setMessage("خطأ إرسال الطلب: " + error.message);
+      const msg = "خطأ إرسال الطلب: " + error.message;
+      if (course && course.price > 0) setPayMessage(msg);
+      else setMessage(msg);
     } else {
-      setMessage("تم إرسال طلب الاشتراك، الأستاذ هيراجعه قريبًا إن شاء الله.");
+      setShowPayModal(false);
+      setMessage(
+        "تم إرسال طلب الاشتراك مع بيانات الدفع ✅ الأستاذ هيراجعه قريبًا إن شاء الله."
+      );
       setStatus("pending");
     }
     setBusy(false);
@@ -507,18 +572,129 @@ export default function CourseDetails() {
             <p>أنت مشترك في هذا الكورس ✅ الدروس هتظهر هنا أول ما تتنشر.</p>
           )}
           {status === "pending" && <p>طلبك قيد المراجعة ⏳</p>}
-          {!status && (
+          {status === "cancelled" && (
             <>
-              <p>محتوى الكورس متاح للمشتركين فقط.</p>
-              <button onClick={requestSubscription} disabled={busy}>
-                {busy
-                  ? "جاري إرسال الطلب..."
-                  : course.price > 0
-                    ? `اشترك الآن - ${course.price} جنيه`
-                    : "اشترك مجانًا"}
+              <p>طلب الاشتراك السابق اترفض ❌</p>
+              {reviewNote && <p>السبب: {reviewNote}</p>}
+              <button onClick={openSubscribe} disabled={busy}>
+                أعد طلب الاشتراك
               </button>
             </>
           )}
+          {!status && (
+            <>
+              <p>محتوى الكورس متاح للمشتركين فقط.</p>
+              <button onClick={openSubscribe} disabled={busy}>
+                {course.price > 0
+                  ? `اشترك الآن - ${course.price} جنيه`
+                  : "اشترك مجانًا"}
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {showPayModal && course && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(4,10,22,0.75)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+            zIndex: 50,
+          }}
+        >
+          <div
+            className="card"
+            style={{
+              maxWidth: "440px",
+              width: "100%",
+              maxHeight: "90vh",
+              overflowY: "auto",
+            }}
+          >
+            <h3 style={{ marginTop: 0 }}>الدفع والاشتراك 💳</h3>
+            <p style={{ fontSize: "15px" }}>
+              حوّل{" "}
+              <strong style={{ color: "var(--gold)" }}>
+                {course.price} جنيه
+              </strong>{" "}
+              على الرقم ده عن طريق <strong>فودافون كاش</strong> أو{" "}
+              <strong>انستاباي</strong>:
+            </p>
+            <p
+              dir="ltr"
+              style={{
+                textAlign: "center",
+                fontSize: "24px",
+                fontWeight: "bold",
+                color: "var(--gold)",
+                letterSpacing: "1px",
+                margin: "10px 0",
+              }}
+            >
+              {PAYMENT_RECEIVER_NUMBER}
+            </p>
+            <p style={{ fontSize: "14px" }}>
+              بعد التحويل اكتب رقم العملية (المرجع) أو ارفع صورة الإيصال،
+              وهنفعّل اشتراكك بعد المراجعة.
+            </p>
+            <label style={{ display: "block", marginTop: "12px" }}>
+              رقم العملية / المرجع
+              <input
+                type="text"
+                value={payRef}
+                onChange={(e) => setPayRef(e.target.value)}
+                placeholder="مثال: 123456789"
+                style={{ width: "100%", marginTop: "6px" }}
+              />
+            </label>
+            <label style={{ display: "block", marginTop: "12px" }}>
+              صورة الإيصال (اختياري)
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setPayFile(e.target.files?.[0] || null)}
+                style={{ width: "100%", marginTop: "6px" }}
+              />
+            </label>
+            {payMessage && (
+              <p role="alert" style={{ color: "#ffb4b4" }}>
+                {payMessage}
+              </p>
+            )}
+            <div style={{ display: "flex", gap: "10px", marginTop: "18px" }}>
+              <button
+                style={{ flex: 1 }}
+                disabled={busy}
+                onClick={() => {
+                  if (!payRef.trim() && !payFile) {
+                    setPayMessage("اكتب رقم العملية أو ارفع صورة الإيصال الأول.");
+                    return;
+                  }
+                  submitSubscription(payRef, payFile);
+                }}
+              >
+                {busy ? "جاري الإرسال..." : "تأكيد الطلب"}
+              </button>
+              <button
+                disabled={busy}
+                onClick={() => setShowPayModal(false)}
+                style={{
+                  background: "transparent",
+                  border: "1px solid #24395e",
+                  color: "#c5cfdd",
+                }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
