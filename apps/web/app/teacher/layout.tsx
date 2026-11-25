@@ -1,55 +1,43 @@
-"use client";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { createServerClient } from "@supabase/ssr";
 
-import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
-
-export default function TeacherLayout({
+export default async function TeacherLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [allowed, setAllowed] = useState(false);
-  const [checking, setChecking] = useState(true);
+  const cookieStore = await cookies();
 
-  useEffect(() => {
-    async function checkTeacher() {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
-
-      if (authError || !user) {
-        window.location.href = "/login";
-        return;
-      }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      if (profile?.role !== "teacher") {
-        window.location.href = "/courses";
-        return;
-      }
-
-      setAllowed(true);
-      setChecking(false);
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll() {
+          // Layouts cannot set cookies; session refresh happens in middleware/pages.
+        },
+      },
     }
+  );
 
-    checkTeacher();
-  }, []);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (checking) {
-    return <main className="subpage">جاري التحقق من الصلاحيات...</main>;
+  if (!user) {
+    redirect("/login");
   }
 
-  if (!allowed) {
-    return null;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role !== "teacher") {
+    redirect("/courses");
   }
 
   return <>{children}</>;

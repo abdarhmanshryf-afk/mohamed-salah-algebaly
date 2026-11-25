@@ -1,8 +1,8 @@
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 type Course = {
   id: string;
@@ -12,18 +12,40 @@ type Course = {
   duration_days: number | null;
 };
 
+type Enrollment = {
+  course_id: string;
+  status: string;
+};
+
 export default function Courses() {
   const [studentName, setStudentName] = useState("");
+  const [studentId, setStudentId] = useState("");
   const [courses, setCourses] = useState<Course[]>([]);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const client = () =>
+    createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+  const loadEnrollments = useCallback(
+    async (supabase: SupabaseClient, uid: string) => {
+      const { data } = await supabase
+        .from("enrollments")
+        .select("course_id, status")
+        .eq("student_id", uid);
+      setEnrollments((data as Enrollment[]) || []);
+    },
+    []
+  );
 
   useEffect(() => {
     async function loadData() {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      const supabase = client();
 
       const { data: { user }, error: authError } =
         await supabase.auth.getUser();
@@ -32,6 +54,8 @@ export default function Courses() {
         window.location.href = "/login";
         return;
       }
+
+      setStudentId(user.id);
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -52,11 +76,38 @@ export default function Courses() {
         setCourses(data || []);
       }
 
+      await loadEnrollments(supabase, user.id);
       setLoading(false);
     }
 
     loadData();
-  }, []);
+  }, [loadEnrollments]);
+
+  function statusFor(courseId: string): string | null {
+    const mine = enrollments.filter((e) => e.course_id === courseId);
+    if (mine.some((e) => e.status === "active")) return "active";
+    if (mine.some((e) => e.status === "pending")) return "pending";
+    return null;
+  }
+
+  async function requestSubscription(courseId: string) {
+    setBusyId(courseId);
+    setMessage("");
+
+    const supabase = client();
+    const { error } = await supabase
+      .from("enrollments")
+      .insert({ student_id: studentId, course_id: courseId });
+
+    if (error) {
+      setMessage("خطأ إرسال الطلب: " + error.message);
+    } else {
+      setMessage("تم إرسال طلب الاشتراك، الأستاذ هيراجعه قريبًا إن شاء الله.");
+      await loadEnrollments(supabase, studentId);
+    }
+
+    setBusyId(null);
+  }
 
   if (loading) {
     return <main className="subpage">جاري تحميل بياناتك...</main>;
@@ -77,22 +128,36 @@ export default function Courses() {
         <p>لا توجد كورسات منشورة حاليًا.</p>
       )}
 
-      {courses.map((course) => (
-        <section
-          key={course.id}
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: "12px",
-            padding: "16px",
-            marginTop: "16px",
-          }}
-        >
-          <h3>{course.title}</h3>
-          <p>{course.description}</p>
-          <p>السعر: {course.price} جنيه</p>
-          <p>مدة الكورس: {course.duration_days ?? "غير محددة"} يوم</p>
-        </section>
-      ))}
+      {courses.map((course) => {
+        const status = statusFor(course.id);
+        return (
+          <section
+            key={course.id}
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: "12px",
+              padding: "16px",
+              marginTop: "16px",
+            }}
+          >
+            <h3>{course.title}</h3>
+            <p>{course.description}</p>
+            <p>السعر: {course.price} جنيه</p>
+            <p>مدة الكورس: {course.duration_days ?? "غير محددة"} يوم</p>
+
+            {status === "active" && <p>أنت مشترك في هذا الكورس ✅</p>}
+            {status === "pending" && <p>طلبك قيد المراجعة ⏳</p>}
+            {!status && (
+              <button
+                onClick={() => requestSubscription(course.id)}
+                disabled={busyId === course.id}
+              >
+                {busyId === course.id ? "جاري إرسال الطلب..." : "اشترك الآن"}
+              </button>
+            )}
+          </section>
+        );
+      })}
     </main>
   );
 }
