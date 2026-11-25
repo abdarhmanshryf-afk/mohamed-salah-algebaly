@@ -126,7 +126,7 @@ export default function LessonComments({
           <div
             key={c.id}
             style={{
-              background: teacherBadge ? "#3a2f14" : "var(--bg-2)",
+              background: teacherBadge ? "var(--warning-bg)" : "var(--bg-2)",
               borderRadius: "10px",
               padding: "10px 14px",
               marginTop: "8px",
@@ -168,7 +168,7 @@ export default function LessonComments({
                     style={{
                       border: 0,
                       background: "none",
-                      color: "#ff6b61",
+                      color: "var(--error)",
                       cursor: "pointer",
                       fontSize: "12px",
                       marginInlineStart: "8px",

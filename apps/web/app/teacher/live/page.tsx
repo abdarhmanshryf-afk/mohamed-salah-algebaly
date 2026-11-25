@@ -161,7 +161,7 @@ export default function TeacherLive() {
             padding: "10px 24px",
             border: 0,
             borderRadius: "10px",
-            background: "#b00020",
+            background: "var(--error)",
             color: "white",
             fontWeight: "bold",
             cursor: "pointer",
@@ -215,10 +215,10 @@ export default function TeacherLive() {
                 onClick={() => remove(s.id)}
                 style={{
                   padding: "6px 14px",
-                  border: "1px solid #ff6b61",
+                  border: "1px solid var(--error)",
                   borderRadius: "8px",
                   background: "var(--surface)",
-                  color: "#ff6b61",
+                  color: "var(--error)",
                   cursor: "pointer",
                 }}
               >

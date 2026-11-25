@@ -225,7 +225,7 @@ export default function TeacherCourses() {
         >
           <h3>
             {course.title}{" "}
-            <span style={{ color: course.is_published ? "#2e9e5b" : "var(--gold)" }}>
+            <span style={{ color: course.is_published ? "var(--success)" : "var(--gold)" }}>
               {course.is_published ? "(منشور)" : "(مسودة)"}
             </span>
           </h3>
@@ -251,8 +251,8 @@ export default function TeacherCourses() {
               onClick={() => deleteCourse(course)}
               style={{
                 background: "var(--surface)",
-                color: "#ff6b61",
-                border: "1px solid #ff6b61",
+                color: "var(--error)",
+                border: "1px solid var(--error)",
                 borderRadius: "8px",
               }}
             >

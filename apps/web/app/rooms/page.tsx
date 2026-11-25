@@ -149,7 +149,7 @@ export default function RoomsPage() {
                     borderRadius: "8px",
                     border: "1px solid var(--border)",
                     background: "var(--bg)",
-                    color: "#e8ecf4",
+                    color: "var(--text)",
                   }}
                 />
                 <button

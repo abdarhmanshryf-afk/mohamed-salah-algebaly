@@ -74,7 +74,7 @@ export default function NotificationBell() {
             position: "absolute",
             top: "-4px",
             right: "-4px",
-            background: "#e0342b",
+            background: "var(--accent-red)",
             color: "white",
             borderRadius: "10px",
             minWidth: "18px",

@@ -238,7 +238,7 @@ export default function AdminUsers() {
                     fontSize: "12px",
                     padding: "3px 10px",
                     borderRadius: "12px",
-                    background: "#5a1f1f",
+                    background: "var(--error-bg)",
                     color: "var(--error)",
                   }}
                 >
@@ -249,7 +249,7 @@ export default function AdminUsers() {
             <p style={{ margin: "8px 0 0", fontSize: "14px" }}>
               {u.phone || "بدون هاتف"} · اشتراكات نشطة: {enrollCounts[u.id] || 0}
             </p>
-            <p style={{ margin: "4px 0 0", fontSize: "13px", color: "#687386" }}>
+            <p style={{ margin: "4px 0 0", fontSize: "13px", color: "var(--text-muted)" }}>
               سجل يوم {new Date(u.created_at).toLocaleDateString("ar-EG")}
             </p>
           </div>

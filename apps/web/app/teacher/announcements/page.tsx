@@ -161,9 +161,9 @@ export default function TeacherAnnouncements() {
             <button
               onClick={() => remove(a.id)}
               style={{
-                border: "1px solid #ff6b61",
+                border: "1px solid var(--error)",
                 background: "var(--surface)",
-                color: "#ff6b61",
+                color: "var(--error)",
                 borderRadius: "8px",
                 padding: "4px 12px",
                 cursor: "pointer",

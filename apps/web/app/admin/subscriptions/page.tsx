@@ -215,7 +215,7 @@ export default function AdminSubscriptions() {
                 {r.courses?.price ? `${r.courses.price} جنيه` : "مجاني"}
                 {r.profiles?.phone ? ` · ${r.profiles.phone}` : ""}
               </p>
-              <p style={{ margin: "4px 0 0", fontSize: "13px", color: "#687386" }}>
+              <p style={{ margin: "4px 0 0", fontSize: "13px", color: "var(--text-muted)" }}>
                 طلب يوم {new Date(r.created_at).toLocaleDateString("ar-EG")}
                 {r.expires_at
                   ? ` · ينتهي ${new Date(r.expires_at).toLocaleDateString("ar-EG")}`

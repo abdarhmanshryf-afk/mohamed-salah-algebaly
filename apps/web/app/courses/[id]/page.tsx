@@ -816,14 +816,14 @@ export default function CourseDetails() {
           <section
             key={s.id}
             style={{
-              border: "2px solid #ff6b61",
+              border: "2px solid var(--error)",
               borderRadius: "12px",
               padding: "16px",
               marginTop: "16px",
               background: "var(--surface)",
             }}
           >
-            <h3 style={{ margin: "0 0 10px", color: "#ff6b61" }}>
+            <h3 style={{ margin: "0 0 10px", color: "var(--error)" }}>
               🔴 بث مباشر الآن: {s.title}
             </h3>
             <div
@@ -885,7 +885,7 @@ export default function CourseDetails() {
           >
             <div
               style={{
-                background: coursePercent === 100 ? "#2e9e5b" : "var(--gold)",
+                background: coursePercent === 100 ? "var(--success)" : "var(--gold)",
                 height: "100%",
                 width: `${coursePercent}%`,
                 transition: "width 0.4s",
@@ -972,7 +972,7 @@ export default function CourseDetails() {
               borderRadius: "8px",
               border: "1px solid var(--border)",
               background: "var(--bg)",
-              color: "#e8ecf4",
+              color: "var(--text)",
               boxSizing: "border-box",
             }}
           />
@@ -993,7 +993,7 @@ export default function CourseDetails() {
             {ratingSaved ? "حدّث تقييمك" : "احفظ التقييم"}
           </button>
           {ratingSaved && (
-            <span style={{ color: "#2e9e5b", marginInlineStart: "10px" }}>
+            <span style={{ color: "var(--success)", marginInlineStart: "10px" }}>
               ✓ تقييمك محفوظ
             </span>
           )}
@@ -1160,7 +1160,7 @@ export default function CourseDetails() {
               <h3 style={{ margin: "0 0 8px", color: "var(--gold)" }}>
                 الدرس {lesson.sort_order}: {lesson.title}
                 {!isTeacher && p?.completed && (
-                  <span style={{ color: "#2e9e5b", marginInlineStart: "8px" }}>
+                  <span style={{ color: "var(--success)", marginInlineStart: "8px" }}>
                     ✓ خلصته
                   </span>
                 )}
@@ -1180,7 +1180,7 @@ export default function CourseDetails() {
                 >
                   <div
                     style={{
-                      background: p.completed ? "#2e9e5b" : "var(--gold)",
+                      background: p.completed ? "var(--success)" : "var(--gold)",
                       height: "100%",
                       width: `${p.completed ? 100 : pct}%`,
                     }}
@@ -1292,7 +1292,7 @@ export default function CourseDetails() {
                       borderRadius: "8px",
                       border: "1px solid var(--border)",
                       background: "var(--bg)",
-                      color: "#e8ecf4",
+                      color: "var(--text)",
                       boxSizing: "border-box",
                     }}
                   />
@@ -1438,7 +1438,7 @@ export default function CourseDetails() {
                               style={{
                                 border: "none",
                                 background: "transparent",
-                                color: "#c0392b",
+                                color: "var(--error)",
                                 cursor: "pointer",
                                 fontSize: "13px",
                               }}
@@ -1469,7 +1469,7 @@ export default function CourseDetails() {
                           borderRadius: "8px",
                           border: "1px solid var(--border)",
                           background: "var(--bg)",
-                          color: "#e8ecf4",
+                          color: "var(--text)",
                           width: "140px",
                         }}
                       />
@@ -1490,7 +1490,7 @@ export default function CourseDetails() {
                           borderRadius: "8px",
                           border: "1px solid var(--border)",
                           background: "var(--bg)",
-                          color: "#e8ecf4",
+                          color: "var(--text)",
                           width: "110px",
                           direction: "ltr",
                         }}
@@ -1580,7 +1580,7 @@ export default function CourseDetails() {
                           {sub && sub.score !== null && (
                             <span>
                               درجتك:{" "}
-                              <strong style={{ color: "#2e9e5b" }}>
+                              <strong style={{ color: "var(--success)" }}>
                                 {sub.score}/100
                               </strong>
                               {sub.feedback && ` — ${sub.feedback}`}
@@ -1625,7 +1625,7 @@ export default function CourseDetails() {
                   justifyContent: "space-between",
                   alignItems: "center",
                   padding: "10px 0",
-                  borderTop: row.rank > 1 ? "1px solid #eef1f5" : 0,
+                  borderTop: row.rank > 1 ? "1px solid var(--border)" : 0,
                 }}
               >
                 <span>
@@ -1734,7 +1734,7 @@ export default function CourseDetails() {
                 </div>
                 <strong>{r.profiles?.full_name || "طالب"}</strong>
                 {r.is_hidden && isTeacher && (
-                  <span style={{ color: "#c0392b", marginInlineStart: "8px" }}>
+                  <span style={{ color: "var(--error)", marginInlineStart: "8px" }}>
                     (مخفي)
                   </span>
                 )}
@@ -1745,10 +1745,10 @@ export default function CourseDetails() {
                     style={{
                       marginTop: "6px",
                       padding: "4px 12px",
-                      border: "1px solid #c0392b",
+                      border: "1px solid var(--error)",
                       borderRadius: "8px",
                       background: "transparent",
-                      color: "#c0392b",
+                      color: "var(--error)",
                       cursor: "pointer",
                       fontSize: "0.85rem",
                     }}
@@ -1836,7 +1836,7 @@ export default function CourseDetails() {
             width: "1120px",
             height: "792px",
             background: "var(--bg)",
-            color: "#e8ecf4",
+            color: "var(--text)",
             fontFamily: "inherit",
             boxSizing: "border-box",
             padding: "40px",
@@ -1844,7 +1844,7 @@ export default function CourseDetails() {
         >
           <div
             style={{
-              border: "3px solid #c9a227",
+              border: "3px solid var(--gold)",
               borderRadius: "12px",
               height: "100%",
               boxSizing: "border-box",
@@ -1853,7 +1853,7 @@ export default function CourseDetails() {
           >
             <div
               style={{
-                border: "1px solid #c9a227",
+                border: "1px solid var(--gold)",
                 borderRadius: "8px",
                 height: "100%",
                 boxSizing: "border-box",
@@ -1866,12 +1866,12 @@ export default function CourseDetails() {
               }}
             >
               <div>
-                <div style={{ color: "#c9a227", fontSize: "22px" }}>
+                <div style={{ color: "var(--gold)", fontSize: "22px" }}>
                   منصة متقن
                 </div>
                 <div
                   style={{
-                    color: "#c9a227",
+                    color: "var(--gold)",
                     fontSize: "44px",
                     fontWeight: "bold",
                     marginTop: "16px",
@@ -1896,7 +1896,7 @@ export default function CourseDetails() {
                 </div>
                 <div
                   style={{
-                    color: "#c9a227",
+                    color: "var(--gold)",
                     fontSize: "28px",
                     fontWeight: "bold",
                     marginTop: "8px",

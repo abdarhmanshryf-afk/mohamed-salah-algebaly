@@ -195,11 +195,11 @@ export default function TeacherTickets() {
                 {busy ? "جاري الإرسال..." : "رد"}
               </button>
               {openTicket.status !== "closed" ? (
-                <button onClick={() => setStatus("closed")} style={{ background: "#444" }}>
+                <button onClick={() => setStatus("closed")} style={{ background: "var(--surface-2)", color: "var(--text)" }}>
                   قفل التذكرة
                 </button>
               ) : (
-                <button onClick={() => setStatus("open")} style={{ background: "#444" }}>
+                <button onClick={() => setStatus("open")} style={{ background: "var(--surface-2)", color: "var(--text)" }}>
                   إعادة فتح
                 </button>
               )}

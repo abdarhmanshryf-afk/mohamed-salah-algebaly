@@ -130,14 +130,14 @@ export default function ReviewPage() {
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                 {(q.options || []).map((opt) => {
                   let bg = "var(--surface)";
-                  let color = "#e8ecf4";
+                  let color = "var(--text)";
                   if (answered) {
                     if (opt === q.correct_answer) {
-                      bg = "#14532d";
-                      color = "#7ee2a8";
+                      bg = "var(--success-bg)";
+                      color = "var(--success)";
                     } else if (opt === myPick) {
-                      bg = "#4c1d1d";
-                      color = "#ff9c9c";
+                      bg = "var(--error-bg)";
+                      color = "var(--error)";
                     }
                   }
                   return (
@@ -161,7 +161,7 @@ export default function ReviewPage() {
               </div>
               {answered && (
                 <div style={{ marginTop: "10px" }}>
-                  <p style={{ margin: 0, color: wasCorrect ? "#7ee2a8" : "#ff9c9c" }}>
+                  <p style={{ margin: 0, color: wasCorrect ? "var(--success)" : "var(--error)" }}>
                     {wasCorrect
                       ? "إجابة صحيحة ✅ هتتأكد منها مرة كمان بعد شوية."
                       : `إجابة غلط ❌ الصح: ${q.correct_answer} — وهرجعها لك بكرة.`}

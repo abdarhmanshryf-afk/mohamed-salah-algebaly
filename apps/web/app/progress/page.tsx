@@ -509,10 +509,10 @@ export default function MyProgress() {
                           border: "1px solid var(--border)",
                           color:
                             l.mastery >= 80
-                              ? "#2e9e5b"
+                              ? "var(--success)"
                               : l.mastery >= 50
-                                ? "#d4a017"
-                                : "#e06060",
+                                ? "var(--gold)"
+                                : "var(--error)",
                         }}
                       >
                         {l.mastery >= 80 ? "🟢" : l.mastery >= 50 ? "🟡" : "🔴"}{" "}
@@ -552,7 +552,7 @@ export default function MyProgress() {
                 </p>
                 {plan.map((p, i) => (
                   <p key={i} style={{ margin: "8px 0 0" }}>
-                    <strong style={{ color: "#e06060" }}>{p.mastery}%</strong>{" "}
+                    <strong style={{ color: "var(--error)" }}>{p.mastery}%</strong>{" "}
                     <a
                       href={`/courses/${p.course_id}`}
                       style={{ color: "var(--gold)", fontWeight: "bold" }}
@@ -578,7 +578,7 @@ export default function MyProgress() {
               top: 0,
               width: "794px",
               background: "var(--bg)",
-              color: "#e8ecf4",
+              color: "var(--text)",
               fontFamily: "inherit",
               boxSizing: "border-box",
               padding: "40px",
@@ -586,14 +586,14 @@ export default function MyProgress() {
           >
             <div
               style={{
-                border: "3px solid #c9a227",
+                border: "3px solid var(--gold)",
                 borderRadius: "12px",
                 padding: "32px",
               }}
             >
               <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                <div style={{ color: "#c9a227", fontSize: "18px" }}>منصة متقن</div>
-                <div style={{ color: "#c9a227", fontSize: "30px", fontWeight: "bold" }}>
+                <div style={{ color: "var(--gold)", fontSize: "18px" }}>منصة متقن</div>
+                <div style={{ color: "var(--gold)", fontSize: "30px", fontWeight: "bold" }}>
                   تقرير شهر {reportMeta.month}
                 </div>
                 <div style={{ color: "var(--text-muted)", fontSize: "14px", marginTop: "6px" }}>
@@ -601,14 +601,14 @@ export default function MyProgress() {
                 </div>
               </div>
               <div style={{ borderTop: "1px solid var(--border)", padding: "14px 0" }}>
-                <strong style={{ color: "#c9a227" }}>النقاط والشارات</strong>
+                <strong style={{ color: "var(--gold)" }}>النقاط والشارات</strong>
                 <p style={{ margin: "6px 0" }}>
                   مجموع النقاط: <strong>{points}</strong> — الشارات المكتسبة:{" "}
                   {badges.filter((b) => b.earned).map((b) => b.name).join("، ") || "لسه"}
                 </p>
               </div>
               <div style={{ borderTop: "1px solid var(--border)", padding: "14px 0" }}>
-                <strong style={{ color: "#c9a227" }}>تقدم الكورسات</strong>
+                <strong style={{ color: "var(--gold)" }}>تقدم الكورسات</strong>
                 {rows.map((r) => (
                   <p key={r.courseId} style={{ margin: "6px 0" }}>
                     {r.title}: خلّص {r.done} من {r.total} دروس (
@@ -617,7 +617,7 @@ export default function MyProgress() {
                 ))}
               </div>
               <div style={{ borderTop: "1px solid var(--border)", padding: "14px 0" }}>
-                <strong style={{ color: "#c9a227" }}>امتحانات الشهر ده</strong>
+                <strong style={{ color: "var(--gold)" }}>امتحانات الشهر ده</strong>
                 {reportMeta.exams.length === 0 ? (
                   <p style={{ margin: "6px 0", color: "var(--text-muted)" }}>
                     مفيش امتحانات الشهر ده.

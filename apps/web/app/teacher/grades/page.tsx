@@ -219,7 +219,7 @@ export default function TeacherGrades() {
                       <strong
                         style={{
                           color:
-                            r.bestScore >= 50 ? "#2e9e5b" : "#b00020",
+                            r.bestScore >= 50 ? "var(--success)" : "var(--error)",
                         }}
                       >
                         {r.bestScore}%

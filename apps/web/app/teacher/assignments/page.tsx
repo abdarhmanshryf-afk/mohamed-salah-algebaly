@@ -357,10 +357,10 @@ export default function TeacherAssignments() {
                 onClick={() => removeAssignment(a.id)}
                 style={{
                   padding: "8px 16px",
-                  border: "1px solid #ff6b61",
+                  border: "1px solid var(--error)",
                   borderRadius: "8px",
                   background: "var(--surface)",
-                  color: "#ff6b61",
+                  color: "var(--error)",
                   cursor: "pointer",
                 }}
               >
@@ -478,7 +478,7 @@ export default function TeacherAssignments() {
                           padding: "6px 14px",
                           border: 0,
                           borderRadius: "8px",
-                          background: "#2e9e5b",
+                          background: "var(--success)",
                           color: "white",
                           cursor: "pointer",
                         }}

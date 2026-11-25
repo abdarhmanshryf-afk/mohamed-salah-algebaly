@@ -140,7 +140,7 @@ export default function AdminHome() {
                 borderRadius: "4px 4px 0 0",
               }}
             />
-            <span style={{ fontSize: "10px", color: "#687386" }}>
+            <span style={{ fontSize: "10px", color: "var(--text-muted)" }}>
               {d.slice(8)}
             </span>
           </div>
@@ -198,7 +198,7 @@ export default function AdminHome() {
 
       <div className="card" style={{ marginTop: "18px" }}>
         <h3>طلبات الاشتراك — آخر 14 يوم</h3>
-        {barChart(reqsPerDay, maxReq, "#4a9e6b")}
+        {barChart(reqsPerDay, maxReq, "var(--success)")}
       </div>
 
       <div className="card" style={{ marginTop: "18px" }}>

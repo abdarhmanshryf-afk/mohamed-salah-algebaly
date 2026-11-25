@@ -188,14 +188,14 @@ export default function LevelCheck() {
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                 {(current.options || []).map((opt) => {
                   let bg = "var(--surface)";
-                  let color = "#e8ecf4";
+                  let color = "var(--text)";
                   if (picked) {
                     if (opt === current.correct_answer) {
-                      bg = "#14532d";
-                      color = "#7ee2a8";
+                      bg = "var(--success-bg)";
+                      color = "var(--success)";
                     } else if (opt === picked) {
-                      bg = "#4c1d1d";
-                      color = "#ff9c9c";
+                      bg = "var(--error-bg)";
+                      color = "var(--error)";
                     }
                   }
                   return (

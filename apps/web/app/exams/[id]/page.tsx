@@ -228,7 +228,7 @@ export default function ExamPage() {
                   border:
                     answers[q.id] === opt
                       ? "2px solid var(--navy)"
-                      : "1px solid #e0e4ea",
+                      : "1px solid var(--border)",
                   cursor: "pointer",
                   fontWeight: "normal",
                 }}

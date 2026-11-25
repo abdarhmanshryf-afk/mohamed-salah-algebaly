@@ -305,7 +305,7 @@ export default function AdminCourses() {
                         fontSize: "12px",
                         padding: "3px 10px",
                         borderRadius: "12px",
-                        background: "#3a3f4a",
+                        background: "var(--surface-2)",
                         color: "var(--text-soft)",
                       }}
                     >

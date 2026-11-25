@@ -183,7 +183,7 @@ export default function RoomPage() {
                 style={{
                   fontSize: "56px",
                   fontWeight: "bold",
-                  color: room.phase === "study" ? "var(--gold)" : "#2e9e5b",
+                  color: room.phase === "study" ? "var(--gold)" : "var(--success)",
                   margin: "8px 0",
                   direction: "ltr",
                 }}
@@ -206,7 +206,7 @@ export default function RoomPage() {
                   new Date(m.last_seen_at).getTime() > onlineCutoff;
                 return (
                   <p key={m.student_id} style={{ margin: "6px 0 0" }}>
-                    <span style={{ color: online ? "#2e9e5b" : "var(--text-dim)" }}>
+                    <span style={{ color: online ? "var(--success)" : "var(--text-dim)" }}>
                       ●
                     </span>{" "}
                     {m.profiles?.full_name || "طالب"}

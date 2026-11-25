@@ -239,9 +239,9 @@ export default function TeacherExams() {
               style={{
                 padding: "8px 14px",
                 borderRadius: "8px",
-                border: "1px solid #ff6b61",
+                border: "1px solid var(--error)",
                 background: "var(--surface)",
-                color: "#ff6b61",
+                color: "var(--error)",
                 cursor: "pointer",
               }}
             >
@@ -335,9 +335,9 @@ export default function TeacherExams() {
                 marginTop: "10px",
                 padding: "6px 12px",
                 borderRadius: "8px",
-                border: "1px solid #ff6b61",
+                border: "1px solid var(--error)",
                 background: "var(--surface)",
-                color: "#ff6b61",
+                color: "var(--error)",
                 cursor: "pointer",
                 fontSize: "14px",
               }}
