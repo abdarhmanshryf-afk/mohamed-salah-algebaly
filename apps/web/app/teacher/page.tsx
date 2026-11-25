@@ -97,6 +97,10 @@ export default function TeacherHome() {
           <h3>الاختبارات</h3>
           <p>إنشاء اختبارات اختيار من متعدد لطلاب الكورس.</p>
         </a>
+        <a className="card" href="/teacher/grades">
+          <h3>الدرجات</h3>
+          <p>نتائج الطلاب في الاختبارات ومين لسه ما حلش.</p>
+        </a>
         <a className="card" href="/teacher/students">
           <h3>إدارة الطلاب</h3>
           <p>عرض الطلاب واشتراكاتهم في الكورسات.</p>
