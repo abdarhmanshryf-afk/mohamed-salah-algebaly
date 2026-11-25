@@ -93,6 +93,10 @@ export default function TeacherHome() {
           <h3>إدارة الكورسات</h3>
           <p>إضافة كورس جديد وتعديل السعر والمدة والنشر.</p>
         </a>
+        <a className="card" href="/teacher/exams">
+          <h3>الاختبارات</h3>
+          <p>إنشاء اختبارات اختيار من متعدد لطلاب الكورس.</p>
+        </a>
         <a className="card" href="/teacher/students">
           <h3>إدارة الطلاب</h3>
           <p>عرض الطلاب واشتراكاتهم في الكورسات.</p>

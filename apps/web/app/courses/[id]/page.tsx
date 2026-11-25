@@ -20,6 +20,11 @@ type Lesson = {
   sort_order: number;
 };
 
+type Exam = {
+  id: string;
+  title: string;
+};
+
 export default function CourseDetails() {
   const params = useParams();
   const courseId = params.id as string;
@@ -34,6 +39,8 @@ export default function CourseDetails() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [openVideo, setOpenVideo] = useState<{ id: string; url: string } | null>(null);
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [bestScores, setBestScores] = useState<Record<string, number>>({});
 
   const client = () =>
     createBrowserClient(
@@ -88,6 +95,29 @@ export default function CourseDetails() {
       const list = (lessonData as Lesson[]) || [];
       setLessons(list);
       setCanView(teacher || list.length > 0);
+
+      const { data: examData } = await supabase
+        .from("exams")
+        .select("id, title")
+        .eq("course_id", courseId)
+        .eq("is_published", true)
+        .order("created_at");
+      const examList = (examData as Exam[]) || [];
+      setExams(examList);
+
+      if (examList.length > 0) {
+        const { data: attempts } = await supabase
+          .from("exam_attempts")
+          .select("exam_id, score")
+          .eq("student_id", user.id);
+        const best: Record<string, number> = {};
+        (attempts || []).forEach((a: { exam_id: string; score: number }) => {
+          if (!(a.exam_id in best) || a.score > best[a.exam_id]) {
+            best[a.exam_id] = a.score;
+          }
+        });
+        setBestScores(best);
+      }
 
       if (!teacher) {
         const { data: enrollment } = await supabase
@@ -257,6 +287,51 @@ export default function CourseDetails() {
             )}
           </section>
         ))}
+
+      {canView && exams.length > 0 && (
+        <>
+          <h2 style={{ color: "var(--navy)", marginTop: "30px" }}>الاختبارات</h2>
+          {exams.map((exam) => (
+            <section
+              key={exam.id}
+              style={{
+                border: "1px solid #e0e4ea",
+                borderRadius: "12px",
+                padding: "16px",
+                marginTop: "16px",
+                background: "white",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <div>
+                <strong style={{ color: "var(--navy)" }}>{exam.title}</strong>
+                {bestScores[exam.id] !== undefined && (
+                  <p style={{ margin: "4px 0 0" }}>
+                    أفضل نتيجة: {bestScores[exam.id]}%
+                  </p>
+                )}
+              </div>
+              <a
+                href={`/exams/${exam.id}`}
+                style={{
+                  padding: "10px 20px",
+                  borderRadius: "10px",
+                  background: "var(--navy)",
+                  color: "white",
+                  fontWeight: "bold",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {bestScores[exam.id] !== undefined ? "أعد الاختبار" : "ابدأ الاختبار"}
+              </a>
+            </section>
+          ))}
+        </>
+      )}
+
     </main>
   );
 }
