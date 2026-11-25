@@ -20,6 +20,7 @@ type Enrollment = {
 export default function Courses() {
   const [studentName, setStudentName] = useState("");
   const [studentId, setStudentId] = useState("");
+  const [isTeacher, setIsTeacher] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,11 +60,15 @@ export default function Courses() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("full_name")
+        .select("full_name, role")
         .eq("id", user.id)
         .single();
 
       setStudentName(profile?.full_name || "طالبنا العزيز");
+
+      if (profile?.role === "teacher") {
+        setIsTeacher(true);
+      }
 
       const { data, error } = await supabase
         .from("courses")
@@ -76,7 +81,9 @@ export default function Courses() {
         setCourses(data || []);
       }
 
-      await loadEnrollments(supabase, user.id);
+      if (profile?.role !== "teacher") {
+        await loadEnrollments(supabase, user.id);
+      }
       setLoading(false);
     }
 
@@ -145,9 +152,10 @@ export default function Courses() {
             <p>السعر: {course.price} جنيه</p>
             <p>مدة الكورس: {course.duration_days ?? "غير محددة"} يوم</p>
 
-            {status === "active" && <p>أنت مشترك في هذا الكورس ✅</p>}
-            {status === "pending" && <p>طلبك قيد المراجعة ⏳</p>}
-            {!status && (
+            {isTeacher && <p>أنت الأستاذ 👨‍🏫 إدارة الكورس من لوحة التحكم.</p>}
+            {!isTeacher && status === "active" && <p>أنت مشترك في هذا الكورس ✅</p>}
+            {!isTeacher && status === "pending" && <p>طلبك قيد المراجعة ⏳</p>}
+            {!isTeacher && !status && (
               <button
                 onClick={() => requestSubscription(course.id)}
                 disabled={busyId === course.id}
