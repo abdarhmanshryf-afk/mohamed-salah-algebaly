@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import Faq from "./components/Faq";
+import { WHATSAPP_NUMBER } from "./config";
 
 const features = [
   ["شرح مبسّط", "دروس منظمة تساعدك على فهم اللغة العربية خطوة بخطوة."],
@@ -38,6 +40,13 @@ export default async function Home() {
       .single();
     isTeacher = profile?.role === "teacher";
   }
+
+  const { data: courseRows } = await supabase
+    .from("courses")
+    .select("id, title")
+    .eq("is_published", true)
+    .order("created_at");
+  const courseLinks: { id: string; title: string }[] = courseRows || [];
 
   return (
     <main>
@@ -84,7 +93,53 @@ export default async function Home() {
           {features.map(([title, desc]) => <article className="card" key={title}><h3>{title}</h3><p>{desc}</p></article>)}
         </div>
       </section>
-      <footer>© منصة متقن</footer>
+      <section className="faq">
+        <h2>أسئلة شائعة</h2>
+        <Faq />
+      </section>
+      <section className="teacher">
+        <div className="teacher-photo" aria-hidden="true">م</div>
+        <div>
+          <h2>عن الأستاذ</h2>
+          <p>
+            <strong style={{ color: "white" }}>محمد صلاح الجبالي</strong> —
+            مدرّس لغة عربية، بيبسّط النحو والبلاغة والإملاء بأمثلة من الحياة
+            اليومية، عشان تحب العربي وتتقنه.
+          </p>
+        </div>
+      </section>
+      <footer className="footer-rich">
+        <h2 className="footer-brand">متقن</h2>
+        <p className="footer-tag">منصة تعليمية بتخلّيك تحب العربي</p>
+        <div className="footer-cols">
+          <div className="footer-col">
+            <h4>الكورسات</h4>
+            {courseLinks.map((c) => (
+              <a key={c.id} href={`/courses/${c.id}`}>{c.title}</a>
+            ))}
+            <a href="/courses">كل الكورسات</a>
+          </div>
+          <div className="footer-col">
+            <h4>الأحكام</h4>
+            <a href="/privacy">سياسة الخصوصية</a>
+            <a href="/terms">الشروط والأحكام</a>
+            <a href="/refund">سياسة الاسترداد</a>
+          </div>
+          <div className="footer-col">
+            <h4>عامة</h4>
+            <a href="/about">عن المنصة</a>
+            <a href="/contact">تواصل معنا</a>
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}`}
+              target="_blank"
+              rel="noopener"
+            >
+              واتساب
+            </a>
+          </div>
+        </div>
+        <p className="footer-copy">© منصة متقن — كل الحقوق محفوظة</p>
+      </footer>
     </main>
   );
 }

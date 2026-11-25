@@ -9,3 +9,54 @@
 .auth-google{width:100%;margin-top:12px;padding:13px;border:1px solid #d5dae3;border-radius:10px;background:white;font-size:16px;cursor:pointer}
 .auth-links{margin-top:16px;text-align:center;color:var(--muted)}
 .auth-links a{color:var(--navy);font-weight:bold}
+
+/* FAQ accordion */
+.faq{background:#0c1a33;padding:56px 8%;border-top:1px solid #1d3358}
+.faq h2{font-size:22px;color:white;margin:0 0 18px}
+.faq-item{border-bottom:1px solid #1d3358}
+.faq-q{width:100%;background:none;border:0;color:#eef2f8;font-size:16px;font-weight:bold;text-align:right;padding:16px 4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:inherit}
+.faq-q .chev{color:var(--gold);font-size:13px;flex-shrink:0}
+.faq-a{color:#c5cfdd;font-size:14px;line-height:1.9;padding:0 4px 18px;margin:0}
+
+/* About the teacher */
+.teacher{background:#0c1a33;padding:52px 8%;border-top:1px solid #1d3358;display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.teacher h2{font-size:22px;color:white;margin:0 0 10px}
+.teacher p{color:#c5cfdd;font-size:15px;line-height:1.9;max-width:560px;margin:0}
+.teacher-photo{width:110px;height:110px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:42px;font-weight:800;flex-shrink:0;background:#16294a;overflow:hidden}
+.teacher-photo img{width:100%;height:100%;object-fit:cover}
+
+/* Rich footer */
+.footer-rich{background:#0c1a33;border-top:1px solid #1d3358;padding:52px 8% 30px;color:#c5cfdd}
+.footer-brand{font-size:48px;font-weight:800;color:white;margin:0}
+.footer-tag{color:var(--gold);font-size:16px;margin:6px 0 32px;font-weight:bold}
+.footer-cols{display:flex;gap:64px;flex-wrap:wrap}
+.footer-col h4{color:var(--gold);font-size:15px;margin:0 0 14px}
+.footer-col a{display:block;color:#c5cfdd;font-size:14px;margin:0 0 11px}
+.footer-col a:hover{color:white}
+.footer-copy{text-align:center;margin-top:42px;color:#8fa0b8;font-size:13px}
+
+/* Floating WhatsApp support */
+.whats-float{position:fixed;left:18px;bottom:24px;z-index:40;background:#22c55e;color:white;font-weight:bold;padding:11px 20px;border-radius:30px;display:flex;align-items:center;gap:8px;box-shadow:0 6px 18px rgba(0,0,0,.35);font-size:15px}
+
+/* Static subpages header */
+.static-header{background:#0c1a33;padding:18px 8%}
+
+/* Progress bar */
+.progress-bar{background:#e8ebf0;border-radius:8px;height:10px;overflow:hidden}
+.progress-fill{background:linear-gradient(90deg,var(--gold),#b98c33);height:100%;border-radius:8px}
+
+/* Mobile bottom nav */
+.bottom-nav{display:none}
+@media(max-width:600px){
+body{padding-bottom:62px}
+.whats-float{bottom:82px;left:14px;padding:9px 16px;font-size:13px}
+.bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:40;background:#0c1a33;border-top:1px solid #1d3358;padding:6px 0 calc(6px + env(safe-area-inset-bottom))}
+.bottom-nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:#8fa0b8;font-size:11px;padding:4px 0}
+.bottom-nav a.active{color:var(--gold)}
+.teacher{padding:42px 7%}
+.footer-rich{padding:44px 7% 26px}
+.footer-brand{font-size:40px}
+.footer-cols{flex-direction:column;gap:32px}
+.faq{padding:44px 7%}
+.subpage{padding:22px}
+}
