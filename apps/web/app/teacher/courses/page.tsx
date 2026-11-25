@@ -54,6 +54,42 @@ export default function TeacherCourses() {
     loadCourses();
   }, []);
 
+  async function deleteCourse(course: Course) {
+    const sure = window.confirm(
+      `متأكد إنك عايز تحذف كورس "${course.title}"؟\n\nهيتمسح نهائيًا مع كل دروسه واختباراته واشتراكات طلابه، ومفيش تراجع.`
+    );
+    if (!sure) return;
+    setMessage("");
+    const supabase = client();
+
+    let storageWarning = false;
+    const { data: files } = await supabase.storage
+      .from("lesson-media")
+      .list(course.id, { limit: 1000 });
+    if (files && files.length > 0) {
+      const paths = files.map((f) => `${course.id}/${f.name}`);
+      const { error: storageError } = await supabase.storage
+        .from("lesson-media")
+        .remove(paths);
+      if (storageError) storageWarning = true;
+    }
+
+    const { error } = await supabase
+      .from("courses")
+      .delete()
+      .eq("id", course.id);
+    if (error) {
+      setMessage("خطأ حذف الكورس: " + error.message);
+      return;
+    }
+    setMessage(
+      storageWarning
+        ? "الكورس اتمسح لكن بعض ملفاته متمسحتش من التخزين."
+        : `تم حذف كورس "${course.title}" نهائيًا.`
+    );
+    loadCourses();
+  }
+
   function startEdit(course: Course) {
     setEditingId(course.id);
     setForm({
@@ -196,7 +232,33 @@ export default function TeacherCourses() {
           <p>{course.description}</p>
           <p>السعر: {course.price} جنيه</p>
           <p>مدة الكورس: {course.duration_days ?? "غير محددة"} يوم</p>
-          <button onClick={() => startEdit(course)}>تعديل</button>
+          <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+            <button onClick={() => startEdit(course)}>تعديل</button>
+            <a
+              href={`/courses/${course.id}`}
+              style={{
+                padding: "8px 16px",
+                borderRadius: "8px",
+                background: "var(--navy)",
+                color: "white",
+                fontWeight: "bold",
+                display: "inline-block",
+              }}
+            >
+              👁 عرض المحتوى
+            </a>
+            <button
+              onClick={() => deleteCourse(course)}
+              style={{
+                background: "white",
+                color: "#b00020",
+                border: "1px solid #b00020",
+                borderRadius: "8px",
+              }}
+            >
+              حذف الكورس
+            </button>
+          </div>
         </section>
       ))}
     </main>
