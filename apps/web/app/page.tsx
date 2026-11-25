@@ -48,10 +48,35 @@ export default async function Home() {
         {user && !isTeacher && <a className="login" href="/courses">كورساتي</a>}
       </nav>
       <section className="hero">
-        <div className="eyebrow">منصة تعليم اللغة العربية</div>
-        <h1>اتعلّم العربي<br /><span>بفهم وثقة</span></h1>
-        <p>رحلتك في اللغة العربية تبدأ من هنا. تابع دروسك، اختبر مستواك، وراجع مع الأستاذ محمد صلاح الجبالي.</p>
-        <a className="cta" href="/courses">استكشف الكورسات</a>
+        <div className="deco-circle" aria-hidden="true" />
+        <svg
+          className="deco-pencil"
+          viewBox="0 0 200 220"
+          aria-hidden="true"
+        >
+          <g
+            transform="rotate(30 100 110)"
+            fill="none"
+            stroke="var(--gold)"
+            strokeWidth="4"
+            strokeLinejoin="round"
+          >
+            <rect x="86" y="18" width="28" height="120" rx="5" />
+            <path d="M86 18 Q100 2 114 18" />
+            <line x1="100" y1="26" x2="100" y2="138" />
+            <polygon points="86,138 114,138 100,176" />
+            <line x1="96" y1="166" x2="104" y2="166" />
+          </g>
+        </svg>
+        <div className="hero-content">
+          <div className="eyebrow">منصة تعليم اللغة العربية</div>
+          <h1>اتعلّم العربي<br /><span>بفهم وثقة</span></h1>
+          <p>رحلتك في اللغة العربية تبدأ من هنا. تابع دروسك، اختبر مستواك، وراجع مع الأستاذ محمد صلاح الجبالي.</p>
+          <div className="hero-points">
+            {features.map(([title]) => <div className="hero-point" key={title}><span>✓</span>{title}</div>)}
+          </div>
+          <a className="cta" href="/courses">استكشف الكورسات</a>
+        </div>
       </section>
       <section className="features">
         <h2>كل ما تحتاجه في مكان واحد</h2>
