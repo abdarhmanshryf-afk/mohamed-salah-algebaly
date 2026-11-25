@@ -878,6 +878,25 @@ export default function CourseDetails() {
         </div>
       )}
 
+      {canView && studentId && !isTeacher && (
+        <div style={{ marginTop: "16px" }}>
+          <a
+            href={`/level-check/${courseId}`}
+            style={{
+              display: "inline-block",
+              padding: "10px 20px",
+              border: "1px solid var(--gold)",
+              borderRadius: "10px",
+              color: "var(--gold)",
+              fontWeight: "bold",
+              textDecoration: "none",
+            }}
+          >
+            🎯 حدد مستواك (10 دقائق)
+          </a>
+        </div>
+      )}
+
       {canView && studentId && !isTeacher && coursePercent === 100 && (
         <div style={{ marginTop: "16px" }}>
           <button

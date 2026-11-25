@@ -165,6 +165,25 @@ $$;
 revoke all on function public.schedule_review(uuid) from public, anon;
 grant execute on function public.schedule_review(uuid) to authenticated;
 
+-- 6) دالة أسئلة تحديد المستوى (بالإجابات الصحيحة والصعوبة)
+create or replace function public.get_level_questions(p_course_id uuid)
+returns table (id uuid, question_text text, options jsonb, correct_answer text, difficulty int)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  return query
+  select q.id, q.question_text, q.options, q.correct_answer, q.difficulty
+  from public.questions q
+  join public.exams e on e.id = q.exam_id
+  where e.course_id = p_course_id and e.is_published = true
+  order by q.difficulty, q.sort_order;
+end;
+$$;
+revoke all on function public.get_level_questions(uuid) from public, anon;
+grant execute on function public.get_level_questions(uuid) to authenticated;
+
 -- صلاحيات
 grant select, insert, delete on public.lesson_chapters to authenticated;
 grant update on public.lesson_chapters to authenticated;
@@ -173,7 +192,7 @@ grant select, insert on public.level_checks to authenticated;
 grant select, insert, update, delete on public.study_rooms to authenticated;
 grant select, insert, update, delete on public.study_room_members to authenticated;
 
--- تحقق: المفروض يطلع 7 صفوف
+-- تحقق: المفروض يطلع 8 صفوف
 select 'lesson_chapters' as check_item, count(*)::int as found
 from pg_tables where schemaname='public' and tablename='lesson_chapters'
 union all
@@ -194,4 +213,7 @@ from information_schema.columns
 where table_schema='public' and table_name='questions' and column_name='difficulty'
 union all
 select 'function schedule_review', count(*)::int
-from pg_proc where proname = 'schedule_review';
+from pg_proc where proname = 'schedule_review'
+union all
+select 'function get_level_questions', count(*)::int
+from pg_proc where proname = 'get_level_questions';
