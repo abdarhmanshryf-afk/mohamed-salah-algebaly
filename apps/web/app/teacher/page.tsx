@@ -156,6 +156,10 @@ export default function TeacherHome() {
           <h3>التحديات</h3>
           <p>تحديات بنقاط تحفّز طلابك.</p>
         </a>
+        <a className="card" href="/teacher/reports">
+          <h3>تقارير الطلاب</h3>
+          <p>تقرير شهري لأي طالب، جاهز للطباعة PDF.</p>
+        </a>
       </div>
     </main>
   );
