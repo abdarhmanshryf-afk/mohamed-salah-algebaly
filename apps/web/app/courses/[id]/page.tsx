@@ -449,7 +449,9 @@ export default function CourseDetails() {
     } else {
       setShowPayModal(false);
       setMessage(
-        "تم إرسال طلب الاشتراك مع بيانات الدفع ✅ الأستاذ هيراجعه قريبًا إن شاء الله."
+        course && course.price > 0
+          ? "تم إرسال طلب الاشتراك مع بيانات الدفع ✅ الأستاذ هيراجعه قريبًا إن شاء الله."
+          : "تم إرسال طلب الاشتراك ✅ الأستاذ هيراجعه قريبًا إن شاء الله."
       );
       setStatus("pending");
     }
