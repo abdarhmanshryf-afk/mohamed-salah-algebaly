@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 
 type LessonMastery = {
@@ -48,6 +48,16 @@ export default function MyProgress() {
   const [badges, setBadges] = useState<{ icon: string; name: string; earned: boolean }[]>([]);
   const [notes, setNotes] = useState<NoteRow[]>([]);
   const [dueReview, setDueReview] = useState(0);
+  const [profileName, setProfileName] = useState("");
+  const [reportBusy, setReportBusy] = useState(false);
+  const [reportMeta, setReportMeta] = useState<{
+    month: string;
+    exams: { title: string; score: number }[];
+    date: string;
+  } | null>(null);
+  const reportPdfRef = useRef<{ save: (n: string) => void } | null>(null);
+  const attemptsListRef = useRef<{ exam_id: string; score: number; created_at: string }[]>([]);
+  const examsRef = useRef<{ id: string; title: string }[]>([]);
   const [plan, setPlan] = useState<
     { lesson_title: string; course_title: string; course_id: string; mastery: number }[]
   >([]);
@@ -69,9 +79,10 @@ export default function MyProgress() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("role")
+        .select("role, full_name")
         .eq("id", user.id)
         .single();
+      setProfileName(profile?.full_name || "");
       if (profile?.role === "teacher") {
         window.location.href = "/teacher/grades";
         return;
@@ -91,7 +102,7 @@ export default function MyProgress() {
       const [attemptsRes, notesRes, allProgressRes, dueRes] = await Promise.all([
         supabase
           .from("exam_attempts")
-          .select("exam_id, score")
+          .select("exam_id, score, created_at")
           .eq("student_id", user.id),
         supabase
           .from("lesson_notes")
@@ -114,7 +125,9 @@ export default function MyProgress() {
       const attemptsList = (attemptsRes.data || []) as {
         exam_id: string;
         score: number;
+        created_at: string;
       }[];
+      attemptsListRef.current = attemptsList;
       const attemptScores = attemptsList.map((a) => a.score);
       const passes = attemptScores.filter((s: number) => s >= 50).length;
       const perfects = attemptScores.filter((s: number) => s === 100).length;
@@ -171,8 +184,9 @@ export default function MyProgress() {
 
       const { data: courseExams } = await supabase
         .from("exams")
-        .select("id, course_id")
+        .select("id, course_id, title")
         .in("course_id", courseIds);
+      examsRef.current = (courseExams || []) as { id: string; title: string }[];
 
       const examBestByCourse: Record<string, number> = {};
       const examCourse: Record<string, string> = {};
@@ -281,6 +295,41 @@ export default function MyProgress() {
     load();
   }, []);
 
+  async function generateReport() {
+    setReportBusy(true);
+    const now = new Date();
+    const month = now.toLocaleDateString("ar-EG", { month: "long", year: "numeric" });
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const titles: Record<string, string> = {};
+    examsRef.current.forEach((e) => {
+      titles[e.id] = e.title;
+    });
+    const exams = attemptsListRef.current
+      .filter((a) => new Date(a.created_at) >= monthStart)
+      .map((a) => ({ title: titles[a.exam_id] || "اختبار", score: a.score }));
+    setReportMeta({ month, exams, date: now.toLocaleDateString("ar-EG") });
+    await new Promise((r) => setTimeout(r, 200));
+    try {
+      const el = document.getElementById("monthly-report-render");
+      if (!el) throw new Error("missing");
+      const html2canvas = (await import("html2canvas")).default;
+      const { jsPDF } = await import("jspdf");
+      const canvas = await html2canvas(el, { backgroundColor: "#0c1a33", scale: 2 });
+      const img = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "px",
+        format: [canvas.width, canvas.height],
+        hotfixes: ["px_scaling"],
+      });
+      pdf.addImage(img, "PNG", 0, 0, canvas.width, canvas.height);
+      pdf.save(`itqan-report-${now.getFullYear()}-${now.getMonth() + 1}.pdf`);
+    } catch {
+      // ignore generation errors silently
+    }
+    setReportBusy(false);
+  }
+
   return (
     <main>
       <header className="static-header">
@@ -289,6 +338,25 @@ export default function MyProgress() {
       <div className="subpage">
         <h1>تقدمي</h1>
         {loading && <p>جاري التحميل...</p>}
+        {!loading && rows.length > 0 && (
+          <p>
+            <button
+              onClick={generateReport}
+              disabled={reportBusy}
+              style={{
+                padding: "10px 18px",
+                borderRadius: "10px",
+                background: "#16294a",
+                border: "1px solid var(--gold)",
+                color: "var(--gold)",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              {reportBusy ? "جاري تجهيز التقرير..." : "⬇ حمّل تقريرك الشهري PDF"}
+            </button>
+          </p>
+        )}
         {!loading && dueReview > 0 && (
           <p>
             <a
@@ -436,6 +504,74 @@ export default function MyProgress() {
               </>
             )}
           </section>
+        )}
+        {reportMeta && (
+          <div
+            id="monthly-report-render"
+            dir="rtl"
+            style={{
+              position: "fixed",
+              left: "-3000px",
+              top: 0,
+              width: "794px",
+              background: "#0c1a33",
+              color: "#e8ecf4",
+              fontFamily: "inherit",
+              boxSizing: "border-box",
+              padding: "40px",
+            }}
+          >
+            <div
+              style={{
+                border: "3px solid #c9a227",
+                borderRadius: "12px",
+                padding: "32px",
+              }}
+            >
+              <div style={{ textAlign: "center", marginBottom: "20px" }}>
+                <div style={{ color: "#c9a227", fontSize: "18px" }}>منصة متقن</div>
+                <div style={{ color: "#c9a227", fontSize: "30px", fontWeight: "bold" }}>
+                  تقرير شهر {reportMeta.month}
+                </div>
+                <div style={{ color: "#8fa0b8", fontSize: "14px", marginTop: "6px" }}>
+                  الطالب: {profileName || "—"} — صدر في {reportMeta.date}
+                </div>
+              </div>
+              <div style={{ borderTop: "1px solid #24395e", padding: "14px 0" }}>
+                <strong style={{ color: "#c9a227" }}>النقاط والشارات</strong>
+                <p style={{ margin: "6px 0" }}>
+                  مجموع النقاط: <strong>{points}</strong> — الشارات المكتسبة:{" "}
+                  {badges.filter((b) => b.earned).map((b) => b.name).join("، ") || "لسه"}
+                </p>
+              </div>
+              <div style={{ borderTop: "1px solid #24395e", padding: "14px 0" }}>
+                <strong style={{ color: "#c9a227" }}>تقدم الكورسات</strong>
+                {rows.map((r) => (
+                  <p key={r.courseId} style={{ margin: "6px 0" }}>
+                    {r.title}: خلّص {r.done} من {r.total} دروس (
+                    {r.total > 0 ? Math.round((r.done / r.total) * 100) : 0}%)
+                  </p>
+                ))}
+              </div>
+              <div style={{ borderTop: "1px solid #24395e", padding: "14px 0" }}>
+                <strong style={{ color: "#c9a227" }}>امتحانات الشهر ده</strong>
+                {reportMeta.exams.length === 0 ? (
+                  <p style={{ margin: "6px 0", color: "#8fa0b8" }}>
+                    مفيش امتحانات الشهر ده.
+                  </p>
+                ) : (
+                  reportMeta.exams.map((e, i) => (
+                    <p key={i} style={{ margin: "6px 0" }}>
+                      {e.title}: {e.score}%
+                    </p>
+                  ))
+                )}
+              </div>
+              <p style={{ color: "#8fa0b8", fontSize: "12px", textAlign: "center" }}>
+                الأستاذ محمد صلاح الجبالي — منصة متقن
+              </p>
+            </div>
+          </div>
         )}
         {notes.length > 0 && (
           <section className="course" style={{ display: "block" }}>
