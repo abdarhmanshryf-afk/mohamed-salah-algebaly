@@ -49,6 +49,11 @@ export default function TeacherLive() {
         .select("id, course_id, title, youtube_id, is_live, created_at")
         .order("created_at", { ascending: false }),
     ]);
+    if (!sessionData) {
+      setMessage(
+        "صفحة البث لسه محتاجة تشغل سكربت الإعداد الأخير (features2) في Supabase SQL Editor."
+      );
+    }
     const courseList = (courseData as Course[]) || [];
     setCourses(courseList);
     setSessions((sessionData as LiveSession[]) || []);
