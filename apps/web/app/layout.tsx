@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import SiteChrome from "./components/SiteChrome";
 import PwaRegister from "./components/PwaRegister";
+import NotificationBell from "./components/NotificationBell";
+import ThemeToggle from "./components/ThemeToggle";
 
 export const metadata: Metadata = {
   title: "متقن | منصة تعليم اللغة العربية",
@@ -25,8 +27,18 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ar" dir="rtl">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var t=localStorage.getItem('itqan-theme')||'dark';document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='dark';}",
+          }}
+        />
+      </head>
       <body>
         {children}
+        <NotificationBell />
+        <ThemeToggle />
         <SiteChrome />
         <PwaRegister />
       </body>
