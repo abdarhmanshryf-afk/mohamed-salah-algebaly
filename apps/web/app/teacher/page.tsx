@@ -152,6 +152,10 @@ export default function TeacherHome() {
           <h3>المجموعات</h3>
           <p>اعمل مجموعات لطلابك بأكواد دعوة.</p>
         </a>
+        <a className="card" href="/teacher/challenges">
+          <h3>التحديات</h3>
+          <p>تحديات بنقاط تحفّز طلابك.</p>
+        </a>
       </div>
     </main>
   );

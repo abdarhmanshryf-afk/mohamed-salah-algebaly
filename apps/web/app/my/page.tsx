@@ -151,6 +151,10 @@ export default function MyLessons() {
           <a href="/groups" style={{ color: "var(--gold)" }}>
             👥 مجموعاتي
           </a>
+          {"  ·  "}
+          <a href="/challenges" style={{ color: "var(--gold)" }}>
+            🏆 التحديات
+          </a>
         </p>
         {loading && <p>جاري التحميل...</p>}
         {!loading && rows.length === 0 && (
