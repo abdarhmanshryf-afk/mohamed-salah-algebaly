@@ -152,7 +152,11 @@ export default function Courses() {
               marginTop: "16px",
             }}
           >
-            <h3>{course.title}</h3>
+            <h3>
+              <a href={`/courses/${course.id}`} style={{ color: "var(--navy)" }}>
+                {course.title}
+              </a>
+            </h3>
             <p>{course.description}</p>
             <p>السعر: {course.price} جنيه</p>
             <p>مدة الكورس: {course.duration_days ?? "غير محددة"} يوم</p>
