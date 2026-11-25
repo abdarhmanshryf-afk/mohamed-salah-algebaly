@@ -7,6 +7,7 @@ const links = [
   { href: "/admin/users", label: "المستخدمون" },
   { href: "/admin/courses", label: "الكورسات" },
   { href: "/admin/subscriptions", label: "الاشتراكات" },
+  { href: "/admin/analytics", label: "التحليلات" },
   { href: "/teacher", label: "لوحة المدرس" },
 ];
 
