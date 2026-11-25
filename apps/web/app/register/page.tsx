@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import PasswordInput from "../components/PasswordInput";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -75,12 +76,11 @@ export default function Register() {
           />
 
           <label>كلمة المرور</label>
-          <input
-            type="password"
-            minLength={8}
+          <PasswordInput
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+            onChange={setPassword}
+            minLength={8}
+            autoComplete="new-password"
           />
 
           <button type="submit" disabled={loading}>

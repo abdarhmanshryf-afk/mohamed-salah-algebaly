@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import PasswordInput from "../components/PasswordInput";
 
 type AccountType = "student" | "teacher";
 
@@ -118,11 +119,10 @@ export default function Login() {
           />
 
           <label>كلمة المرور</label>
-          <input
-            type="password"
+          <PasswordInput
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+            onChange={setPassword}
+            autoComplete="current-password"
           />
 
           <button type="submit" disabled={loading}>

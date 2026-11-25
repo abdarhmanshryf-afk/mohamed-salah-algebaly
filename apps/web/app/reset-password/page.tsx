@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
+import PasswordInput from "../components/PasswordInput";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -51,19 +52,17 @@ export default function ResetPassword() {
         {!done && (
           <form onSubmit={handleUpdate}>
             <label>كلمة المرور الجديدة</label>
-            <input
-              type="password"
+            <PasswordInput
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+              onChange={setPassword}
+              autoComplete="new-password"
             />
 
             <label>تأكيد كلمة المرور</label>
-            <input
-              type="password"
+            <PasswordInput
               value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              required
+              onChange={setConfirm}
+              autoComplete="new-password"
             />
 
             <button type="submit" disabled={loading}>
