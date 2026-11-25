@@ -42,7 +42,7 @@ export default async function Home() {
   return (
     <main>
       <nav className="nav">
-        <div className="brand">الأستاذ محمد صلاح الجبالي</div>
+        <div className="brand">متقن</div>
         {isTeacher && <a className="login" href="/teacher">لوحة التحكم</a>}
         {!user && <a className="login" href="/login">دخول الطلاب</a>}
         {user && !isTeacher && <a className="login" href="/courses">كورساتي</a>}
@@ -59,7 +59,7 @@ export default async function Home() {
           {features.map(([title, desc]) => <article className="card" key={title}><h3>{title}</h3><p>{desc}</p></article>)}
         </div>
       </section>
-      <footer>© منصة الأستاذ محمد صلاح الجبالي</footer>
+      <footer>© منصة متقن</footer>
     </main>
   );
 }

@@ -12,15 +12,18 @@ export default function Login() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const client = () =>
+    createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = client();
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -53,6 +56,20 @@ export default function Login() {
     window.location.href = "/courses";
   }
 
+  async function handleGoogle() {
+    setMessage("");
+    const supabase = client();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) {
+      setMessage("الدخول بحساب جوجل غير متاح حاليًا، سجل بالبريد الإلكتروني وكلمة المرور.");
+    }
+  }
+
   const optionStyle = (active: boolean): React.CSSProperties => ({
     flex: 1,
     padding: "12px",
@@ -65,59 +82,70 @@ export default function Login() {
   });
 
   return (
-    <main className="subpage">
-      <a href="/">← الرئيسية</a>
-      <h1>تسجيل الدخول</h1>
-      <p>سجل دخولك لمتابعة كورساتك التعليمية.</p>
+    <main className="auth-wrap">
+      <div className="auth-card">
+        <h1 className="auth-brand">متقن<span>.</span></h1>
+        <p className="auth-welcome">أهلًا بيك في متقن، رحلتك للتفوق بتبدأ من هنا ❤️</p>
 
-      <div
-        role="group"
-        aria-label="نوع الحساب"
-        style={{ display: "flex", gap: "12px", marginBottom: "16px" }}
-      >
-        <button
-          type="button"
-          style={optionStyle(accountType === "student")}
-          onClick={() => setAccountType("student")}
+        <div
+          role="group"
+          aria-label="نوع الحساب"
+          style={{ display: "flex", gap: "12px", marginBottom: "8px" }}
         >
-          أنا طالب 🎓
+          <button
+            type="button"
+            style={optionStyle(accountType === "student")}
+            onClick={() => setAccountType("student")}
+          >
+            أنا طالب 🎓
+          </button>
+          <button
+            type="button"
+            style={optionStyle(accountType === "teacher")}
+            onClick={() => setAccountType("teacher")}
+          >
+            أنا الأستاذ 👨‍🏫
+          </button>
+        </div>
+
+        <form onSubmit={handleLogin}>
+          <label>البريد الإلكتروني</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <label>كلمة المرور</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit" disabled={loading}>
+            {loading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
+          </button>
+        </form>
+
+        <button type="button" className="auth-google" onClick={handleGoogle}>
+          الدخول بحساب جوجل
         </button>
-        <button
-          type="button"
-          style={optionStyle(accountType === "teacher")}
-          onClick={() => setAccountType("teacher")}
-        >
-          أنا الأستاذ 👨‍🏫
-        </button>
+
+        {message && <p role="alert">{message}</p>}
+
+        <div className="auth-links">
+          <a href="/forgot-password">نسيت كلمة المرور؟</a>
+        </div>
+        <div className="auth-links">
+          ليس لديك حساب؟ <a href="/register">اعمل حساب جديد</a>
+        </div>
+        <div className="auth-links">
+          <a href="/">← الرئيسية</a>
+        </div>
       </div>
-
-      <form onSubmit={handleLogin}>
-        <label>البريد الإلكتروني</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        <label>كلمة المرور</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <button type="submit" disabled={loading}>
-          {loading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
-        </button>
-      </form>
-
-      {message && <p role="alert">{message}</p>}
-
-      <p>
-        ليس لديك حساب؟ <a href="/register">إنشاء حساب جديد</a>
-      </p>
     </main>
   );
 }
