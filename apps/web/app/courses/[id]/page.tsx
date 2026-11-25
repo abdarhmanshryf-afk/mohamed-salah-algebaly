@@ -118,7 +118,10 @@ export default function CourseDetails() {
       setMessage("مش قادرين نفتح الملف دلوقتي، جرب تاني.");
       return;
     }
-    window.location.href = data.signedUrl;
+    const full = data.signedUrl.startsWith("http")
+      ? data.signedUrl
+      : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1${data.signedUrl}`;
+    window.location.href = full;
   }
 
   async function playVideo(lesson: Lesson) {
@@ -128,10 +131,13 @@ export default function CourseDetails() {
       .from("lesson-media")
       .createSignedUrl(lesson.video_path, 3600);
     if (error || !data?.signedUrl) {
-      setMessage("مش قادرين نشغل الفيديو دلوقتي، جرب تاني.");
+      setMessage("مش قادرين نفتح الفيديو دلوقتي، جرب تاني.");
       return;
     }
-    setOpenVideo({ id: lesson.id, url: data.signedUrl });
+    const full = data.signedUrl.startsWith("http")
+      ? data.signedUrl
+      : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1${data.signedUrl}`;
+    setOpenVideo({ id: lesson.id, url: full });
   }
 
   async function requestSubscription() {
