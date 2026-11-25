@@ -63,11 +63,9 @@ export default function Login() {
       </form>
 
       {message && <p role="alert">{message}</p>}
-    </main>
-  );
-}
 
-"use client";
+      <p>
+        ليس لديك حساب؟ <a href="/register">إنشاء حساب جديد</a>
       </p>
     </main>
   );
