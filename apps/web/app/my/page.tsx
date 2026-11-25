@@ -139,6 +139,11 @@ export default function MyLessons() {
       </header>
       <div className="subpage">
         <h1>دروسي</h1>
+        <p style={{ margin: "0 0 10px", fontSize: "14px" }}>
+          <a href="/support" style={{ color: "var(--gold)" }}>
+            🛟 عندك مشكلة؟ كلم الدعم من هنا
+          </a>
+        </p>
         {loading && <p>جاري التحميل...</p>}
         {!loading && rows.length === 0 && (
           <p>

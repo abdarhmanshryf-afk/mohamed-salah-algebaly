@@ -144,6 +144,10 @@ export default function TeacherHome() {
           <h3>الاشتراكات</h3>
           <p>متابعة الاشتراكات النشطة والمعلقة والمنتهية.</p>
         </a>
+        <a className="card" href="/teacher/tickets">
+          <h3>تذاكر الدعم</h3>
+          <p>رد على استفسارات ومشاكل الطلاب.</p>
+        </a>
       </div>
     </main>
   );
