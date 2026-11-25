@@ -34,6 +34,14 @@ const icons: Record<string, React.ReactNode> = {
       <path d="M12 7v5l3 3" />
     </svg>
   ),
+  users: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2" />
+      <circle cx="10" cy="7" r="4" />
+      <path d="M21 21v-2a4 4 0 00-3-3.87" />
+      <path d="M15 3.13a4 4 0 010 7.75" />
+    </svg>
+  ),
 };
 
 const items = [
@@ -42,6 +50,7 @@ const items = [
   { href: "/my", label: "دروسي", icon: icons.play },
   { href: "/exams", label: "امتحانات", icon: icons.pencil },
   { href: "/progress", label: "تقدمي", icon: icons.clock },
+  { href: "/rooms", label: "غرف", icon: icons.users },
 ];
 
 const hiddenPrefixes = [
