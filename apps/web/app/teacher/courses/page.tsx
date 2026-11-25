@@ -239,8 +239,8 @@ export default function TeacherCourses() {
               style={{
                 padding: "8px 16px",
                 borderRadius: "8px",
-                background: "var(--navy)",
-                color: "white",
+                background: "var(--gold)",
+                color: "#17233a",
                 fontWeight: "bold",
                 display: "inline-block",
               }}

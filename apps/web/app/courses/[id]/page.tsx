@@ -585,8 +585,8 @@ export default function CourseDetails() {
                     padding: "10px 20px",
                     border: 0,
                     borderRadius: "10px",
-                    background: "var(--navy)",
-                    color: "white",
+                    background: "var(--gold)",
+                    color: "#17233a",
                     fontWeight: "bold",
                     cursor: "pointer",
                     marginInlineEnd: "8px",
@@ -715,8 +715,8 @@ export default function CourseDetails() {
                             style={{
                               padding: "8px 16px",
                               borderRadius: "8px",
-                              background: "var(--navy)",
-                              color: "white",
+                              background: "var(--gold)",
+                              color: "#17233a",
                               fontWeight: "bold",
                               cursor: "pointer",
                             }}
@@ -849,8 +849,8 @@ export default function CourseDetails() {
                 style={{
                   padding: "10px 20px",
                   borderRadius: "10px",
-                  background: "var(--navy)",
-                  color: "white",
+                  background: "var(--gold)",
+                  color: "#17233a",
                   fontWeight: "bold",
                   whiteSpace: "nowrap",
                 }}

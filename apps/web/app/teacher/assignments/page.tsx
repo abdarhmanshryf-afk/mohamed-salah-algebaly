@@ -301,8 +301,8 @@ export default function TeacherAssignments() {
               padding: "10px 24px",
               border: 0,
               borderRadius: "10px",
-              background: "var(--navy)",
-              color: "white",
+              background: "var(--gold)",
+              color: "#17233a",
               fontWeight: "bold",
               cursor: "pointer",
             }}
@@ -346,8 +346,8 @@ export default function TeacherAssignments() {
                   padding: "8px 16px",
                   border: 0,
                   borderRadius: "8px",
-                  background: "var(--navy)",
-                  color: "white",
+                  background: "var(--gold)",
+                  color: "#17233a",
                   cursor: "pointer",
                 }}
               >

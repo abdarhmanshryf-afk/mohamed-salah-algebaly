@@ -209,8 +209,8 @@ export default function LessonComments({
             padding: "10px 18px",
             border: 0,
             borderRadius: "10px",
-            background: "var(--navy)",
-            color: "white",
+            background: "var(--gold)",
+            color: "#17233a",
             fontWeight: "bold",
             cursor: "pointer",
           }}
