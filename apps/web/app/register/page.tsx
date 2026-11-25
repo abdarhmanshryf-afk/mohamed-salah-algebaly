@@ -89,7 +89,9 @@ export default function Register() {
         </button>
       </form>
 
-      {message && <p role="status">{message}</p>}
+      {message && <p role="status">{message}</p>}<p>
+  لديك حساب بالفعل؟ <a href="/login">تسجيل الدخول</a>
+</p>
     </main>
   );
 }
