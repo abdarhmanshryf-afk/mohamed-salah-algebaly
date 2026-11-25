@@ -110,15 +110,23 @@ export default function CourseDetails() {
   }, [courseId]);
 
   async function openFile(path: string) {
+    // Open the tab in the click gesture so popup blockers allow it,
+    // then point it at the signed URL once it is ready.
+    const win = window.open("", "_blank");
     const supabase = client();
     const { data, error } = await supabase.storage
       .from("lesson-media")
       .createSignedUrl(path, 3600);
     if (error || !data?.signedUrl) {
+      win?.close();
       setMessage("مش قادرين نفتح الملف دلوقتي، جرب تاني.");
       return;
     }
-    window.open(data.signedUrl, "_blank");
+    if (win) {
+      win.location.href = data.signedUrl;
+    } else {
+      window.location.href = data.signedUrl;
+    }
   }
 
   async function playVideo(lesson: Lesson) {
