@@ -22,7 +22,7 @@ export default function Register() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -36,6 +36,13 @@ export default function Register() {
     if (error) {
       setMessage("تعذر إنشاء الحساب: " + error.message);
       setLoading(false);
+      return;
+    }
+
+    // When email confirmation is off, signup returns an active session:
+    // send them straight in instead of telling them to check their email.
+    if (data?.session) {
+      window.location.href = "/courses";
       return;
     }
 
