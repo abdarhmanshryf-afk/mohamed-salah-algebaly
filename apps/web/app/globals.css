@@ -26,14 +26,14 @@ html[data-theme="light"]{color-scheme:light}
 .auth-welcome{text-align:center;color:var(--text-muted);margin:10px 0 24px;line-height:1.8}
 .auth-card label{display:block;margin:14px 0 6px;color:var(--ink);font-weight:bold}
 .auth-card input{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:16px}
-.auth-card form>button{width:100%;margin-top:20px;padding:14px;border:0;border-radius:10px;background:var(--navy);color:white;font-size:17px;font-weight:bold;cursor:pointer}
+.auth-card form>button{width:100%;margin-top:20px;padding:14px;border:0;border-radius:10px;background:var(--gold);color:var(--gold-ink);font-size:17px;font-weight:bold;cursor:pointer}
 .auth-google{width:100%;margin-top:12px;padding:13px;border:1px solid var(--border);border-radius:10px;background:var(--surface);font-size:16px;cursor:pointer}
 .auth-links{margin-top:16px;text-align:center;color:var(--text-muted)}
 .auth-links a{color:var(--text);font-weight:bold}
 
 /* FAQ accordion */
 .faq{background:var(--bg-2);padding:56px 8%;border-top:1px solid var(--border)}
-.faq h2{font-size:22px;color:white;margin:0 0 18px}
+.faq h2{font-size:22px;color:var(--text);margin:0 0 18px}
 .faq-item{border-bottom:1px solid var(--border)}
 .faq-q{width:100%;background:none;border:0;color:var(--text);font-size:16px;font-weight:bold;text-align:right;padding:16px 4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:inherit}
 .faq-q .chev{color:var(--gold);font-size:13px;flex-shrink:0}
@@ -41,19 +41,19 @@ html[data-theme="light"]{color-scheme:light}
 
 /* About the teacher */
 .teacher{background:var(--bg-2);padding:52px 8%;border-top:1px solid var(--border);display:flex;align-items:center;gap:26px;flex-wrap:wrap}
-.teacher h2{font-size:22px;color:white;margin:0 0 10px}
+.teacher h2{font-size:22px;color:var(--text);margin:0 0 10px}
 .teacher p{color:var(--text-soft);font-size:15px;line-height:1.9;max-width:560px;margin:0}
 .teacher-photo{width:130px;height:130px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:42px;font-weight:800;flex-shrink:0;background:var(--surface);overflow:hidden}
 .teacher-photo img{width:100%;height:100%;object-fit:cover}
 
 /* Rich footer */
 .footer-rich{background:var(--bg-2);border-top:1px solid var(--border);padding:52px 8% 30px;color:var(--text-soft)}
-.footer-brand{font-size:48px;font-weight:800;color:white;margin:0}
+.footer-brand{font-size:48px;font-weight:800;color:var(--text);margin:0}
 .footer-tag{color:var(--gold);font-size:16px;margin:6px 0 32px;font-weight:bold}
 .footer-cols{display:flex;gap:64px;flex-wrap:wrap}
 .footer-col h4{color:var(--gold);font-size:15px;margin:0 0 14px}
 .footer-col a{display:block;color:var(--text-soft);font-size:14px;margin:0 0 11px}
-.footer-col a:hover{color:white}
+.footer-col a:hover{color:var(--gold)}
 .footer-copy{text-align:center;margin-top:42px;color:var(--text-muted);font-size:13px}
 
 /* Floating WhatsApp support */
