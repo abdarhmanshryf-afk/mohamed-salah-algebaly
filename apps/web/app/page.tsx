@@ -1,15 +1,51 @@
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
+
 const features = [
   ["شرح مبسّط", "دروس منظمة تساعدك على فهم اللغة العربية خطوة بخطوة."],
   ["امتحانات إلكترونية", "تدرّب واختبر مستواك وتابع تقدمك."],
   ["مذكرات ومراجعات", "مواد تعليمية مساعدة لكل كورس."],
 ];
 
-export default function Home() {
+export default async function Home() {
+  const cookieStore = await cookies();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll() {
+          // Server components cannot set cookies.
+        },
+      },
+    }
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let isTeacher = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    isTeacher = profile?.role === "teacher";
+  }
+
   return (
     <main>
       <nav className="nav">
         <div className="brand">الأستاذ محمد صلاح الجبالي</div>
-        <a className="login" href="/login">دخول الطلاب</a>
+        {isTeacher && <a className="login" href="/teacher">لوحة التحكم</a>}
+        {!user && <a className="login" href="/login">دخول الطلاب</a>}
+        {user && !isTeacher && <a className="login" href="/courses">كورساتي</a>}
       </nav>
       <section className="hero">
         <div className="eyebrow">منصة تعليم اللغة العربية</div>

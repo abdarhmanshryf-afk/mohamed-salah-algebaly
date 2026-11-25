@@ -123,6 +123,11 @@ export default function Courses() {
   return (
     <main className="subpage">
       <a href="/">← الرئيسية</a>
+      {isTeacher && (
+        <a href="/teacher" style={{ marginInlineStart: "16px" }}>
+          لوحة التحكم
+        </a>
+      )}
 
       <h1>مرحبًا بك يا {studentName} ❤️</h1>
       <p>أهلًا بك في منصة الأستاذ محمد صلاح الجبالي.</p>
