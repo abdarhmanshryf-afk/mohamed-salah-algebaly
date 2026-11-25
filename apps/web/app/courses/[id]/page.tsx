@@ -635,6 +635,8 @@ export default function CourseDetails() {
                 <video
                   src={openVideo.url}
                   controls
+                  playsInline
+                  preload="metadata"
                   style={{
                     width: "100%",
                     marginTop: "12px",
