@@ -34,6 +34,7 @@ export default function AdminHome() {
 
   useEffect(() => {
     async function load() {
+      try {
       const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -62,6 +63,10 @@ export default function AdminHome() {
       setLessonsCount(l.count ?? 0);
       setAttemptsCount(a.count ?? 0);
       setLoading(false);
+      } catch {
+        setMessage("خطأ تحميل الإحصائيات.");
+        setLoading(false);
+      }
     }
     load();
   }, []);

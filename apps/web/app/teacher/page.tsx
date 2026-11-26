@@ -17,6 +17,7 @@ export default function TeacherHome() {
 
   useEffect(() => {
     async function loadStats() {
+      try {
       const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -65,6 +66,9 @@ export default function TeacherHome() {
         pendingRequests: pending.count ?? 0,
         activeSubscriptions: active.count ?? 0,
       });
+      } catch {
+        setMessage("خطأ تحميل الإحصائيات.");
+      }
     }
 
     loadStats();
