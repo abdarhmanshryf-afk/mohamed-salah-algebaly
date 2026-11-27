@@ -12,6 +12,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   const client = () =>
     createBrowserClient(
@@ -23,13 +24,23 @@ export default function Login() {
   // المنصة على صفحة الدخول أولًا في كل مرة. من عنده جلسة شغالة ووصل هنا
   // (من تحويل الصفحة الرئيسية) نعلمه ونرجعه للمنصة مباشرة.
   useEffect(() => {
+    // ?switch=1 يعرض الفورم حتى لو فيه جلسة (تبديل حساب).
+    if (window.location.search.includes("switch=1")) {
+      setChecking(false);
+      return;
+    }
     const supabase = client();
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        document.cookie = "mtq_gate=1; path=/; SameSite=Lax";
-        window.location.href = "/";
-      }
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (data.session) {
+          document.cookie = "mtq_gate=1; path=/; SameSite=Lax";
+          window.location.href = "/";
+        } else {
+          setChecking(false);
+        }
+      })
+      .catch(() => setChecking(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -119,6 +130,19 @@ export default function Login() {
     cursor: "pointer",
     fontSize: "16px",
   });
+
+  // أثناء فحص الجلسة أو أثناء التحويل التلقائي للمنصة: شاشة دخول نظيفة
+  // من غير فورم، حتى لا يظهر تعارض بين الفورم والواجهة لمن عنده جلسة شغالة.
+  if (checking) {
+    return (
+      <main className="auth-wrap">
+        <div className="auth-card">
+          <h1 className="auth-brand">متقن<span>.</span></h1>
+          <p className="auth-welcome">جاري الدخول للمنصة...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="auth-wrap">
