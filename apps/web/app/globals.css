@@ -122,3 +122,4 @@ button:active{transform:scale(.97)}
 a.card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
 .bottom-nav a{transition:color .15s ease}
+.auth-card .auth-primary{width:100%;margin-top:20px;padding:14px;border:0;border-radius:10px;background:var(--gold);color:var(--gold-ink);font-size:17px;font-weight:bold;cursor:pointer}
