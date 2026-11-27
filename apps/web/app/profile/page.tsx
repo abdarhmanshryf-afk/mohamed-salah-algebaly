@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../lib/supabase-browser";
 
 const roleLabels: Record<string, string> = {
   student: "طالب",
@@ -21,14 +21,12 @@ export default function ProfilePage() {
   const [message, setMessage] = useState("");
 
   function client() {
-    return createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    return getBrowserClient();
   }
 
   useEffect(() => {
     async function load() {
+      try {
       const supabase = client();
       const {
         data: { user },
@@ -51,6 +49,11 @@ export default function ProfilePage() {
         setCreatedAt(p.created_at || "");
       }
       setLoading(false);
+      } catch {
+        setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
     }
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 
 const STUDY_SECONDS = 25 * 60;
 const BREAK_SECONDS = 5 * 60;
@@ -35,10 +35,7 @@ export default function RoomPage() {
 
   const client = useCallback(
     () =>
-      createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      ),
+      getBrowserClient(),
     []
   );
 
@@ -51,6 +48,7 @@ export default function RoomPage() {
   const ss = (remaining % 60).toString().padStart(2, "0");
 
   async function refresh() {
+    try {
     const supabase = client();
     const { data: roomData, error } = await supabase
       .from("study_rooms")
@@ -69,6 +67,10 @@ export default function RoomPage() {
       .eq("room_id", id);
     setMembers((memberData as unknown as Member[]) || []);
     setLoading(false);
+    } catch {
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function maybeAdvancePhase(r: RoomData) {

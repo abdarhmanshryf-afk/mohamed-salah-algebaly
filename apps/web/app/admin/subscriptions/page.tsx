@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 import { logPaymentEvent } from "../../lib/paymentEvents";
 
 type SubRow = {
@@ -41,13 +41,11 @@ export default function AdminSubscriptions() {
   const [proofSupported, setProofSupported] = useState(true);
 
   function client() {
-    return createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    return getBrowserClient();
   }
 
   async function load() {
+    try {
     const supabase = client();
     // Payment-proof columns come from the admin setup SQL; fall back pre-setup.
     const full = await supabase
@@ -79,6 +77,11 @@ export default function AdminSubscriptions() {
       setRows((full.data as unknown as SubRow[]) || []);
     }
     setLoading(false);
+    } catch {
+      setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {

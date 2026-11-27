@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../lib/supabase-browser";
 
 type ProfileRow = { id: string; role: string; created_at: string };
 type EnrollmentRow = {
@@ -35,10 +35,7 @@ export default function AdminHome() {
   useEffect(() => {
     async function load() {
       try {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      const supabase = getBrowserClient();
 
       const [p, e, c, l, a] = await Promise.all([
         supabase.from("profiles").select("id, role, created_at"),

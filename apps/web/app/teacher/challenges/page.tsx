@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 
 type Challenge = {
   id: string;
@@ -24,13 +24,11 @@ export default function TeacherChallenges() {
   const [message, setMessage] = useState("");
 
   function client() {
-    return createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    return getBrowserClient();
   }
 
   async function load() {
+    try {
     const supabase = client();
     const { data, error } = await supabase
       .from("challenges")
@@ -39,6 +37,11 @@ export default function TeacherChallenges() {
     if (error) setSupported(false);
     else setRows((data as Challenge[]) || []);
     setLoading(false);
+    } catch {
+      setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {

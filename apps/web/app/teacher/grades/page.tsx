@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 
 type Course = { id: string; title: string };
 type Exam = { id: string; title: string };
@@ -29,13 +29,11 @@ export default function TeacherGrades() {
   const [message, setMessage] = useState("");
 
   const client = () =>
-    createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    getBrowserClient();
 
   useEffect(() => {
     async function loadCourses() {
+      try {
       const supabase = client();
       const { data, error } = await supabase
         .from("courses")
@@ -50,6 +48,11 @@ export default function TeacherGrades() {
       setCourses(list);
       if (list.length > 0) setCourseId(list[0].id);
       else setLoading(false);
+      } catch {
+        setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
     }
     loadCourses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -58,6 +61,7 @@ export default function TeacherGrades() {
   useEffect(() => {
     if (!courseId) return;
     async function loadGrades() {
+      try {
       setLoading(true);
       setMessage("");
       const supabase = client();
@@ -120,6 +124,11 @@ export default function TeacherGrades() {
       }
 
       setLoading(false);
+      } catch {
+        setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
     }
     loadGrades();
     // eslint-disable-next-line react-hooks/exhaustive-deps

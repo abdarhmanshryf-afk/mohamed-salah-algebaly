@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 
 type LQuestion = {
   id: string;
@@ -31,10 +31,7 @@ export default function LevelCheck() {
   const startRef = useRef(Date.now());
 
   const client = () =>
-    createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    getBrowserClient();
 
   function pickNext(
     questions: LQuestion[],
@@ -50,6 +47,7 @@ export default function LevelCheck() {
 
   useEffect(() => {
     async function load() {
+      try {
       const supabase = client();
       const {
         data: { user },
@@ -72,6 +70,10 @@ export default function LevelCheck() {
         setCurrent(pickNext(qs, [], 2));
       }
       setLoading(false);
+      } catch {
+      } finally {
+        setLoading(false);
+      }
     }
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps

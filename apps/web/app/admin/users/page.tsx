@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 
 type UserRow = {
   id: string;
@@ -29,13 +29,11 @@ export default function AdminUsers() {
   const [banSupported, setBanSupported] = useState(true);
 
   function client() {
-    return createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    return getBrowserClient();
   }
 
   async function load() {
+    try {
     const supabase = client();
 
     // banned_at is added by the admin setup SQL; fall back gracefully pre-setup.
@@ -76,6 +74,11 @@ export default function AdminUsers() {
     });
     setEnrollCounts(counts);
     setLoading(false);
+    } catch {
+      setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {

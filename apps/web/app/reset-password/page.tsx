@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../lib/supabase-browser";
 import PasswordInput from "../components/PasswordInput";
 
 export default function ResetPassword() {
@@ -12,6 +12,7 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
 
   async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
+    try {
     e.preventDefault();
     setMessage("");
 
@@ -26,10 +27,7 @@ export default function ResetPassword() {
 
     setLoading(true);
 
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = getBrowserClient();
 
     const { error } = await supabase.auth.updateUser({ password });
 
@@ -41,6 +39,11 @@ export default function ResetPassword() {
     }
 
     setLoading(false);
+    } catch {
+      setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

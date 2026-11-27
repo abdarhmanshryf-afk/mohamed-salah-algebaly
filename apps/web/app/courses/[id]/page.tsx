@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 import LessonComments from "../../components/LessonComments";
 import { PAYMENT_RECEIVER_NUMBER } from "../../config";
 import { logPaymentEvent } from "../../lib/paymentEvents";
@@ -124,13 +124,11 @@ export default function CourseDetails() {
   const lastSaveRef = useRef<Record<string, number>>({});
 
   const client = () =>
-    createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    getBrowserClient();
 
   useEffect(() => {
     async function loadData() {
+      try {
       const supabase = client();
 
       const {
@@ -349,6 +347,11 @@ export default function CourseDetails() {
       }
 
       setLoading(false);
+      } catch {
+        setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
     }
 
     loadData();

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 
 type Course = {
   id: string;
@@ -29,13 +29,11 @@ export default function TeacherCourses() {
   const [saving, setSaving] = useState(false);
 
   function client() {
-    return createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    return getBrowserClient();
   }
 
   async function loadCourses() {
+    try {
     const supabase = client();
     const { data, error } = await supabase
       .from("courses")
@@ -48,6 +46,11 @@ export default function TeacherCourses() {
       setCourses(data || []);
     }
     setLoading(false);
+    } catch {
+      setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {

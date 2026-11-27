@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../lib/supabase-browser";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -9,14 +9,12 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
 
   async function handleReset(e: React.FormEvent<HTMLFormElement>) {
+    try {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = getBrowserClient();
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
@@ -29,6 +27,11 @@ export default function ForgotPassword() {
     }
 
     setLoading(false);
+    } catch {
+      setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

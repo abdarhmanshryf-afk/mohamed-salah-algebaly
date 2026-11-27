@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 
 type Course = { id: string; title: string };
 type Exam = {
@@ -33,10 +33,7 @@ export default function TeacherExams() {
   const [message, setMessage] = useState("");
 
   const client = () =>
-    createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    getBrowserClient();
 
   const loadExams = useCallback(
     async (cid: string) => {
@@ -58,6 +55,7 @@ export default function TeacherExams() {
 
   useEffect(() => {
     async function load() {
+      try {
       const supabase = client();
       const { data } = await supabase
         .from("courses")
@@ -70,6 +68,11 @@ export default function TeacherExams() {
         await loadExams(list[0].id);
       }
       setLoading(false);
+      } catch {
+        setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
     }
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps

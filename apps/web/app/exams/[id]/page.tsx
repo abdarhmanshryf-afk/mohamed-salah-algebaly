@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 import { askItqanAI } from "../../lib/ai";
 
 type Question = {
@@ -34,13 +34,11 @@ export default function ExamPage() {
   const [aiReply, setAiReply] = useState("");
 
   const client = () =>
-    createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    getBrowserClient();
 
   useEffect(() => {
     async function load() {
+      try {
       const supabase = client();
 
       const {
@@ -80,6 +78,11 @@ export default function ExamPage() {
 
       setQuestions((qs as Question[]) || []);
       setLoading(false);
+      } catch {
+        setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
     }
 
     load();

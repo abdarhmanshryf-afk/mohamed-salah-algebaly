@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../lib/supabase-browser";
 import PasswordInput from "../components/PasswordInput";
 
 type AccountType = "student" | "teacher";
@@ -16,10 +16,7 @@ export default function Login() {
   const [sessionInfo, setSessionInfo] = useState<{ name: string; isStaff: boolean } | null>(null);
 
   const client = () =>
-    createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    getBrowserClient();
 
   // علامة جلسة المتصفح (mtq_gate): تُوضع عند الدخول وتُمحى بقفل المتصفح،
   // حتى تفتح المنصة على صفحة الدخول أولًا في كل جلسة. من عنده جلسة شغالة
@@ -60,6 +57,7 @@ export default function Login() {
   }
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    try {
     e.preventDefault();
     setLoading(true);
     setMessage("");
@@ -118,6 +116,11 @@ export default function Login() {
     }
 
     window.location.href = "/courses";
+    } catch {
+      setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleGoogle() {

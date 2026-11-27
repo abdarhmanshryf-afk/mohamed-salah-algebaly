@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../lib/supabase-browser";
 
 type DueItem = {
   id: string;
@@ -23,10 +23,8 @@ export default function ReviewPage() {
 
   useEffect(() => {
     async function load() {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      try {
+      const supabase = getBrowserClient();
 
       const {
         data: { user },
@@ -51,6 +49,10 @@ export default function ReviewPage() {
         setItems((data as unknown as DueItem[]) || []);
       }
       setLoading(false);
+      } catch {
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, []);
@@ -59,10 +61,7 @@ export default function ReviewPage() {
     if (picked[item.id]) return;
     setPicked((p) => ({ ...p, [item.id]: option }));
     const correct = option === item.questions?.correct_answer;
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = getBrowserClient();
     if (!correct) {
       await supabase
         .from("review_schedule")

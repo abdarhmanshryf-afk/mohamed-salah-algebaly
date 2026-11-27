@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 import { logPaymentEvent } from "../../lib/paymentEvents";
 
 type Enrollment = {
@@ -48,10 +48,8 @@ export default function TeacherStudents() {
 
   useEffect(() => {
     async function loadStudents() {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      try {
+      const supabase = getBrowserClient();
 
       const { data, error } = await supabase
         .from("profiles")
@@ -67,13 +65,15 @@ export default function TeacherStudents() {
         setStudents((data as unknown as Student[]) || []);
       }
       setLoading(false);
+      } catch {
+        setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
     }
 
     async function loadCourses() {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      const supabase = getBrowserClient();
       const { data } = await supabase
         .from("courses")
         .select("id, title, duration_days, price")
@@ -86,10 +86,7 @@ export default function TeacherStudents() {
   }, []);
 
   async function reloadStudents() {
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = getBrowserClient();
     const { data } = await supabase
       .from("profiles")
       .select(
@@ -117,10 +114,7 @@ export default function TeacherStudents() {
     if (!student || !course) return;
 
     setAddBusy(true);
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = getBrowserClient();
 
     const existing = (student.enrollments || []).find(
       (e) => e.course_id === addCourseId

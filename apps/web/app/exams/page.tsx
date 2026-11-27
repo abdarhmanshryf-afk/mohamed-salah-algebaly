@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../lib/supabase-browser";
 
 type Row = {
   id: string;
@@ -16,10 +16,8 @@ export default function ExamsList() {
 
   useEffect(() => {
     async function load() {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      try {
+      const supabase = getBrowserClient();
 
       const {
         data: { user },
@@ -95,6 +93,10 @@ export default function ExamsList() {
         )
       );
       setLoading(false);
+      } catch {
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, []);

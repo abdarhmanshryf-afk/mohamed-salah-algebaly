@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../lib/supabase-browser";
 
 type CommentRow = {
   id: string;
@@ -28,10 +28,7 @@ export default function LessonComments({
   const [message, setMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = getBrowserClient();
 
   const load = useCallback(async () => {
     const { data, error } = await supabase

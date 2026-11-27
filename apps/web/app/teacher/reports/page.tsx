@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 
 type Student = { id: string; full_name: string | null };
 
@@ -38,10 +38,7 @@ export default function TeacherReports() {
 
   useEffect(() => {
     async function load() {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      const supabase = getBrowserClient();
       const { data } = await supabase
         .from("profiles")
         .select("id, full_name")
@@ -57,10 +54,7 @@ export default function TeacherReports() {
     setBusy(true);
     setMessage("");
     setReport(null);
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = getBrowserClient();
     const { data, error } = await supabase.rpc("get_student_month_report", {
       p_student_id: studentId,
       p_year: year,

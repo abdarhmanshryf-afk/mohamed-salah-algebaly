@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 
 type SubscriptionRow = {
   id: string;
@@ -30,10 +30,8 @@ export default function TeacherSubscriptions() {
 
   useEffect(() => {
     async function loadSubscriptions() {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      try {
+      const supabase = getBrowserClient();
 
       const { data, error } = await supabase
         .from("enrollments")
@@ -48,6 +46,11 @@ export default function TeacherSubscriptions() {
         setSubscriptions((data as unknown as SubscriptionRow[]) || []);
       }
       setLoading(false);
+      } catch {
+        setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
     }
 
     loadSubscriptions();

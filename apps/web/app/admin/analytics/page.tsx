@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 
 type DayRow = { day: string; count: number };
 
@@ -64,10 +64,8 @@ export default function AdminAnalytics() {
 
   useEffect(() => {
     async function load() {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      try {
+      const supabase = getBrowserClient();
 
       const [p, e, c, a, lp] = await Promise.all([
         supabase.from("profiles").select("id, role, created_at"),
@@ -139,6 +137,11 @@ export default function AdminAnalytics() {
 
       if (!lp.error) setCompletions(lp.count || 0);
       setLoading(false);
+      } catch {
+        setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, []);
