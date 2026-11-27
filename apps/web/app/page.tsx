@@ -85,6 +85,13 @@ export default async function Home() {
           <span className="nq-logo-mark" aria-hidden="true">🎓</span>
           <span>متقن</span>
         </a>
+        <nav className="nq-links nq-links-desktop">
+          <a href="/">الرئيسية</a>
+          <a href="/courses">الكورسات</a>
+          <a href="/about">عن المنصة</a>
+          <a href="/review">المراجعات</a>
+          <a href="/#faq">الأسئلة الشائعة</a>
+        </nav>
         <details className="nq-navwrap">
           <summary className="nq-burger" aria-label="القائمة">☰</summary>
           <nav className="nq-links">
