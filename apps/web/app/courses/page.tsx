@@ -26,6 +26,9 @@ type Notification = {
   read: boolean;
 };
 
+type LessonRow = { id: string; title: string; course_id: string };
+type ExamRow = { id: string; title: string; course_id: string };
+
 export default function Courses() {
   const [studentName, setStudentName] = useState("");
   const [studentId, setStudentId] = useState("");
@@ -45,6 +48,10 @@ export default function Courses() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [lessonsDone, setLessonsDone] = useState(0);
   const [examsDone, setExamsDone] = useState(0);
+  const [attemptedExamIds, setAttemptedExamIds] = useState<string[]>([]);
+  const [upcomingExams, setUpcomingExams] = useState<ExamRow[]>([]);
+  const [latestLessons, setLatestLessons] = useState<LessonRow[]>([]);
+  const [coursePct, setCoursePct] = useState<Record<string, number>>({});
   const [progressPct, setProgressPct] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -160,6 +167,9 @@ export default function Courses() {
       }
       if (!attemptsRes.error) {
         setExamsDone((attemptsRes.data || []).length);
+        setAttemptedExamIds(
+          (attemptsRes.data || []).map((a: { exam_id: string }) => a.exam_id)
+        );
       }
       if (!notifRes.error) {
         setNotifications((notifRes.data as Notification[]) || []);
@@ -174,7 +184,8 @@ export default function Courses() {
     loadData();
   }, [loadEnrollments]);
 
-  // My enrolled courses + progress %, derived once enrollments are known.
+  // My enrolled courses + per-course progress + latest lessons, derived once
+  // enrollments are known.
   useEffect(() => {
     async function loadMine() {
       const activeIds = enrollments
@@ -190,19 +201,46 @@ export default function Courses() {
 
       const { data: lessonRows } = await supabase
         .from("lessons")
-        .select("id, course_id")
+        .select("id, title, course_id, created_at")
+        .in("course_id", activeIds)
+        .order("created_at", { ascending: false });
+      const lessons = (lessonRows as (LessonRow & { created_at: string })[]) || [];
+      setLatestLessons(lessons.slice(0, 3));
+
+      const lessonIds = lessons.map((l) => l.id);
+      let doneSet = new Set<string>();
+      if (lessonIds.length) {
+        const { data: doneRows } = await supabase
+          .from("lesson_progress")
+          .select("lesson_id")
+          .eq("student_id", studentId)
+          .eq("completed", true)
+          .in("lesson_id", lessonIds);
+        doneSet = new Set((doneRows || []).map((d: { lesson_id: string }) => d.lesson_id));
+      }
+      const totalLessons = lessons.length;
+      if (totalLessons) {
+        setProgressPct(Math.round((doneSet.size / totalLessons) * 100));
+        const pctMap: Record<string, { done: number; total: number }> = {};
+        lessons.forEach((l) => {
+          if (!pctMap[l.course_id]) pctMap[l.course_id] = { done: 0, total: 0 };
+          pctMap[l.course_id].total += 1;
+          if (doneSet.has(l.id)) pctMap[l.course_id].done += 1;
+        });
+        const out: Record<string, number> = {};
+        Object.keys(pctMap).forEach((cid) => {
+          out[cid] = pctMap[cid].total
+            ? Math.round((pctMap[cid].done / pctMap[cid].total) * 100)
+            : 0;
+        });
+        setCoursePct(out);
+      }
+
+      const { data: examRows } = await supabase
+        .from("exams")
+        .select("id, title, course_id")
         .in("course_id", activeIds);
-      const totalLessons = (lessonRows || []).length;
-      if (!totalLessons) return;
-      const lessonIds = (lessonRows || []).map((l: { id: string }) => l.id);
-      const { data: doneRows } = await supabase
-        .from("lesson_progress")
-        .select("lesson_id")
-        .eq("student_id", studentId)
-        .eq("completed", true)
-        .in("lesson_id", lessonIds);
-      const done = (doneRows || []).length;
-      setProgressPct(Math.round((done / totalLessons) * 100));
+      if (examRows) setUpcomingExams(examRows as ExamRow[]);
     }
     loadMine();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -248,6 +286,10 @@ export default function Courses() {
   }
 
   const activeCount = enrollments.filter((e) => e.status === "active").length;
+  const upcomingList = upcomingExams.filter((x) => !attemptedExamIds.includes(x.id));
+
+  const R = 34;
+  const CIRC = 2 * Math.PI * R;
 
   return (
     <main className="nq nqd">
@@ -263,7 +305,7 @@ export default function Courses() {
           متقن
         </a>
         <span className="nqd-topspacer" />
-        <NotificationBell />
+        <NotificationBell inline />
       </div>
 
       {menuOpen && (
@@ -311,82 +353,135 @@ export default function Courses() {
             <p>أهلًا بك في منصة متقن.</p>
           </div>
           <span className="nqd-bell-desktop">
-            <NotificationBell />
+            <NotificationBell inline />
           </span>
         </div>
 
         <section className="nqd-welcome">
           <div className="nqd-welcome-text">
             <h2>استمر في التعلم، أنت تبلي بلاءً حسنًا!</h2>
-            <p>
-              أكملت {progressPct}٪ من دروس كورساتك. ثباتك اليوم هو تفوقك بكرة إن
-              شاء الله.
-            </p>
+            <p>معًا نحو التميز في اللغة. ثباتك اليوم هو تفوقك بكرة إن شاء الله.</p>
             <a href="/my" className="nqd-btn-primary">
               استكمل الدروس ←
             </a>
+          </div>
+          <div className="nqd-ringwrap">
+            <svg width="92" height="92" viewBox="0 0 92 92" className="nqd-ring">
+              <circle cx="46" cy="46" r={R} stroke="rgba(255,255,255,.28)" strokeWidth="9" fill="none" />
+              <circle
+                cx="46" cy="46" r={R} stroke="#fff" strokeWidth="9" fill="none"
+                strokeLinecap="round" strokeDasharray={CIRC}
+                strokeDashoffset={CIRC * (1 - progressPct / 100)}
+                transform="rotate(-90 46 46)"
+              />
+              <text x="46" y="52" textAnchor="middle" fill="#fff" fontSize="19" fontWeight="800">
+                {progressPct}٪
+              </text>
+            </svg>
+            <span className="nqd-ring-label">نسبة الإنجاز</span>
           </div>
           <div className="nqd-welcome-art">
             <img src="/illustrations/welcome-student.png" alt="" />
           </div>
         </section>
 
-        <section className="nqd-stats">
+        <section className="nqd-stats nqd-stats-4">
           <div className="nqd-stat">
+            <span className="nqd-stat-ico nqd-ico-blue">📚</span>
             <span className="nqd-stat-num">{activeCount}</span>
-            <span className="nqd-stat-label">كورساتي</span>
+            <span className="nqd-stat-label">كورسات مسجلة</span>
           </div>
           <div className="nqd-stat">
+            <span className="nqd-stat-ico nqd-ico-green">✅</span>
             <span className="nqd-stat-num">{lessonsDone}</span>
-            <span className="nqd-stat-label">دروس مكتملة</span>
+            <span className="nqd-stat-label">درس مكتمل</span>
           </div>
           <div className="nqd-stat">
+            <span className="nqd-stat-ico nqd-ico-purple">📝</span>
             <span className="nqd-stat-num">{examsDone}</span>
-            <span className="nqd-stat-label">امتحانات</span>
+            <span className="nqd-stat-label">امتحانات مجتازة</span>
+          </div>
+          <div className="nqd-stat">
+            <span className="nqd-stat-ico nqd-ico-gold">🏆</span>
+            <span className="nqd-stat-num">{upcomingList.length}</span>
+            <span className="nqd-stat-label">الامتحانات القادمة</span>
           </div>
         </section>
 
-        {(announcements.length > 0 || notifications.length > 0) && (
-          <section className="nqd-notifs">
-            <h3>أحدث الإشعارات</h3>
-            {notifications.map((n) => (
-              <a
-                key={n.id}
-                href={n.link || "/notifications"}
-                className="nqd-notif"
-              >
-                <strong>{n.title}</strong>
-                <span>{n.body}</span>
+        <div className="nqd-panels">
+          <section className="nqd-panel">
+            <h3>آخر المحاضرات</h3>
+            {latestLessons.length === 0 && (
+              <p className="nqd-empty">لسه مفيش محاضرات في كورساتك.</p>
+            )}
+            {latestLessons.map((l) => (
+              <a key={l.id} href={`/courses/${l.course_id}`} className="nqd-row">
+                <span className="nqd-row-ico nqd-ico-blue">▶</span>
+                <span className="nqd-row-text">{l.title}</span>
+                <span className="nqd-row-go">متابعة الدرس</span>
+              </a>
+            ))}
+          </section>
+
+          <section className="nqd-panel">
+            <h3>الكورسات الحالية</h3>
+            {myCourses.length === 0 && (
+              <p className="nqd-empty">لسه ما اشتركتش في كورسات.</p>
+            )}
+            {myCourses.map((c) => (
+              <a key={c.id} href={`/courses/${c.id}`} className="nqd-row nqd-row-course">
+                <span className="nqd-row-ico nqd-ico-gold">📖</span>
+                <span className="nqd-row-text">
+                  {c.title}
+                  <span className="nqd-bar">
+                    <span
+                      className="nqd-bar-fill"
+                      style={{ width: `${coursePct[c.id] ?? 0}%` }}
+                    />
+                  </span>
+                </span>
+                <span className="nqd-row-pct">{coursePct[c.id] ?? 0}٪</span>
+              </a>
+            ))}
+          </section>
+
+          <section className="nqd-panel">
+            <h3>الامتحانات القادمة</h3>
+            {upcomingList.length === 0 && (
+              <p className="nqd-empty">مفيش امتحانات قادمة دلوقتي.</p>
+            )}
+            {upcomingList.slice(0, 3).map((x) => (
+              <a key={x.id} href="/exams" className="nqd-row">
+                <span className="nqd-row-ico nqd-ico-purple">📝</span>
+                <span className="nqd-row-text">{x.title}</span>
+              </a>
+            ))}
+            <a href="/exams" className="nqd-more">عرض الكل</a>
+          </section>
+
+          <section className="nqd-panel">
+            <h3>آخر الإشعارات</h3>
+            {notifications.length === 0 && announcements.length === 0 && (
+              <p className="nqd-empty">مفيش إشعارات جديدة.</p>
+            )}
+            {notifications.slice(0, 3).map((n) => (
+              <a key={n.id} href={n.link || "/notifications"} className="nqd-row">
+                <span className="nqd-row-ico nqd-ico-gold">🔔</span>
+                <span className="nqd-row-text">
+                  <strong>{n.title}</strong> — {n.body}
+                </span>
               </a>
             ))}
             {announcements.map((a) => (
-              <div key={a.id} className="nqd-notif nqd-ann">
-                <strong>📢 إعلان الأستاذ</strong>
-                <span style={{ whiteSpace: "pre-wrap" }}>{a.body}</span>
+              <div key={a.id} className="nqd-row">
+                <span className="nqd-row-ico nqd-ico-gold">📢</span>
+                <span className="nqd-row-text" style={{ whiteSpace: "pre-wrap" }}>
+                  {a.body}
+                </span>
               </div>
             ))}
           </section>
-        )}
-
-        {myCourses.length > 0 && (
-          <>
-            <h3 className="nqd-section-title">كورساتي الحالية</h3>
-            <div className="nqd-grid">
-              {myCourses.map((course) => (
-                <section key={course.id} className="nqd-card">
-                  <h4>{course.title}</h4>
-                  <p>{course.description}</p>
-                  <div className="nqd-card-foot">
-                    <span className="nqd-badge-active">مشترك ✅</span>
-                    <a href={`/courses/${course.id}`} className="nqd-btn-ghost">
-                      دخول الكورس ←
-                    </a>
-                  </div>
-                </section>
-              ))}
-            </div>
-          </>
-        )}
+        </div>
 
         <h3 className="nqd-section-title">كورسات اللغة العربية</h3>
 

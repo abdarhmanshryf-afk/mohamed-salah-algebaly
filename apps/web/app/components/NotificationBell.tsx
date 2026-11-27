@@ -6,7 +6,7 @@ import { createBrowserClient } from "@supabase/ssr";
 
 const HIDDEN = ["/login", "/register", "/forgot-password", "/reset-password"];
 
-export default function NotificationBell() {
+export default function NotificationBell({ inline }: { inline?: boolean }) {
   const pathname = usePathname();
   const [unread, setUnread] = useState(0);
   const [supported, setSupported] = useState(true);
@@ -45,7 +45,36 @@ export default function NotificationBell() {
     };
   }, [pathname]);
 
-  if (!supported || HIDDEN.some((p) => pathname.startsWith(p))) return null;
+  const hiddenHere =
+    HIDDEN.some((p) => pathname.startsWith(p)) ||
+    pathname === "/courses" ||
+    pathname === "/teacher";
+  if (!supported || (!inline && hiddenHere)) return null;
+
+  if (inline) {
+    return (
+      <a href="/notifications" aria-label="الإشعارات" className="notif-bell-inline">
+        🔔
+        {unread > 0 && (
+          <span
+            style={{
+              position: "absolute",
+              top: "-4px",
+              right: "-4px",
+              background: "var(--accent-red)",
+              color: "white",
+              borderRadius: "10px",
+              padding: "1px 6px",
+              fontSize: "11px",
+              fontWeight: 700,
+            }}
+          >
+            {unread}
+          </span>
+        )}
+      </a>
+    );
+  }
 
   return (
     <a
