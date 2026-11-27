@@ -82,7 +82,10 @@ export default async function Home() {
       <nav className="nav">
         <div className="brand">متقن</div>
         {isTeacher && <a className="login" href="/teacher">لوحة التحكم</a>}
-        {!user && <a className="login" href="/login">دخول الطلاب</a>}
+        {!user && <a className="login" href="/login">تسجيل دخول</a>}
+        {user && (
+          <a className="login" href="/login" style={{ marginLeft: "8px" }}>تسجيل دخول</a>
+        )}
         {user && !isTeacher && <a className="login" href="/courses">كورساتي</a>}
         {user && !isTeacher && (
           <a className="login" href="/profile" style={{ marginRight: "8px" }}>حسابي</a>
