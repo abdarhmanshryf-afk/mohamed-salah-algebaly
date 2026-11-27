@@ -2,8 +2,8 @@
 // Static assets: cache-first. Pages: network-first with cache fallback.
 // Supabase/API calls: network only, never cached.
 
-const STATIC_CACHE = "itqan-static-v1";
-const PAGE_CACHE = "itqan-pages-v1";
+const STATIC_CACHE = "itqan-static-v2";
+const PAGE_CACHE = "itqan-pages-v2";
 const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", (event) => {

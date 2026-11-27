@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import PasswordInput from "../components/PasswordInput";
 
@@ -18,6 +18,20 @@ export default function Login() {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
+
+  // علامة جلسة المتصفح: تُوضع بعد الدخول وتُمحى بقفل المتصفح، حتى تفتح
+  // المنصة على صفحة الدخول أولًا في كل مرة. من عنده جلسة شغالة ووصل هنا
+  // (من تحويل الصفحة الرئيسية) نعلمه ونرجعه للمنصة مباشرة.
+  useEffect(() => {
+    const supabase = client();
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        document.cookie = "mtq_gate=1; path=/; SameSite=Lax";
+        window.location.href = "/";
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -63,6 +77,9 @@ export default function Login() {
       setLoading(false);
       return;
     }
+
+    // دخل بنجاح: علم جلسة المتصفح حتى لا يعيده بوابة الدخول في نفس الجلسة.
+    document.cookie = "mtq_gate=1; path=/; SameSite=Lax";
 
     const isStaff = profile?.role === "teacher" || profile?.role === "admin";
     if (accountType === "teacher" && isStaff) {
