@@ -242,3 +242,40 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-of
 @media(max-width:900px){
   body:has(.nq) .notif-bell{top:200px !important}
 }
+
+/* ===== صفحة الدخول الجديدة (nql) ===== */
+.nql{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 5%}
+.nql-shell{display:flex;width:100%;max-width:1000px;min-height:580px;background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(18,35,63,.16)}
+.nql-brand{flex:1;background:linear-gradient(165deg,#d8ebff 0%,#eaf4ff 100%);padding:44px 40px;display:flex;flex-direction:column;gap:18px}
+.nql-brand h2{color:var(--nq-navy);font-size:30px;font-weight:800;line-height:1.5;margin:6px 0 0}
+.nql-art{width:100%;max-width:300px;border-radius:20px;margin-top:auto;box-shadow:0 16px 40px rgba(18,35,63,.12)}
+.nql-panel{flex:1.15;padding:44px 42px;display:flex;flex-direction:column}
+.nql-panel h1{color:var(--nq-navy);font-size:25px;font-weight:800;margin:0;text-align:center}
+.nql-sub{color:#68779a;font-size:14.5px;text-align:center;margin:8px 0 22px}
+.nql-type{display:flex;gap:12px;margin-bottom:18px}
+.nql-type button{flex:1;padding:14px 10px;border-radius:14px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;color:#3c4c68;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s ease}
+.nql-type button span{font-size:22px}
+.nql-type button.active{background:var(--nq-navy);color:#fff;border-color:var(--nq-navy)}
+.nql-panel label{display:block;margin:12px 0 6px;color:var(--nq-navy);font-weight:700;font-size:14.5px}
+.nql-panel input{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;background:#fbfdff;color:#16294a;font-family:inherit}
+.nql-panel input:focus{outline:2px solid var(--nq-mint);outline-offset:0;border-color:var(--nq-mint)}
+.nql-pass-head{display:flex;justify-content:space-between;align-items:baseline}
+.nql-pass-head a{color:var(--nq-orange);font-size:13px;font-weight:600}
+.nql-submit{width:100%;margin-top:20px;padding:14px;border:0;border-radius:12px;background:var(--nq-navy);color:#fff;font-size:16.5px;font-weight:800;cursor:pointer;font-family:inherit;transition:background .15s ease}
+.nql-submit:hover{background:var(--nq-navy-2)}
+.nql-submit:disabled{opacity:.6;cursor:default}
+.nql-divider{display:flex;align-items:center;gap:12px;color:#8fa0b8;font-size:13px;margin:20px 0 12px}
+.nql-divider::before,.nql-divider::after{content:"";flex:1;border-top:1px solid var(--border)}
+.nql-google{width:100%;padding:13px;border:1.5px solid var(--border);border-radius:12px;background:#fff;font-size:15.5px;font-weight:700;color:#3c4c68;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .15s ease}
+.nql-google:hover{border-color:var(--nq-blue-2);background:#fbfdff}
+.nql-msg{margin:14px 0 0;color:#b45309;background:#fdf1dc;border-radius:10px;padding:10px 14px;font-size:14px;text-align:center}
+.nql-links{margin-top:16px;text-align:center;color:#68779a;font-size:14px}
+.nql-links a{color:var(--nq-navy);font-weight:700}
+@media(max-width:820px){
+  .nql{padding:18px 4%}
+  .nql-shell{flex-direction:column;min-height:0}
+  .nql-brand{padding:26px 24px;align-items:center;text-align:center;gap:10px}
+  .nql-brand h2{font-size:21px;margin:0}
+  .nql-art{display:none}
+  .nql-panel{padding:26px 22px 30px}
+}

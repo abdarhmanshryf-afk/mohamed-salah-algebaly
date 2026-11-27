@@ -134,25 +134,23 @@ export default function Login() {
     }
   }
 
-  const optionStyle = (active: boolean): React.CSSProperties => ({
-    flex: 1,
-    padding: "12px",
-    borderRadius: "12px",
-    border: active ? "2px solid var(--gold)" : "1px solid var(--border)",
-    background: active ? "var(--border)" : "var(--bg-2)",
-    color: active ? "var(--gold)" : "var(--text-soft)",
-    fontWeight: active ? 700 : 400,
-    cursor: "pointer",
-    fontSize: "16px",
-  });
-
   // أثناء فحص الجلسة: شاشة دخول نظيفة من غير فورم.
   if (checking) {
     return (
-      <main className="auth-wrap">
-        <div className="auth-card">
-          <h1 className="auth-brand">متقن<span>.</span></h1>
-          <p className="auth-welcome">جاري الدخول للمنصة...</p>
+      <main className="nq nql">
+        <div className="nql-shell">
+          <aside className="nql-brand">
+            <a className="nq-logo" href="/" aria-label="متقن — الرئيسية">
+              <span className="nq-logo-mark" aria-hidden="true">🎓</span>
+              <span>متقن</span>
+            </a>
+            <h2>رحلتك نحو التميز<br />تبدأ من هنا..</h2>
+            <img src="/illustrations/books.png" alt="" className="nql-art" />
+          </aside>
+          <section className="nql-panel">
+            <h1>مرحبًا بك في منصة متقن</h1>
+            <p className="nql-sub">جاري الدخول للمنصة...</p>
+          </section>
         </div>
       </main>
     );
@@ -161,89 +159,110 @@ export default function Login() {
   // جلسة شغالة: اختيار ثابت، بلا وميض ولا تحويل تلقائي.
   if (sessionInfo) {
     return (
-      <main className="auth-wrap">
-        <div className="auth-card">
-          <h1 className="auth-brand">متقن<span>.</span></h1>
-          <p className="auth-welcome">أهلًا بيك في متقن، رحلتك للتفوق بتبدأ من هنا ❤️</p>
+      <main className="nq nql">
+        <div className="nql-shell">
+          <aside className="nql-brand">
+            <a className="nq-logo" href="/" aria-label="متقن — الرئيسية">
+              <span className="nq-logo-mark" aria-hidden="true">🎓</span>
+              <span>متقن</span>
+            </a>
+            <h2>رحلتك نحو التميز<br />تبدأ من هنا..</h2>
+            <img src="/illustrations/books.png" alt="" className="nql-art" />
+          </aside>
+          <section className="nql-panel">
+            <h1>مرحبًا بك في منصة متقن</h1>
+            <p className="nql-sub">أهلًا بيك في متقن، رحلتك للتفوق بتبدأ من هنا ❤️</p>
 
-          <button type="button" className="auth-primary" onClick={continueAs}>
-            كمّل كـ {sessionInfo.name || "حسابك"}
-          </button>
-          <button type="button" className="auth-google" onClick={switchAccount}>
-            دخول بحساب تاني
-          </button>
+            <button type="button" className="nql-submit" onClick={continueAs}>
+              كمّل كـ {sessionInfo.name || "حسابك"}
+            </button>
+            <button type="button" className="nql-google" onClick={switchAccount}>
+              دخول بحساب تاني
+            </button>
 
-          <div className="auth-links">
-            <a href="/">← الرئيسية</a>
-          </div>
+            <div className="nql-links">
+              <a href="/">← الرئيسية</a>
+            </div>
+          </section>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="auth-wrap">
-      <div className="auth-card">
-        <h1 className="auth-brand">متقن<span>.</span></h1>
-        <p className="auth-welcome">أهلًا بيك في متقن، رحلتك للتفوق بتبدأ من هنا ❤️</p>
+    <main className="nq nql">
+      <div className="nql-shell">
+        <aside className="nql-brand">
+          <a className="nq-logo" href="/" aria-label="متقن — الرئيسية">
+            <span className="nq-logo-mark" aria-hidden="true">🎓</span>
+            <span>متقن</span>
+          </a>
+          <h2>رحلتك نحو التميز<br />تبدأ من هنا..</h2>
+          <img src="/illustrations/books.png" alt="" className="nql-art" />
+        </aside>
+        <section className="nql-panel">
+          <h1>مرحبًا بك في منصة متقن</h1>
+          <p className="nql-sub">اختر نوع الحساب لتسجيل الدخول</p>
 
-        <div
-          role="group"
-          aria-label="نوع الحساب"
-          style={{ display: "flex", gap: "12px", marginBottom: "8px" }}
-        >
-          <button
-            type="button"
-            style={optionStyle(accountType === "student")}
-            onClick={() => setAccountType("student")}
-          >
-            أنا طالب 🎓
+          <div role="group" aria-label="نوع الحساب" className="nql-type">
+            <button
+              type="button"
+              className={accountType === "student" ? "active" : ""}
+              onClick={() => setAccountType("student")}
+            >
+              <span aria-hidden="true">🎓</span>
+              طالب
+            </button>
+            <button
+              type="button"
+              className={accountType === "teacher" ? "active" : ""}
+              onClick={() => setAccountType("teacher")}
+            >
+              <span aria-hidden="true">👨‍🏫</span>
+              معلم
+            </button>
+          </div>
+
+          <form onSubmit={handleLogin}>
+            <label htmlFor="nql-email">البريد الإلكتروني</label>
+            <input
+              id="nql-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+
+            <div className="nql-pass-head">
+              <label htmlFor="nql-pass">كلمة المرور</label>
+              <a href="/forgot-password">نسيت كلمة المرور؟</a>
+            </div>
+            <PasswordInput
+              value={password}
+              onChange={setPassword}
+              autoComplete="current-password"
+            />
+
+            <button type="submit" className="nql-submit" disabled={loading}>
+              {loading ? "جاري تسجيل الدخول..." : "تسجيل الدخول ←"}
+            </button>
+          </form>
+
+          <div className="nql-divider"><span>أو الدخول باستخدام</span></div>
+
+          <button type="button" className="nql-google" onClick={handleGoogle}>
+            <span aria-hidden="true" style={{ fontWeight: 900, color: "#4285F4" }}>G</span> المتابعة عبر جوجل
           </button>
-          <button
-            type="button"
-            style={optionStyle(accountType === "teacher")}
-            onClick={() => setAccountType("teacher")}
-          >
-            أنا الأستاذ 👨‍🏫
-          </button>
-        </div>
 
-        <form onSubmit={handleLogin}>
-          <label>البريد الإلكتروني</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          {message && <p role="alert" className="nql-msg">{message}</p>}
 
-          <label>كلمة المرور</label>
-          <PasswordInput
-            value={password}
-            onChange={setPassword}
-            autoComplete="current-password"
-          />
-
-          <button type="submit" disabled={loading}>
-            {loading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
-          </button>
-        </form>
-
-        <button type="button" className="auth-google" onClick={handleGoogle}>
-          الدخول بحساب جوجل
-        </button>
-
-        {message && <p role="alert">{message}</p>}
-
-        <div className="auth-links">
-          <a href="/forgot-password">نسيت كلمة المرور؟</a>
-        </div>
-        <div className="auth-links">
-          ليس لديك حساب؟ <a href="/register">اعمل حساب جديد</a>
-        </div>
-        <div className="auth-links">
-          <a href="/">← الرئيسية</a>
-        </div>
+          <div className="nql-links">
+            ليس لديك حساب؟ <a href="/register">إنشاء حساب جديد</a>
+          </div>
+          <div className="nql-links">
+            <a href="/">← الرئيسية</a>
+          </div>
+        </section>
       </div>
     </main>
   );
