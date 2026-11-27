@@ -5,10 +5,11 @@ import Faq from "./components/Faq";
 import { WHATSAPP_NUMBER } from "./config";
 
 const features = [
-  ["شرح مبسّط", "دروس منظمة تساعدك على فهم اللغة العربية خطوة بخطوة."],
-  ["امتحانات إلكترونية", "تدرّب واختبر مستواك وتابع تقدمك."],
-  ["مذكرات ومراجعات", "مواد تعليمية مساعدة لكل كورس."],
-];
+  ["🎬", "دروس فيديو بجودة عالية", "شرح مبسّط ومنظم يساعدك تفهم العربي خطوة بخطوة.", "blue"],
+  ["📝", "امتحانات إلكترونية تفاعلية", "تدرّب واختبر مستواك وتابع نتيجتك أول بأول.", "mint"],
+  ["📚", "مذكرات ومراجعات شاملة", "مواد تعليمية مساعدة لكل كورس وكل درس.", "orange"],
+  ["📊", "متابعة تقدمك لحظة بلحظة", "تقارير ونقاط وشارات تحفزك تكمّل.", "purple"],
+] as const;
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -78,38 +79,55 @@ export default async function Home() {
   const courseLinks: { id: string; title: string }[] = courseRows || [];
 
   return (
-    <main>
-      <nav className="nav">
-        <div className="brand">متقن</div>
-        {isTeacher && <a className="login" href="/teacher">لوحة التحكم</a>}
-        {!user && <a className="login" href="/login">تسجيل دخول</a>}
-        {user && (
-          <a className="login" href="/login" style={{ marginLeft: "8px" }}>تسجيل دخول</a>
-        )}
-        {user && !isTeacher && <a className="login" href="/courses">كورساتي</a>}
-        {user && !isTeacher && (
-          <a className="login" href="/profile" style={{ marginRight: "8px" }}>حسابي</a>
-        )}
-      </nav>
+    <main className="nq">
+      <header className="nq-header">
+        <a className="nq-logo" href="/" aria-label="متقن — الرئيسية">
+          <span className="nq-logo-mark" aria-hidden="true">🎓</span>
+          <span>متقن</span>
+        </a>
+        <details className="nq-navwrap">
+          <summary className="nq-burger" aria-label="القائمة">☰</summary>
+          <nav className="nq-links">
+            <a href="/">الرئيسية</a>
+            <a href="/courses">الكورسات</a>
+            <a href="/about">عن المنصة</a>
+            <a href="/review">المراجعات</a>
+            <a href="/#faq">الأسئلة الشائعة</a>
+          </nav>
+        </details>
+        <div className="nq-header-btns">
+          {isTeacher && <a className="nq-btn nq-btn-ghost" href="/teacher">لوحة التحكم</a>}
+          {user && !isTeacher && <a className="nq-btn nq-btn-ghost" href="/courses">كورساتي</a>}
+          <a className="nq-btn nq-btn-navy" href="/login">تسجيل دخول</a>
+          <a className="nq-btn nq-btn-orange" href="/register">إنشاء حساب +</a>
+        </div>
+      </header>
 
       {user && !isTeacher && (
-        <section className="features" style={{ paddingTop: "100px" }}>
-          <h2>أهلًا بيك يا {studentName || "بطل"} 👋</h2>
-          <div className="cards">
-            <a className="card" href="/my"><h3>📖 دروسي</h3><p>كمّل من مكان ما وقفت.</p></a>
-            <a className="card" href="/progress"><h3>📈 تقدمي</h3><p>نقاطك وشاراتك وتقريرك الشهري.</p></a>
-            <a className="card" href="/review"><h3>🔁 المراجعة</h3><p>الأسئلة المستحقة للمراجعة النهاردة.</p></a>
-            <a className="card" href="/assistant"><h3>🤖 المساعد الذكي</h3><p>اسأل أي حاجة في العربي.</p></a>
-            <a className="card" href="/challenges"><h3>🏆 التحديات</h3><p>تحديات جديدة بنقاط.</p></a>
-            <a className="card" href="/notifications"><h3>🔔 الإشعارات</h3><p>كل جديدك في مكان واحد.</p></a>
+        <section className="nq-section nq-me">
+          <div className="nq-me-head">
+            <img src="/illustrations/welcome-student.png" alt="" className="nq-me-art" />
+            <div>
+              <h2>أهلًا بيك يا {studentName || "بطل"} 👋</h2>
+              <p>كمّل رحلتك من مكان ما وقفت.</p>
+            </div>
+          </div>
+          <div className="nq-grid nq-grid-3">
+            <a className="nq-card nq-link-card" href="/my"><span className="nq-chip mint">📖</span><h3>دروسي</h3><p>كمّل من مكان ما وقفت.</p></a>
+            <a className="nq-card nq-link-card" href="/progress"><span className="nq-chip blue">📈</span><h3>تقدمي</h3><p>نقاطك وشاراتك وتقريرك الشهري.</p></a>
+            <a className="nq-card nq-link-card" href="/review"><span className="nq-chip orange">🔁</span><h3>المراجعة</h3><p>الأسئلة المستحقة للمراجعة النهاردة.</p></a>
+            <a className="nq-card nq-link-card" href="/assistant"><span className="nq-chip purple">🤖</span><h3>المساعد الذكي</h3><p>اسأل أي حاجة في العربي.</p></a>
+            <a className="nq-card nq-link-card" href="/challenges"><span className="nq-chip mint">🏆</span><h3>التحديات</h3><p>تحديات جديدة بنقاط.</p></a>
+            <a className="nq-card nq-link-card" href="/notifications"><span className="nq-chip blue">🔔</span><h3>الإشعارات</h3><p>كل جديدك في مكان واحد.</p></a>
           </div>
           {recentAttempts.length > 0 && (
             <>
-              <h2 style={{ marginTop: "34px" }}>آخر نشاط ليك</h2>
-              <div className="cards">
+              <h2 className="nq-h2">آخر نشاط ليك</h2>
+              <div className="nq-grid nq-grid-3">
                 {recentAttempts.map((a, i) => (
-                  <article className="card" key={i}>
-                    <h3>✍️ {a.exams?.title || "امتحان"}</h3>
+                  <article className="nq-card" key={i}>
+                    <span className="nq-chip orange">✍️</span>
+                    <h3>{a.exams?.title || "امتحان"}</h3>
                     <p>درجتك: {a.score}% — {new Date(a.created_at).toLocaleDateString("ar-EG")}</p>
                   </article>
                 ))}
@@ -118,11 +136,12 @@ export default async function Home() {
           )}
           {latestLessons.length > 0 && (
             <>
-              <h2 style={{ marginTop: "34px" }}>جديد على المنصة</h2>
-              <div className="cards">
+              <h2 className="nq-h2">جديد على المنصة</h2>
+              <div className="nq-grid nq-grid-3">
                 {latestLessons.map((l) => (
-                  <a className="card" key={l.id} href={`/courses/${l.course_id}`}>
-                    <h3>🆕 {l.title}</h3>
+                  <a className="nq-card nq-link-card" key={l.id} href={`/courses/${l.course_id}`}>
+                    <span className="nq-chip mint">🆕</span>
+                    <h3>{l.title}</h3>
                     <p>درس جديد اتضاف مؤخرًا — شوفه دلوقتي.</p>
                   </a>
                 ))}
@@ -131,76 +150,78 @@ export default async function Home() {
           )}
         </section>
       )}
-      <section className="hero">
-        <div className="deco-circle" aria-hidden="true" />
-        <svg
-          className="deco-pencil"
-          viewBox="0 0 200 220"
-          aria-hidden="true"
-        >
-          <g
-            transform="rotate(30 100 110)"
-            fill="none"
-            stroke="var(--gold)"
-            strokeWidth="4"
-            strokeLinejoin="round"
-          >
-            <rect x="86" y="18" width="28" height="120" rx="5" />
-            <path d="M86 18 Q100 2 114 18" />
-            <line x1="100" y1="26" x2="100" y2="138" />
-            <polygon points="86,138 114,138 100,176" />
-            <line x1="96" y1="166" x2="104" y2="166" />
-          </g>
-        </svg>
-        <div className="hero-content">
-          <div className="eyebrow">منصة تعليم اللغة العربية</div>
-          <h1>اتعلّم العربي<br /><span>بفهم وثقة</span></h1>
-          <p>رحلتك في اللغة العربية تبدأ من هنا. تابع دروسك، اختبر مستواك، وراجع مع الأستاذ محمد صلاح الجبالي.</p>
-          <div className="hero-points">
-            {features.map(([title]) => <div className="hero-point" key={title}><span>✓</span>{title}</div>)}
+
+      <section className="nq-hero">
+        <div className="nq-hero-text">
+          <span className="nq-eyebrow">✨ منصة تعليم اللغة العربية</span>
+          <h1>اتعلم العربي<br /><span className="nq-grad">بفهم وثقة</span></h1>
+          <p>رحلتك نحو التميز تبدأ من هنا. دروس فيديو، امتحانات إلكترونية، مذكرات ومراجعات شاملة، ومتابعة مستمرة — بإشراف الأستاذ محمد صلاح الجبالي.</p>
+          <div className="nq-hero-btns">
+            <a className="nq-btn nq-btn-orange nq-btn-lg" href="/courses">▶ استكشف الكورسات</a>
+            <a className="nq-btn nq-btn-outline nq-btn-lg" href="/login">تسجيل الدخول</a>
           </div>
-          <a className="cta" href="/courses">استكشف الكورسات</a>
+          <div className="nq-hero-points">
+            <span><b>✓</b> شرح مبسّط</span>
+            <span><b>✓</b> امتحانات إلكترونية</span>
+            <span><b>✓</b> مذكرات ومراجعات</span>
+          </div>
+        </div>
+        <div className="nq-hero-art" aria-hidden="true">
+          <img src="/illustrations/hero.png" alt="" />
         </div>
       </section>
-      <section className="features">
-        <h2>كل ما تحتاجه في مكان واحد</h2>
-        <div className="cards">
-          {features.map(([title, desc]) => <article className="card" key={title}><h3>{title}</h3><p>{desc}</p></article>)}
+
+      <section className="nq-section">
+        <h2 className="nq-h2 nq-center">كل اللي تحتاجه في مكان واحد</h2>
+        <p className="nq-sub nq-center">أدوات متكاملة تساعدك تتعلم وتتقن العربي بسهولة.</p>
+        <div className="nq-grid nq-grid-4">
+          {features.map(([icon, title, desc, tone]) => (
+            <article className="nq-card nq-feature" key={title}>
+              <span className={`nq-chip ${tone}`}>{icon}</span>
+              <h3>{title}</h3>
+              <p>{desc}</p>
+            </article>
+          ))}
         </div>
       </section>
-      <section className="faq">
-        <h2>أسئلة شائعة</h2>
-        <Faq />
+
+      <section className="nq-section" id="faq">
+        <h2 className="nq-h2 nq-center">أسئلة شائعة</h2>
+        <div className="nq-faq"><Faq /></div>
       </section>
-      <section className="teacher">
-        <div className="teacher-photo"><img src="/teacher.jpg" alt="الأستاذ محمد صلاح الجبالي" /></div>
-        <div>
-          <h2>عن الأستاذ</h2>
-          <p>
-            <strong style={{ color: "var(--text)" }}>محمد صلاح الجبالي</strong> —
-            مدرّس لغة عربية، بيبسّط النحو والبلاغة والإملاء بأمثلة من الحياة
-            اليومية، عشان تحب العربي وتتقنه.
-          </p>
+
+      <section className="nq-section">
+        <div className="nq-teacher">
+          <div className="teacher-photo"><img src="/teacher.jpg" alt="الأستاذ محمد صلاح الجبالي" /></div>
+          <div>
+            <h2 className="nq-h2">عن الأستاذ</h2>
+            <p>
+              <strong>محمد صلاح الجبالي</strong> —
+              مدرّس لغة عربية، بيبسّط النحو والبلاغة والإملاء بأمثلة من الحياة
+              اليومية، عشان تحب العربي وتتقنه.
+            </p>
+          </div>
         </div>
       </section>
-      <footer className="footer-rich">
-        <h2 className="footer-brand">متقن</h2>
-        <p className="footer-tag">منصة تعليمية بتخلّيك تحب العربي</p>
-        <div className="footer-cols">
-          <div className="footer-col">
+
+      <footer className="nq-footer">
+        <h2 className="nq-footer-brand">متقن</h2>
+        <p className="nq-footer-tag">منصة تعليمية بتخلّيك تحب العربي</p>
+        <div className="nq-footer-cols">
+          <div className="nq-footer-col">
             <h4>الكورسات</h4>
             {courseLinks.map((c) => (
               <a key={c.id} href={`/courses/${c.id}`}>{c.title}</a>
             ))}
             <a href="/courses">كل الكورسات</a>
           </div>
-          <div className="footer-col">
+          <div className="nq-footer-col">
             <h4>الأحكام</h4>
             <a href="/privacy">سياسة الخصوصية</a>
             <a href="/terms">الشروط والأحكام</a>
             <a href="/refund">سياسة الاسترداد</a>
           </div>
-          <div className="footer-col">
+          <div className="nq-footer-col">
             <h4>عامة</h4>
             <a href="/about">عن المنصة</a>
             <a href="/contact">تواصل معنا</a>
@@ -213,7 +234,7 @@ export default async function Home() {
             </a>
           </div>
         </div>
-        <p className="footer-copy">© منصة متقن — كل الحقوق محفوظة</p>
+        <p className="nq-footer-copy">© منصة متقن — كل الحقوق محفوظة</p>
       </footer>
     </main>
   );
