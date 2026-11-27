@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../../lib/supabase-browser";
 
 type RequestRow = {
   id: string;
@@ -18,14 +18,10 @@ export default function TeacherRequests() {
   const [message, setMessage] = useState("");
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  function client() {
-    return createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
-  }
+  const client = getBrowserClient;
 
   async function loadRequests() {
+    try {
     const supabase = client();
     // Payment-proof columns come from the admin setup SQL; fall back pre-setup.
     const full = await supabase
@@ -56,7 +52,11 @@ export default function TeacherRequests() {
     } else {
       setRequests((full.data as unknown as RequestRow[]) || []);
     }
-    setLoading(false);
+    } catch {
+      setMessage("حصل خطأ أثناء تحميل الطلبات. حدّث الصفحة وحاول مرة أخرى.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function viewProof(path: string) {

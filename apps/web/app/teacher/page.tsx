@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../lib/supabase-browser";
 import NotificationBell from "../components/NotificationBell";
 
 type Stats = {
@@ -34,10 +34,7 @@ export default function TeacherHome() {
   useEffect(() => {
     async function loadStats() {
       try {
-        const supabase = createBrowserClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        );
+        const supabase = getBrowserClient();
 
         const {
           data: { user },

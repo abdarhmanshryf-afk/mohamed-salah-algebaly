@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../lib/supabase-browser";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import NotificationBell from "../components/NotificationBell";
 
@@ -55,11 +55,7 @@ export default function Courses() {
   const [progressPct, setProgressPct] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const client = () =>
-    createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+  const client = getBrowserClient;
 
   const loadEnrollments = useCallback(
     async (supabase: SupabaseClient, uid: string) => {
@@ -74,6 +70,7 @@ export default function Courses() {
 
   useEffect(() => {
     async function loadData() {
+      try {
       const supabase = client();
 
       const { data: { user }, error: authError } =
@@ -178,7 +175,11 @@ export default function Courses() {
       if (profile?.role !== "teacher") {
         await loadEnrollments(supabase, user.id);
       }
-      setLoading(false);
+      } catch {
+        setMessage("حصل خطأ أثناء تحميل البيانات. حدّث الصفحة وحاول مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
     }
 
     loadData();

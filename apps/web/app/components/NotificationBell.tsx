@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "../lib/supabase-browser";
 
 const HIDDEN = ["/login", "/register", "/forgot-password", "/reset-password"];
 
@@ -14,10 +14,7 @@ export default function NotificationBell({ inline }: { inline?: boolean }) {
   useEffect(() => {
     let alive = true;
     async function load() {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      const supabase = getBrowserClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
