@@ -53,7 +53,7 @@ export default function NotificationBell() {
       aria-label="الإشعارات"
       style={{
         position: "fixed",
-        top: "14px",
+        top: "84px", // تحت الهيدر حتى لا تغطي أزراره
         left: "16px",
         zIndex: 50,
         width: "42px",
