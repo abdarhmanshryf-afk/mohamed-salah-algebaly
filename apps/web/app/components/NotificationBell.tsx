@@ -51,6 +51,7 @@ export default function NotificationBell() {
     <a
       href="/notifications"
       aria-label="الإشعارات"
+      className="notif-bell"
       style={{
         position: "fixed",
         top: "84px", // تحت الهيدر حتى لا تغطي أزراره
