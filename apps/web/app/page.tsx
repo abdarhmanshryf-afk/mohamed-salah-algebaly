@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { createServerClient } from "@supabase/ssr";
 import Faq from "./components/Faq";
 import { WHATSAPP_NUMBER } from "./config";
@@ -30,6 +31,11 @@ export default async function Home() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // المنصة تفتح على صفحة تسجيل الدخول أولًا؛ الزائر غير المسجل يتحول لها تلقائيًا.
+  if (!user) {
+    redirect("/login");
+  }
 
   let isTeacher = false;
   let studentName = "";
