@@ -86,7 +86,7 @@ export default async function Home() {
           <span>متقن</span>
         </a>
         <nav className="nq-links nq-links-desktop">
-          <a href="/">الرئيسية</a>
+          <a href="/" className="active">الرئيسية</a>
           <a href="/courses">الكورسات</a>
           <a href="/about">عن المنصة</a>
           <a href="/review">المراجعات</a>
@@ -106,7 +106,7 @@ export default async function Home() {
           {isTeacher && <a className="nq-btn nq-btn-ghost" href="/teacher">لوحة التحكم</a>}
           {user && !isTeacher && <a className="nq-btn nq-btn-ghost" href="/courses">كورساتي</a>}
           <a className="nq-btn nq-btn-navy" href="/login">تسجيل دخول</a>
-          <a className="nq-btn nq-btn-orange" href="/register">إنشاء حساب +</a>
+          <a className="nq-btn nq-btn-green" href="/register">+ إنشاء حساب</a>
         </div>
       </header>
 
@@ -162,10 +162,10 @@ export default async function Home() {
         <div className="nq-hero-text">
           <span className="nq-eyebrow">✨ منصة تعليم اللغة العربية</span>
           <h1>اتعلم العربي<br /><span className="nq-grad">بفهم وثقة</span></h1>
-          <p>رحلتك نحو التميز تبدأ من هنا. دروس فيديو، امتحانات إلكترونية، مذكرات ومراجعات شاملة، ومتابعة مستمرة — بإشراف الأستاذ محمد صلاح الجبالي.</p>
+          <p className="nq-hero-sub"><strong>مع منصة متقن التعليمية</strong><br />بإشراف الأستاذ محمد صلاح الجبالي</p>
           <div className="nq-hero-btns">
+            <a className="nq-btn nq-btn-navy nq-btn-lg" href="/login">تسجيل الدخول&nbsp;👤</a>
             <a className="nq-btn nq-btn-orange nq-btn-lg" href="/courses">▶ استكشف الكورسات</a>
-            <a className="nq-btn nq-btn-outline nq-btn-lg" href="/login">تسجيل الدخول</a>
           </div>
           <div className="nq-hero-points">
             <span><b>✓</b> شرح مبسّط</span>
@@ -178,7 +178,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="nq-section">
+      <section className="nq-section nq-feats">
         <h2 className="nq-h2 nq-center">كل اللي تحتاجه في مكان واحد</h2>
         <p className="nq-sub nq-center">أدوات متكاملة تساعدك تتعلم وتتقن العربي بسهولة.</p>
         <div className="nq-grid nq-grid-4">
