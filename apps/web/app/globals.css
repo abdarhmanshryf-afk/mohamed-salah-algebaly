@@ -387,3 +387,23 @@ a.nqd-row:hover{background:#f2f7fc}
   .nqd-panels{grid-template-columns:1fr}
   .nqd-welcome-art img{width:110px}
 }
+
+/* ===== nqd teacher home extras ===== */
+.nqd-teacher-mid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:8px}
+.nqd-chart{width:100%;height:auto}
+.nqd-chart-panel{min-height:220px}
+.nqd-welcome-teacher{background:linear-gradient(135deg,#d8ecff,#eaf5ff);color:#0f2740;flex-direction:row;align-items:center;margin-bottom:0}
+.nqd-welcome-teacher h2{color:#0f2740;font-size:20px;margin:0 0 8px}
+.nqd-welcome-teacher p{color:#4c6b8c;margin:0 0 14px}
+.nqd-welcome-teacher .nqd-btn-primary{background:#16324f;color:#fff}
+.nqd-panels-3{grid-template-columns:1fr 1fr 1fr}
+.nqd-linkcard{text-decoration:none;display:block;transition:transform .15s ease,box-shadow .15s ease}
+.nqd-linkcard:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(15,39,64,.1)}
+.nqd-linkcard h4{margin:0 0 6px;font-size:16px;color:#16324f}
+@media(max-width:1100px){
+  .nqd-teacher-mid{grid-template-columns:1fr}
+  .nqd-panels-3{grid-template-columns:1fr 1fr}
+}
+@media(max-width:900px){
+  .nqd-panels-3{grid-template-columns:1fr}
+}
