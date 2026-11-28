@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@supabase/ssr";
 import Faq from "./components/Faq";
+import UserMenu from "./components/UserMenu";
 import { WHATSAPP_NUMBER } from "./config";
 
 const features = [
@@ -41,6 +42,7 @@ export default async function Home() {
 
   let isTeacher = false;
   let studentName = "";
+  let userRole = "student";
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
@@ -49,6 +51,7 @@ export default async function Home() {
       .single();
     isTeacher = profile?.role === "teacher";
     studentName = profile?.full_name || "";
+    userRole = profile?.role || "student";
   }
 
   // لوحة الطالب الرئيسية: نشاط حديث + أحدث الدروس (للطالب المسجل بس)
@@ -105,8 +108,14 @@ export default async function Home() {
         <div className="nq-header-btns">
           {isTeacher && <a className="nq-btn nq-btn-ghost" href="/teacher">لوحة التحكم</a>}
           {user && !isTeacher && <a className="nq-btn nq-btn-ghost" href="/courses">كورساتي</a>}
-          <a className="nq-btn nq-btn-navy" href="/login">تسجيل دخول</a>
-          <a className="nq-btn nq-btn-green" href="/register">+ إنشاء حساب</a>
+          {user ? (
+            <UserMenu name={studentName} role={userRole} />
+          ) : (
+            <>
+              <a className="nq-btn nq-btn-navy" href="/login">تسجيل دخول</a>
+              <a className="nq-btn nq-btn-green" href="/register">+ إنشاء حساب</a>
+            </>
+          )}
         </div>
       </header>
 
