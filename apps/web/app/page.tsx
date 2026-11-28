@@ -173,7 +173,13 @@ export default async function Home() {
           <h1>اتعلم العربي<br /><span className="nq-grad">بفهم وثقة</span></h1>
           <p className="nq-hero-sub"><strong>مع منصة متقن التعليمية</strong><br />بإشراف الأستاذ محمد صلاح الجبالي</p>
           <div className="nq-hero-btns">
-            <a className="nq-btn nq-btn-navy nq-btn-lg" href="/login">تسجيل الدخول&nbsp;👤</a>
+            {user ? (
+              <a className="nq-btn nq-btn-navy nq-btn-lg" href={isTeacher ? "/teacher" : "/courses"}>
+                {isTeacher ? "لوحة التحكم" : "كورساتي"}
+              </a>
+            ) : (
+              <a className="nq-btn nq-btn-navy nq-btn-lg" href="/login">تسجيل الدخول&nbsp;👤</a>
+            )}
             <a className="nq-btn nq-btn-orange nq-btn-lg" href="/courses">▶ استكشف الكورسات</a>
           </div>
           <div className="nq-hero-points">
