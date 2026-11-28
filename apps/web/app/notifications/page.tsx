@@ -69,6 +69,50 @@ export default function NotificationsPage() {
     else load();
   }
 
+  // الحذف محتاج سياسة notif_delete_own (سكريبت phase4-notifications.sql).
+  // لو لسه ما اشتغلتش، الحذف بيرجع صفر صفوف من غير خطأ — فبنقول للمستخدم بصراحة.
+  const deleteNotReady =
+    "الحذف لسه مش متفعّل على قاعدة البيانات — شغّل سكريبت phase4-notifications.sql في Supabase، وبعدها الحذف هيشتغل.";
+
+  async function removeOne(id: string) {
+    setMessage("");
+    const supabase = client();
+    const { data, error } = await supabase
+      .from("notifications")
+      .delete()
+      .eq("id", id)
+      .select("id");
+    if (error) {
+      setMessage("تعذر حذف الإشعار: " + error.message);
+      return;
+    }
+    if (!data || data.length === 0) {
+      setMessage(deleteNotReady);
+      return;
+    }
+    setRows((rs) => rs.filter((r) => r.id !== id));
+  }
+
+  async function removeRead() {
+    setMessage("");
+    const supabase = client();
+    const { data, error } = await supabase
+      .from("notifications")
+      .delete()
+      .eq("read", true)
+      .select("id");
+    if (error) {
+      setMessage("تعذر الحذف: " + error.message);
+      return;
+    }
+    if (!data || data.length === 0) {
+      setMessage(deleteNotReady);
+      return;
+    }
+    const gone = data.map((d: { id: string }) => d.id);
+    setRows((rs) => rs.filter((r) => !gone.includes(r.id)));
+  }
+
   const unreadCount = rows.filter((r) => !r.read).length;
 
   return (
@@ -86,11 +130,18 @@ export default function NotificationsPage() {
 
         {!loading && supported && (
           <>
-            {unreadCount > 0 && (
-              <button onClick={markAllRead} style={{ marginBottom: "10px", background: "var(--border)" }}>
-                تحديد الكل كمقروء ({unreadCount})
-              </button>
-            )}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "10px" }}>
+              {unreadCount > 0 && (
+                <button onClick={markAllRead} style={{ background: "var(--border)" }}>
+                  تحديد الكل كمقروء ({unreadCount})
+                </button>
+              )}
+              {rows.some((r) => r.read) && (
+                <button onClick={removeRead} style={{ background: "var(--border)" }}>
+                  مسح المقروء
+                </button>
+              )}
+            </div>
             {rows.length === 0 && <p>مفيش إشعارات لسه — أول ما يحصل جديد هتلاقيه هنا.</p>}
             {rows.map((n) => {
               const inner = (
@@ -113,12 +164,25 @@ export default function NotificationsPage() {
                   </p>
                 </section>
               );
-              return n.link ? (
-                <a key={n.id} href={n.link} style={{ display: "block" }}>
-                  {inner}
-                </a>
-              ) : (
-                <div key={n.id}>{inner}</div>
+              return (
+                <div key={n.id} className="notif-row">
+                  {n.link ? (
+                    <a href={n.link} className="notif-row-body">
+                      {inner}
+                    </a>
+                  ) : (
+                    <div className="notif-row-body">{inner}</div>
+                  )}
+                  <button
+                    type="button"
+                    className="notif-row-del"
+                    onClick={() => removeOne(n.id)}
+                    aria-label="حذف الإشعار"
+                    title="حذف الإشعار"
+                  >
+                    ✕
+                  </button>
+                </div>
               );
             })}
           </>
