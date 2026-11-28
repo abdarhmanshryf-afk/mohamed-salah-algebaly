@@ -41,8 +41,8 @@ export default function MyLessons() {
         .select("role")
         .eq("id", user.id)
         .single();
-      if (profile?.role === "teacher") {
-        window.location.href = "/teacher";
+      if (profile?.role === "teacher" || profile?.role === "admin") {
+        window.location.href = profile?.role === "admin" ? "/admin" : "/teacher";
         return;
       }
 

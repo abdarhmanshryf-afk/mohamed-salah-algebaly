@@ -54,10 +54,15 @@ export default async function Home() {
     userRole = profile?.role || "student";
   }
 
+  // لوحة التحكم بتظهر للمعلم والأدمن بس
+  const isStaff = userRole === "teacher" || userRole === "admin";
+  const staffHref = userRole === "admin" ? "/admin" : "/teacher";
+  const staffLabel = userRole === "admin" ? "لوحة الإدارة" : "لوحة التحكم";
+
   // لوحة الطالب الرئيسية: نشاط حديث + أحدث الدروس (للطالب المسجل بس)
   let recentAttempts: { score: number; created_at: string; exams: { title: string } | null }[] = [];
   let latestLessons: { id: string; title: string; course_id: string }[] = [];
-  if (user && !isTeacher) {
+  if (user && !isStaff) {
     const [{ data: att }, { data: les }] = await Promise.all([
       supabase
         .from("exam_attempts")
@@ -106,8 +111,8 @@ export default async function Home() {
           </nav>
         </details>
         <div className="nq-header-btns">
-          {isTeacher && <a className="nq-btn nq-btn-ghost" href="/teacher">لوحة التحكم</a>}
-          {user && !isTeacher && <a className="nq-btn nq-btn-ghost" href="/courses">كورساتي</a>}
+          {isStaff && <a className="nq-btn nq-btn-ghost" href={staffHref}>{staffLabel}</a>}
+          {user && !isStaff && <a className="nq-btn nq-btn-ghost" href="/courses">كورساتي</a>}
           {user ? (
             <UserMenu name={studentName} role={userRole} />
           ) : (
@@ -119,7 +124,7 @@ export default async function Home() {
         </div>
       </header>
 
-      {user && !isTeacher && (
+      {user && !isStaff && (
         <section className="nq-section nq-me">
           <div className="nq-me-head">
             <img src="/illustrations/welcome-student.png" alt="" className="nq-me-art" />
@@ -174,8 +179,8 @@ export default async function Home() {
           <p className="nq-hero-sub"><strong>مع منصة متقن التعليمية</strong><br />بإشراف الأستاذ محمد صلاح الجبالي</p>
           <div className="nq-hero-btns">
             {user ? (
-              <a className="nq-btn nq-btn-navy nq-btn-lg" href={isTeacher ? "/teacher" : "/courses"}>
-                {isTeacher ? "لوحة التحكم" : "كورساتي"}
+              <a className="nq-btn nq-btn-navy nq-btn-lg" href={isStaff ? staffHref : "/courses"}>
+                {isStaff ? staffLabel : "كورساتي"}
               </a>
             ) : (
               <a className="nq-btn nq-btn-navy nq-btn-lg" href="/login">تسجيل الدخول&nbsp;👤</a>

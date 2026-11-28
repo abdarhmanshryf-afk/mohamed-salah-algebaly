@@ -148,7 +148,7 @@ export default function CourseDetails() {
         .eq("id", user.id)
         .single();
 
-      const teacher = profile?.role === "teacher";
+      const teacher = profile?.role === "teacher" || profile?.role === "admin";
       setIsTeacher(teacher);
       setStudentName(profile?.full_name || "");
 

@@ -33,6 +33,7 @@ export default function Courses() {
   const [studentName, setStudentName] = useState("");
   const [studentId, setStudentId] = useState("");
   const [isTeacher, setIsTeacher] = useState(false);
+  const [staffHome, setStaffHome] = useState("/teacher");
   const [courses, setCourses] = useState<Course[]>([]);
   const [myCourses, setMyCourses] = useState<Course[]>([]);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
@@ -91,8 +92,9 @@ export default function Courses() {
 
       setStudentName(profile?.full_name || "طالبنا العزيز");
 
-      if (profile?.role === "teacher") {
+      if (profile?.role === "teacher" || profile?.role === "admin") {
         setIsTeacher(true);
+        setStaffHome(profile?.role === "admin" ? "/admin" : "/teacher");
       }
 
       const { data, error } = await supabase
@@ -172,7 +174,7 @@ export default function Courses() {
         setNotifications((notifRes.data as Notification[]) || []);
       }
 
-      if (profile?.role !== "teacher") {
+      if (profile?.role !== "teacher" && profile?.role !== "admin") {
         await loadEnrollments(supabase, user.id);
       }
       } catch {
@@ -340,8 +342,8 @@ export default function Courses() {
           </a>
           <a href="/profile">الإعدادات</a>
           {isTeacher && (
-            <a href="/teacher" className="nqd-teacher-link">
-              لوحة تحكم الأستاذ
+            <a href={staffHome} className="nqd-teacher-link">
+              {staffHome === "/admin" ? "لوحة الإدارة" : "لوحة تحكم الأستاذ"}
             </a>
           )}
         </nav>
